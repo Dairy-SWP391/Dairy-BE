@@ -1,0 +1,1 @@
+npm run prettier:check && npm run eslint:check-allow-warning && npm run check-types
