@@ -1,0 +1,256 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement()) 
+  first_name String
+  last_name String
+  phone_number String @unique
+  email String @unique
+  password String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  avatar_url String? 
+  role ROLE @default(MEMBER)
+  Post Post[]
+  Order Order[]
+  Cart Cart?
+  Feedback Feedback[]
+  Notification Notification[]
+  Voucher Voucher[]
+  ReporterReports Report[] @relation("Reporter")
+  HandlerReports Report[] @relation("Handler")
+  ChatRoomMember ChatRoom[] @relation("ChatRoomMember")
+  ChatRoomStaff ChatRoom[] @relation("ChatRoomStaff")
+  WishList WishList[]
+
+  @@map("users")
+}   
+
+enum ROLE {
+  ADMIN
+  MEMBER
+  STAFF
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+  name String
+  quantity Int
+  price Float
+  rating_number Int
+  rating_point Float
+  description String?
+  category Category @relation(fields: [category_id], references: [id])
+  category_id Int
+  OrderDetail OrderDetail[]
+  CartItem CartItem[]
+  WishList WishList[]
+
+  @@map("products")
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  name String
+  parent_category Category? @relation("ParentCategory", fields: [parent_category_id], references: [id])
+  parent_category_id Int?
+  Product Product[]
+  category Category[] @relation("ParentCategory")
+
+  @@map("categories")
+}
+
+model Post {
+  id Int @id @default(autoincrement())
+  title String
+  content String
+  creator User @relation(fields: [creator_id], references: [id])
+  creator_id Int
+  created_at DateTime @default(now())
+
+  @@map("posts")
+}
+
+model Image {                                                                
+  id Int @id @default(autoincrement())
+  parent_id Int
+  parent_type ImageParentType
+  image_url String
+  
+  @@map("images")           
+}
+
+enum ImageParentType {
+  PRODUCT
+  FEEDBACK
+  POST
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+  estimate_price Float
+  end_price Float
+  status String
+  created_at DateTime @default(now())
+  discount Float?
+  OrderDetail OrderDetail[]
+  Transaction Transaction?
+  @@map("orders")
+
+} 
+
+model Transaction {
+  id Int @id @default(autoincrement())
+  order Order @relation(fields: [order_id], references: [id])
+  order_id Int @unique
+  payment_method String
+  receive_destination String
+  description String
+  status String
+  time_stamp DateTime @default(now())
+
+  @@map("transactions")
+}
+
+model OrderDetail {
+  id Int @id @default(autoincrement())
+  order Order @relation(fields: [order_id], references: [id])
+  order_id Int
+  quantity Int
+  price Float
+  sale_price Float
+  product Product @relation(fields: [product_id], references: [id])
+  product_id Int
+  Feedback Feedback?
+
+  @@map("order_details")
+}
+
+model Cart {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int @unique
+  Cart_Item CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id Int @id @default(autoincrement())
+  product Product @relation(fields: [product_id], references: [id])
+  product_id Int
+  quantity Int
+  cart Cart @relation(fields: [cart_id], references: [id])
+  cart_id Int
+
+  @@map("cart_items")
+}
+
+model Feedback {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+  content String?
+  created_at DateTime @default(now())
+  rating_point Float
+  order_detail OrderDetail @relation(fields: [order_detail_id], references: [id])
+  order_detail_id Int @unique
+
+  @@map("feedbacks") 
+
+}
+
+model Notification {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [target_id], references: [id])
+  target_id Int
+  content String
+  created_at DateTime @default(now())
+  status Boolean
+
+  @@map("notifications")
+}
+
+model Voucher {
+  id Int @id @default(autoincrement())
+  code String @unique
+  value Float
+  created_at DateTime @default(now())
+  expired_at DateTime
+  status Boolean
+  user User? @relation(fields: [user_id], references: [id])
+  user_id Int?
+
+  @@map("vouchers")
+}
+
+model Report {
+  id Int @id @default(autoincrement())
+  reporter User @relation("Reporter", fields: [reporter_id], references: [id])
+  reporter_id Int
+  handler User? @relation("Handler", fields: [handler_id], references: [id])
+  handler_id Int?
+  content String
+  status ReportStatus @default(PENDING)
+  
+  @@map("reports")
+}
+
+enum ReportStatus {
+  PENDING
+  RESOLVED
+  REJECTED
+}
+
+model WishList {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+  product Product @relation(fields: [product_id], references: [id])
+  product_id Int
+
+  @@map("wish_lists") 
+}
+
+model ChatRoom {
+  id Int @id @default(autoincrement())
+  member User @relation("ChatRoomMember", fields: [member_id], references: [id])
+  member_id Int
+  staff User @relation("ChatRoomStaff", fields: [staff_id], references: [id])
+  staff_id Int
+  created_at DateTime @default(now()) 
+  ChatLine ChatLine[] 
+
+  @@map("chat_rooms")
+}
+
+model ChatLine {
+  id Int @id @default(autoincrement())
+  chat_room ChatRoom @relation(fields: [chat_room_id], references: [id])
+  chat_room_id Int
+  content String
+  sender ChatLineSender
+  created_at DateTime @default(now())
+
+  @@map("chat_lines")
+}
+
+enum ChatLineSender {
+  MEMBER
+  STAFF
+}
