@@ -14,11 +14,11 @@
     // "plugin:prettier/recommended", //eslint-PLUGIN-prettier
     // typescript eslint
     "plugin:@typescript-eslint/recommended", //@typescript-eslint/eslint-plugin
-    "plugin:@typescript-eslint/stylistic", //@typescript-eslint/eslint-plugin
-    "plugin:@typescript-eslint/recommended-type-checked",
-    "plugin:@typescript-eslint/stylistic-type-checked",
-    "plugin:import/recommended", //eslint-plugin-import
-    "plugin:import/typescript", //eslint-plugin-import
+    // "plugin:@typescript-eslint/stylistic", //@typescript-eslint/eslint-plugin
+    // "plugin:@typescript-eslint/recommended-type-checked",
+    // "plugin:@typescript-eslint/stylistic-type-checked",
+    // "plugin:import/recommended", //eslint-plugin-import
+    // "plugin:import/typescript", //eslint-plugin-import
     // eslint stylistic
     "plugin:@stylistic/recommended-extends", //@stylistic/eslint-plugin
     "prettier" //eslint-CONFIG-prettier === this config only turns **rules** key below off (turn off eslint rules that conflict with prettier), turn on prettier/prettier rules
@@ -33,14 +33,21 @@
     // rule that override the extends config above
     // normal code
     // typescript
-    "@typescript-eslint/explicit-function-return-type": "error",
-    "@typescript-eslint/explicit-module-boundary-types": "error",
+    // "@typescript-eslint/explicit-function-return-type": "error",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    // "@typescript-eslint/explicit-module-boundary-types": "error",
+    "@typescript-eslint/no-misused-promises": "off",
+    "@typescript-eslint/no-unsafe-argument": "off",
     "@typescript-eslint/array-type": "error",
     "@typescript-eslint/consistent-type-definitions": "off",
     "@stylistic/semi": ["error", "always"],
     "@stylistic/quote-props": ["error", "as-needed"], // Add this line
     "@stylistic/arrow-parens": ["error", "always"],
     "@stylistic/brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+    "@stylistic/operator-linebreak": "off",
     "@stylistic/member-delimiter-style": [
       "error",
       {

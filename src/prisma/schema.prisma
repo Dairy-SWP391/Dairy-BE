@@ -14,19 +14,20 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement()) 
+  id String @id 
   first_name String
   last_name String
-  phone_number String @unique
+  phone_number String? @unique
   email String @unique
   password String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   avatar_url String? 
   role ROLE @default(MEMBER)
+  status USER_STATUS @default(UNVERIFIED)
   Post Post[]
   Order Order[]
-  Cart Cart?
+  // Cart Cart?
   Feedback Feedback[]
   Notification Notification[]
   Voucher Voucher[]
@@ -35,9 +36,16 @@ model User {
   ChatRoomMember ChatRoom[] @relation("ChatRoomMember")
   ChatRoomStaff ChatRoom[] @relation("ChatRoomStaff")
   WishList WishList[]
+  RefreshToken RefreshToken[]
 
   @@map("users")
 }   
+
+enum USER_STATUS {
+  UNVERIFIED
+  VERIFIED
+  BANNED
+} 
 
 enum ROLE {
   ADMIN
@@ -56,7 +64,7 @@ model Product {
   category Category @relation(fields: [category_id], references: [id])
   category_id Int
   OrderDetail OrderDetail[]
-  CartItem CartItem[]
+  // CartItem CartItem[]
   WishList WishList[]
 
   @@map("products")
@@ -78,7 +86,7 @@ model Post {
   title String
   content String
   creator User @relation(fields: [creator_id], references: [id])
-  creator_id Int
+  creator_id String
   created_at DateTime @default(now())
 
   @@map("posts")
@@ -87,13 +95,13 @@ model Post {
 model Image {                                                                
   id Int @id @default(autoincrement())
   parent_id Int
-  parent_type ImageParentType
+  parent_type IMAGE_PARENT_TYPE
   image_url String
   
   @@map("images")           
 }
 
-enum ImageParentType {
+enum IMAGE_PARENT_TYPE {
   PRODUCT
   FEEDBACK
   POST
@@ -102,7 +110,7 @@ enum ImageParentType {
 model Order {
   id Int @id @default(autoincrement())
   user User @relation(fields: [user_id], references: [id])
-  user_id Int
+  user_id String
   estimate_price Float
   end_price Float
   status String
@@ -141,30 +149,30 @@ model OrderDetail {
   @@map("order_details")
 }
 
-model Cart {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [user_id], references: [id])
-  user_id Int @unique
-  Cart_Item CartItem[]
+// model Cart {
+//   id Int @id @default(autoincrement())
+//   user User @relation(fields: [user_id], references: [id])
+//   user_id Int @unique
+//   Cart_Item CartItem[]
 
-  @@map("carts")
-}
+//   @@map("carts")
+// }
 
-model CartItem {
-  id Int @id @default(autoincrement())
-  product Product @relation(fields: [product_id], references: [id])
-  product_id Int
-  quantity Int
-  cart Cart @relation(fields: [cart_id], references: [id])
-  cart_id Int
+// model CartItem {
+//   id Int @id @default(autoincrement())
+//   product Product @relation(fields: [product_id], references: [id])
+//   product_id Int
+//   quantity Int
+//   cart Cart @relation(fields: [cart_id], references: [id])
+//   cart_id Int
 
-  @@map("cart_items")
-}
+//   @@map("cart_items")
+// }
 
 model Feedback {
   id Int @id @default(autoincrement())
   user User @relation(fields: [user_id], references: [id])
-  user_id Int
+  user_id String
   content String?
   created_at DateTime @default(now())
   rating_point Float
@@ -178,7 +186,7 @@ model Feedback {
 model Notification {
   id Int @id @default(autoincrement())
   user User @relation(fields: [target_id], references: [id])
-  target_id Int
+  target_id String
   content String
   created_at DateTime @default(now())
   status Boolean
@@ -194,7 +202,7 @@ model Voucher {
   expired_at DateTime
   status Boolean
   user User? @relation(fields: [user_id], references: [id])
-  user_id Int?
+  user_id String?
 
   @@map("vouchers")
 }
@@ -202,16 +210,16 @@ model Voucher {
 model Report {
   id Int @id @default(autoincrement())
   reporter User @relation("Reporter", fields: [reporter_id], references: [id])
-  reporter_id Int
+  reporter_id String
   handler User? @relation("Handler", fields: [handler_id], references: [id])
-  handler_id Int?
+  handler_id String?
   content String
-  status ReportStatus @default(PENDING)
+  status REPORT_STATUS @default(PENDING)
   
   @@map("reports")
 }
 
-enum ReportStatus {
+enum REPORT_STATUS {
   PENDING
   RESOLVED
   REJECTED
@@ -220,7 +228,7 @@ enum ReportStatus {
 model WishList {
   id Int @id @default(autoincrement())
   user User @relation(fields: [user_id], references: [id])
-  user_id Int
+  user_id String
   product Product @relation(fields: [product_id], references: [id])
   product_id Int
 
@@ -230,9 +238,9 @@ model WishList {
 model ChatRoom {
   id Int @id @default(autoincrement())
   member User @relation("ChatRoomMember", fields: [member_id], references: [id])
-  member_id Int
+  member_id String
   staff User @relation("ChatRoomStaff", fields: [staff_id], references: [id])
-  staff_id Int
+  staff_id String
   created_at DateTime @default(now()) 
   ChatLine ChatLine[] 
 
@@ -244,13 +252,25 @@ model ChatLine {
   chat_room ChatRoom @relation(fields: [chat_room_id], references: [id])
   chat_room_id Int
   content String
-  sender ChatLineSender
+  sender CHAT_LINE_SENDER
   created_at DateTime @default(now())
 
   @@map("chat_lines")
 }
 
-enum ChatLineSender {
+enum CHAT_LINE_SENDER {
   MEMBER
   STAFF
+}
+
+model RefreshToken {
+  id Int @id @default(autoincrement())
+  token String @unique @db.VarChar(255)
+  created_at DateTime @default(now())
+  iat DateTime
+  exp DateTime
+  user User @relation(fields: [user_id], references: [id])
+  user_id String
+
+  @@map("refresh_tokens")
 }
