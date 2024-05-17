@@ -83,48 +83,41 @@ const lastnameSchema: ParamSchema = {
   },
 };
 
-const imageSchema: ParamSchema = {
-  optional: true,
-  isString: {
-    errorMessage: USER_MESSAGES.IMAGE_URL_MUST_BE_A_STRING,
-  },
-  trim: true,
-  isLength: {
-    options: {
-      min: 1,
-      max: 400,
-    },
-    errorMessage: USER_MESSAGES.IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400,
-  },
-};
+// const imageSchema: ParamSchema = {
+//   optional: true,
+//   isString: {
+//     errorMessage: USER_MESSAGES.IMAGE_URL_MUST_BE_A_STRING,
+//   },
+//   trim: true,
+//   isLength: {
+//     options: {
+//       min: 1,
+//       max: 400,
+//     },
+//     errorMessage: USER_MESSAGES.IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400,
+//   },
+// };
 
 export const registerValidator = validate(
-  checkSchema({
-    first_name: firstnameSchema,
-    last_name: lastnameSchema,
-    phone_number: {
-      ...phone_numberSchema,
-      custom: {
-        options: async (value) => {
-          const user = await userService.getUserByPhoneNumber(value);
-          if (user) {
-            throw new Error(USER_MESSAGES.PHONE_NUMBER_IS_ALREADY_EXISTED);
-          }
+  checkSchema(
+    {
+      first_name: firstnameSchema,
+      last_name: lastnameSchema,
+      phone_number: phone_numberSchema,
+      email: {
+        ...emailSchema,
+        custom: {
+          options: async (value) => {
+            const user = await userService.getUserByEmail(value);
+            if (user) {
+              throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTS);
+            }
+            return true;
+          },
         },
       },
+      password: passwordSchema,
     },
-    email: {
-      ...emailSchema,
-      custom: {
-        options: async (value) => {
-          const user = await userService.getUserByEmail(value);
-          if (user) {
-            throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTS);
-          }
-        },
-      },
-    },
-    password: passwordSchema,
-    avatar_url: imageSchema,
-  }),
+    ['body'],
+  ),
 );

@@ -84,14 +84,6 @@ class UserService {
     });
   }
 
-  async getUserByPhoneNumber(phone_number: string) {
-    return await DatabaseInstance.getPrismaInstance().user.findUnique({
-      where: {
-        phone_number,
-      },
-    });
-  }
-
   async register(registerBody: RegisterReqBody) {
     const { first_name, last_name, password, email, phone_number } = registerBody;
     const id = generateId('US');

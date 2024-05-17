@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE `users` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` VARCHAR(191) NOT NULL,
     `first_name` VARCHAR(191) NOT NULL,
     `last_name` VARCHAR(191) NOT NULL,
     `phone_number` VARCHAR(191) NULL,
@@ -12,7 +12,6 @@ CREATE TABLE `users` (
     `role` ENUM('ADMIN', 'MEMBER', 'STAFF') NOT NULL DEFAULT 'MEMBER',
     `status` ENUM('UNVERIFIED', 'VERIFIED', 'BANNED') NOT NULL DEFAULT 'UNVERIFIED',
 
-    UNIQUE INDEX `users_phone_number_key`(`phone_number`),
     UNIQUE INDEX `users_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -45,7 +44,7 @@ CREATE TABLE `posts` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(191) NOT NULL,
     `content` VARCHAR(191) NOT NULL,
-    `creator_id` INTEGER NOT NULL,
+    `creator_id` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
@@ -64,7 +63,7 @@ CREATE TABLE `images` (
 -- CreateTable
 CREATE TABLE `orders` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `user_id` INTEGER NOT NULL,
+    `user_id` VARCHAR(191) NOT NULL,
     `estimate_price` DOUBLE NOT NULL,
     `end_price` DOUBLE NOT NULL,
     `status` VARCHAR(191) NOT NULL,
@@ -103,7 +102,7 @@ CREATE TABLE `order_details` (
 -- CreateTable
 CREATE TABLE `feedbacks` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `user_id` INTEGER NOT NULL,
+    `user_id` VARCHAR(191) NOT NULL,
     `content` VARCHAR(191) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `rating_point` DOUBLE NOT NULL,
@@ -116,7 +115,7 @@ CREATE TABLE `feedbacks` (
 -- CreateTable
 CREATE TABLE `notifications` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `target_id` INTEGER NOT NULL,
+    `target_id` VARCHAR(191) NOT NULL,
     `content` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `status` BOOLEAN NOT NULL,
@@ -132,7 +131,7 @@ CREATE TABLE `vouchers` (
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `expired_at` DATETIME(3) NOT NULL,
     `status` BOOLEAN NOT NULL,
-    `user_id` INTEGER NULL,
+    `user_id` VARCHAR(191) NULL,
 
     UNIQUE INDEX `vouchers_code_key`(`code`),
     PRIMARY KEY (`id`)
@@ -141,8 +140,8 @@ CREATE TABLE `vouchers` (
 -- CreateTable
 CREATE TABLE `reports` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `reporter_id` INTEGER NOT NULL,
-    `handler_id` INTEGER NULL,
+    `reporter_id` VARCHAR(191) NOT NULL,
+    `handler_id` VARCHAR(191) NULL,
     `content` VARCHAR(191) NOT NULL,
     `status` ENUM('PENDING', 'RESOLVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
 
@@ -152,7 +151,7 @@ CREATE TABLE `reports` (
 -- CreateTable
 CREATE TABLE `wish_lists` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `user_id` INTEGER NOT NULL,
+    `user_id` VARCHAR(191) NOT NULL,
     `product_id` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -161,8 +160,8 @@ CREATE TABLE `wish_lists` (
 -- CreateTable
 CREATE TABLE `chat_rooms` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `member_id` INTEGER NOT NULL,
-    `staff_id` INTEGER NOT NULL,
+    `member_id` VARCHAR(191) NOT NULL,
+    `staff_id` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
@@ -176,6 +175,19 @@ CREATE TABLE `chat_lines` (
     `sender` ENUM('MEMBER', 'STAFF') NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `refresh_tokens` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `token` VARCHAR(255) NOT NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `iat` DATETIME(3) NOT NULL,
+    `exp` DATETIME(3) NOT NULL,
+    `user_id` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `refresh_tokens_token_key`(`token`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -232,3 +244,6 @@ ALTER TABLE `chat_rooms` ADD CONSTRAINT `chat_rooms_staff_id_fkey` FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE `chat_lines` ADD CONSTRAINT `chat_lines_chat_room_id_fkey` FOREIGN KEY (`chat_room_id`) REFERENCES `chat_rooms`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `refresh_tokens` ADD CONSTRAINT `refresh_tokens_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
