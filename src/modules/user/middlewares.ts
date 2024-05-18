@@ -2,6 +2,8 @@ import { ParamSchema, checkSchema } from 'express-validator';
 import { USER_MESSAGES } from './messages';
 import { validate } from '~/utils/validation';
 import userService from './service';
+import { hashPassword } from '~/utils/crypto';
+import { DatabaseInstance } from '~/database/database.services';
 
 export const emailSchema: ParamSchema = {
   trim: true,
@@ -112,6 +114,35 @@ export const registerValidator = validate(
             if (user) {
               throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTS);
             }
+            return true;
+          },
+        },
+      },
+      password: passwordSchema,
+    },
+    ['body'],
+  ),
+);
+
+export const loginValidator = validate(
+  checkSchema(
+    {
+      email: {
+        ...emailSchema,
+        custom: {
+          options: async (value, { req }) => {
+            const user = await DatabaseInstance.getPrismaInstance().user.findUnique({
+              where: {
+                email: value,
+                password: hashPassword(req.body.password),
+              },
+            });
+            if (user === null) {
+              throw new Error(USER_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT);
+            }
+
+            // lưu thông tin user vào req.user
+            req.user = user;
             return true;
           },
         },

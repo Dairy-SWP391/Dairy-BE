@@ -12,6 +12,7 @@ export const USER_MESSAGES = {
   EMAIL_IS_REQUIRED: 'Email is required',
   EMAIL_IS_INVALID: 'Email is invalid',
   EMAIL_IS_NOT_REGISTERED: 'Email is not registered!',
+  EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email or password is incorrect',
 
   // phone number
   PHONE_NUMBER_IS_REQUIRED: 'Phone number is required',
