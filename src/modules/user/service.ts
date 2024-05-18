@@ -115,6 +115,28 @@ class UserService {
 
     return { access_token, refresh_token };
   }
+
+  async login({ user_id, verify }: { user_id: string; verify: USER_STATUS }) {
+    // dùng cái user_id tạo access và refresh token
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
+      user_id,
+      verify,
+    });
+    console.log('access_token', access_token);
+    console.log('refresh_token', refresh_token);
+
+    const { exp, iat } = await this.decodeRefreshToken(refresh_token);
+    // lưu refresh token vào database
+    await DatabaseInstance.getPrismaInstance().refreshToken.create({
+      data: {
+        user_id,
+        token: refresh_token,
+        iat: new Date(iat * 1000),
+        exp: new Date(exp * 1000),
+      },
+    });
+    return { access_token, refresh_token };
+  }
 }
 
 const userService = new UserService();
