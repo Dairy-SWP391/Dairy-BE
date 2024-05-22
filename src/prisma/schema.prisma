@@ -23,6 +23,7 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   avatar_url String? 
+  forgot_password_token String  @default("") @db.VarChar(255) 
   role ROLE @default(MEMBER)
   status USER_STATUS @default(UNVERIFIED)
   Post Post[]

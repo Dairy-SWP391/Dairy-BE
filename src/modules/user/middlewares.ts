@@ -152,3 +152,24 @@ export const loginValidator = validate(
     ['body'],
   ),
 );
+export const forgotPasswordValidator = validate(
+  checkSchema(
+    {
+      email: {
+        ...emailSchema,
+        custom: {
+          options: async (value, { req }) => {
+            const user = await userService.getUserByEmail(value);
+            if (user === null) {
+              throw new Error(USER_MESSAGES.USER_NOT_FOUND);
+            }
+
+            req.user = user;
+            return true;
+          },
+        },
+      },
+    },
+    ['body'],
+  ),
+);

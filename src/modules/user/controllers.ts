@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { LoginRequestBody, RegisterReqBody } from './requests';
+import { ForgotPasswordReqBody, LoginRequestBody, RegisterReqBody } from './requests';
 import { ParamsDictionary } from 'express-serve-static-core';
 import userService from './service';
 import { USER_MESSAGES } from './messages';
@@ -24,6 +24,18 @@ export const loginController = async (
   const result = await userService.login({ user_id: user_id, verify: user.status as USER_STATUS });
   return res.status(200).json({
     message: USER_MESSAGES.LOGIN_SUCCESS,
+    result: result,
+  });
+};
+export const forgotPasswordController = async (
+  req: Request<ParamsDictionary, any, ForgotPasswordReqBody>,
+  res: Response,
+) => {
+  const { id, status } = req.user as User;
+
+  const result = await userService.forgotPassword({ user_id: id, verify: status });
+  return res.json({
+    message: USER_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD,
     result: result,
   });
 };

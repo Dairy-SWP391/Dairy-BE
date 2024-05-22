@@ -54,13 +54,7 @@ class UserService {
     });
   }
 
-  private signForgotPasswordToken({
-    user_id,
-    verify,
-  }: {
-    user_id: string;
-    verify: UserVerifyStatus;
-  }) {
+  private signForgotPasswordToken({ user_id, verify }: { user_id: string; verify: USER_STATUS }) {
     return signToken({
       payload: { user_id, verify, token_type: TokenType.ForgotPasswordToken },
       options: { expiresIn: process.env.FORGOT_PASSWORD_TOKEN_EXPIRE_IN },
@@ -95,6 +89,7 @@ class UserService {
         password: hashPassword(password),
         email,
         phone_number,
+        forgot_password_token: '',
       },
     });
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
@@ -136,6 +131,23 @@ class UserService {
       },
     });
     return { access_token, refresh_token };
+  }
+
+  async forgotPassword({ user_id, verify }: { user_id: string; verify: USER_STATUS }) {
+    const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify });
+
+    await DatabaseInstance.getPrismaInstance().user.update({
+      where: {
+        id: user_id,
+      },
+      data: {
+        updated_at: new Date(),
+        forgot_password_token: forgot_password_token as string,
+      },
+    });
+
+    console.log('forgot_password_token: ', forgot_password_token);
+    return forgot_password_token;
   }
 }
 

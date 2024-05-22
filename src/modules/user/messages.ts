@@ -61,7 +61,7 @@ export const USER_MESSAGES = {
 
   // forgot password
   CHECK_EMAIL_TO_RESET_PASSWORD: 'Check your email to get OTP code to reset password',
-  FORGOT_PASSWORD_OTP_IS_REQUIRED: 'Forgot password otp is required',
+  FORGOT_PASSWORD_TOKEN_IS_REQUIRED: 'Forgot password token is required',
   SEND_OTP_SUCCESSFULLY: 'Send OTP successfully!',
   OTP_IS_INCORRECT: 'OTP is incorrect',
   VERIFY_OTP_SUCCESSFULLY: 'Verify OTP successfully',
@@ -72,6 +72,10 @@ export const USER_MESSAGES = {
   // verify account
   VERIFY_ACCOUNT_OTP_IS_REQUIRED: 'Verify account otp is required',
   VERIFY_ACCOUNT_SUCCESSFULLY: 'Verify account successfully',
+
+  // get me
+  ACCESS_TOKEN_IS_REQUIRED: 'Access token is required',
+  GET_ME_SUCCESS: 'Get me successfully',
 
   // image
   IMAGE_URL_MUST_BE_A_STRING: 'Image url must be a string',
