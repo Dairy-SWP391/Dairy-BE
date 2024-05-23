@@ -4,6 +4,7 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import userService from './service';
 import { USER_MESSAGES } from './messages';
 import { USER_STATUS, User } from '@prisma/client';
+
 export const registerController = async (
   req: Request<ParamsDictionary, any, RegisterReqBody>,
   res: Response,
@@ -38,4 +39,7 @@ export const forgotPasswordController = async (
     message: USER_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD,
     result: result,
   });
+};
+export const verifyForgotPasswordTokenController = async (req: Request, res: Response) => {
+  return res.json({ message: USER_MESSAGES.VERIFY_TOKEN_SUCCESSFULLY });
 };

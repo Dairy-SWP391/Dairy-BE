@@ -60,14 +60,15 @@ export const USER_MESSAGES = {
   UNPROCESSABLE_ENTITY: 'Validation: Unprocessable Entity',
 
   // forgot password
-  CHECK_EMAIL_TO_RESET_PASSWORD: 'Check your email to get OTP code to reset password',
+  CHECK_EMAIL_TO_RESET_PASSWORD: 'Check your email to get token to reset password',
   FORGOT_PASSWORD_TOKEN_IS_REQUIRED: 'Forgot password token is required',
   SEND_OTP_SUCCESSFULLY: 'Send OTP successfully!',
   OTP_IS_INCORRECT: 'OTP is incorrect',
-  VERIFY_OTP_SUCCESSFULLY: 'Verify OTP successfully',
+  VERIFY_TOKEN_SUCCESSFULLY: 'Verify token successfully',
   RESET_PASSWORD_SUCCESSFULLY: 'Reset password successfully',
   OTP_NOT_FOUND: 'OTP is not found',
   REQUIRE_FIELD_IS_INVALID: 'Require field is invalid',
+  FORGOT_PASSWORD_TOKEN_IS_INVALID: 'Forgot password token is invalid',
 
   // verify account
   VERIFY_ACCOUNT_OTP_IS_REQUIRED: 'Verify account otp is required',

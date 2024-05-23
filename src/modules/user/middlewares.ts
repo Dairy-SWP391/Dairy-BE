@@ -4,6 +4,11 @@ import { validate } from '~/utils/validation';
 import userService from './service';
 import { hashPassword } from '~/utils/crypto';
 import { DatabaseInstance } from '~/database/database.services';
+import { verifyToken } from '~/utils/jwt';
+import { ErrorWithStatus } from '../error/entityError';
+import { JsonWebTokenError } from 'jsonwebtoken';
+import HTTP_STATUS from '~/constants/httpsStatus';
+import { TokenPayload } from './requests';
 
 export const emailSchema: ParamSchema = {
   trim: true,
@@ -160,11 +165,69 @@ export const forgotPasswordValidator = validate(
         custom: {
           options: async (value, { req }) => {
             const user = await userService.getUserByEmail(value);
-            if (user === null) {
+            if (!user) {
               throw new Error(USER_MESSAGES.USER_NOT_FOUND);
             }
 
             req.user = user;
+            return true;
+          },
+        },
+      },
+    },
+    ['body'],
+  ),
+);
+export const verifyForgotPasswordTokenValidator = validate(
+  checkSchema(
+    {
+      forgot_password_token: {
+        trim: true,
+        custom: {
+          // kiểm tra xem có truyền lên token hay không
+          options: async (value, { req }) => {
+            try {
+              if (!value) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_REQUIRED,
+                  status: HTTP_STATUS.UNAUTHORIZED,
+                });
+              }
+              const decoded_forgot_password_token = await verifyToken({
+                token: value,
+                secretOrPublicKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
+              });
+              req.decoded_forgot_password_token = decoded_forgot_password_token;
+              const { user_id } = req.decoded_forgot_password_token as TokenPayload;
+              // dựa vào user_id tìm user
+              const user = await DatabaseInstance.getPrismaInstance().user.findUnique({
+                where: {
+                  id: user_id,
+                },
+              });
+
+              if (!user) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.USER_NOT_FOUND,
+                  status: HTTP_STATUS.NOT_FOUND,
+                });
+              }
+              if (user.forgot_password_token !== value) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_INVALID,
+                  status: HTTP_STATUS.UNAUTHORIZED,
+                });
+              }
+            } catch (error) {
+              if (error instanceof JsonWebTokenError) {
+                throw new ErrorWithStatus({
+                  message: (error as JsonWebTokenError).message,
+                  status: HTTP_STATUS.UNAUTHORIZED,
+                });
+              }
+
+              throw error;
+            }
             return true;
           },
         },
