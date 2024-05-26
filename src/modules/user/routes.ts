@@ -11,6 +11,7 @@ import {
   loginController,
   forgotPasswordController,
   verifyForgotPasswordTokenController,
+  oAuthController,
 } from './controllers';
 
 const userRouter = Router();
@@ -23,4 +24,6 @@ userRouter.post(
   verifyForgotPasswordTokenValidator,
   wrapAsync(verifyForgotPasswordTokenController),
 );
+userRouter.get('/oauth/google', wrapAsync(oAuthController));
+
 export default userRouter;

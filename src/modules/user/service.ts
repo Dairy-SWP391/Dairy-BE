@@ -5,6 +5,10 @@ import { RegisterReqBody } from './requests';
 import { hashPassword } from '~/utils/crypto';
 import { USER_STATUS } from '@prisma/client';
 import { generateId } from '~/utils/utils';
+import axios from 'axios';
+import { ErrorWithStatus } from '../error/entityError';
+import HTTP_STATUS from '~/constants/httpsStatus';
+import { USER_MESSAGES } from './messages';
 
 class UserService {
   private decodeRefreshToken(refresh_token: string) {
@@ -149,7 +153,90 @@ class UserService {
     console.log('forgot_password_token: ', forgot_password_token);
     return forgot_password_token;
   }
-}
 
+  private async getGoogleToken(code: string) {
+    const body = {
+      code,
+      client_id: process.env.GOOGLE_CLIENT_ID!,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI!,
+      grant_type: 'authorization_code',
+    };
+    const { data } = await axios.post('https://oauth2.googleapis.com/token', body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return { access_token: data.access_token as string, id_token: data.id_token as string };
+  }
+
+  async getUserInfoFromOauth(access_token: string, id_token: string) {
+    const { data } = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo', {
+      params: {
+        access_token,
+        alt: 'json',
+      },
+      headers: {
+        Authorization: `Bearer ${id_token}`,
+      },
+    });
+    return data as {
+      id: string;
+      email: string;
+      verified_email: boolean;
+      name: string;
+      given_name: string;
+      family_name: string;
+      picture: string;
+      locale: string;
+    };
+  }
+
+  async oAuth(code: string) {
+    const { access_token, id_token } = await this.getGoogleToken(code);
+    const userinfo = await this.getUserInfoFromOauth(access_token, id_token);
+
+    if (userinfo.verified_email === false) {
+      throw new ErrorWithStatus({
+        message: USER_MESSAGES.EMAIL_NOT_VERIFIED,
+        status: HTTP_STATUS.BAD_REQUEST, // 400
+      });
+    }
+    const user = await this.getUserByEmail(userinfo.email);
+
+    if (user) {
+      const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
+        user_id: user.id.toString(),
+        verify: user.status,
+      });
+
+      const { exp, iat } = await this.decodeRefreshToken(refresh_token);
+      await DatabaseInstance.getPrismaInstance().refreshToken.create({
+        data: {
+          user_id: user.id,
+          token: refresh_token,
+          exp: new Date(exp * 1000),
+          iat: new Date(iat * 1000),
+        },
+      });
+      return { access_token, refresh_token, new_user: 0, verify: user.status };
+    } else {
+      const password = Math.random().toString(36).slice(1, 15);
+      const data = await this.register({
+        email: userinfo.email,
+        first_name: userinfo.given_name,
+        last_name: userinfo.family_name,
+        password: password,
+        phone_number: '',
+      });
+      return {
+        ...data,
+        new_user: 1,
+        verify: USER_STATUS.UNVERIFIED,
+      };
+    }
+  }
+}
 const userService = new UserService();
 export default userService;
