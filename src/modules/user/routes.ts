@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { wrapAsync } from '~/utils/handler';
 import {
+  accessTokenValidator,
   forgotPasswordValidator,
   loginValidator,
   registerValidator,
@@ -11,6 +12,7 @@ import {
   loginController,
   forgotPasswordController,
   verifyForgotPasswordTokenController,
+  getMeController,
 } from './controllers';
 
 const userRouter = Router();
@@ -23,4 +25,6 @@ userRouter.post(
   verifyForgotPasswordTokenValidator,
   wrapAsync(verifyForgotPasswordTokenController),
 );
+userRouter.get('/me', accessTokenValidator, wrapAsync(getMeController));
+
 export default userRouter;
