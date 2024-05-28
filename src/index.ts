@@ -3,6 +3,7 @@ import { config } from 'dotenv';
 import express, { json } from 'express';
 import { defaultErrorHandler } from './modules/error/middlewares';
 import userRouter from './modules/user/routes';
+import categoryRouter from './modules/category/routes';
 
 config();
 
@@ -38,6 +39,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/user', userRouter);
+
+app.use('/category', categoryRouter);
 
 // error handler
 app.use(defaultErrorHandler);
