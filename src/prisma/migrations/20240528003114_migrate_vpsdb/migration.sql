@@ -6,13 +6,29 @@ CREATE TABLE `users` (
     `phone_number` VARCHAR(191) NULL,
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
+    `address` VARCHAR(191) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
     `avatar_url` VARCHAR(191) NULL,
+    `forgot_password_token` VARCHAR(191) NULL,
+    `point` INTEGER NOT NULL DEFAULT 0,
     `role` ENUM('ADMIN', 'MEMBER', 'STAFF') NOT NULL DEFAULT 'MEMBER',
     `status` ENUM('UNVERIFIED', 'VERIFIED', 'BANNED') NOT NULL DEFAULT 'UNVERIFIED',
 
+    UNIQUE INDEX `users_phone_number_key`(`phone_number`),
     UNIQUE INDEX `users_email_key`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `addresses` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `phone_number` VARCHAR(191) NOT NULL,
+    `address` VARCHAR(191) NOT NULL,
+    `default_address` BOOLEAN NOT NULL DEFAULT false,
+    `user_id` VARCHAR(191) NOT NULL,
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -21,13 +37,40 @@ CREATE TABLE `products` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `quantity` INTEGER NOT NULL,
-    `price` DOUBLE NOT NULL,
     `rating_number` INTEGER NOT NULL,
     `rating_point` DOUBLE NOT NULL,
+    `brand_id` INTEGER NOT NULL,
+    `origin` VARCHAR(191) NULL,
+    `producer` VARCHAR(191) NULL,
+    `manufactured_at` VARCHAR(191) NULL,
+    `target` VARCHAR(191) NULL,
+    `volume` INTEGER NULL,
+    `weight` INTEGER NULL,
+    `caution` VARCHAR(191) NULL,
+    `instruction` VARCHAR(191) NULL,
+    `preservation` VARCHAR(191) NULL,
     `description` VARCHAR(191) NULL,
     `category_id` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `brands` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `product_pricings` (
+    `product_id` INTEGER NOT NULL,
+    `price` DOUBLE NOT NULL,
+    `starting_timestamp` DATETIME(3) NOT NULL,
+    `ending_timestamp` DATETIME(3) NULL,
+
+    PRIMARY KEY (`product_id`, `starting_timestamp`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -46,6 +89,24 @@ CREATE TABLE `posts` (
     `content` VARCHAR(191) NOT NULL,
     `creator_id` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `post_by_categories` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `post_id` INTEGER NOT NULL,
+    `post_category_id` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `post_categories` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `description` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -128,6 +189,7 @@ CREATE TABLE `vouchers` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `code` VARCHAR(191) NOT NULL,
     `value` DOUBLE NOT NULL,
+    `trading_point` INTEGER NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `expired_at` DATETIME(3) NOT NULL,
     `status` BOOLEAN NOT NULL,
@@ -192,13 +254,28 @@ CREATE TABLE `refresh_tokens` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
+ALTER TABLE `addresses` ADD CONSTRAINT `addresses_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `products` ADD CONSTRAINT `products_brand_id_fkey` FOREIGN KEY (`brand_id`) REFERENCES `brands`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `products` ADD CONSTRAINT `products_category_id_fkey` FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `product_pricings` ADD CONSTRAINT `product_pricings_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `categories` ADD CONSTRAINT `categories_parent_category_id_fkey` FOREIGN KEY (`parent_category_id`) REFERENCES `categories`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `posts` ADD CONSTRAINT `posts_creator_id_fkey` FOREIGN KEY (`creator_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `post_by_categories` ADD CONSTRAINT `post_by_categories_post_id_fkey` FOREIGN KEY (`post_id`) REFERENCES `posts`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `post_by_categories` ADD CONSTRAINT `post_by_categories_post_category_id_fkey` FOREIGN KEY (`post_category_id`) REFERENCES `post_categories`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `orders` ADD CONSTRAINT `orders_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

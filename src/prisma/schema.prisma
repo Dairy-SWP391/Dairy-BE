@@ -17,13 +17,15 @@ model User {
   id String @id 
   first_name String
   last_name String
-  phone_number String?
+  phone_number String? @unique
   email String @unique
   password String
+  address String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   avatar_url String? 
-  forgot_password_token String  @default("") @db.VarChar(255) 
+  forgot_password_token String?
+  point Int @default(0)
   role ROLE @default(MEMBER)
   status USER_STATUS @default(UNVERIFIED)
   Post Post[]
@@ -38,9 +40,22 @@ model User {
   ChatRoomStaff ChatRoom[] @relation("ChatRoomStaff")
   WishList WishList[]
   RefreshToken RefreshToken[]
+  Address Address[]
 
   @@map("users")
 }   
+
+model Address {
+  id Int @id @default(autoincrement())
+  name String
+  phone_number String
+  address String
+  default_address Boolean @default(false)
+  user User @relation(fields: [user_id], references: [id])
+  user_id String
+
+  @@map("addresses")
+}
 
 enum USER_STATUS {
   UNVERIFIED
@@ -58,17 +73,48 @@ model Product {
   id Int @id @default(autoincrement())
   name String
   quantity Int
-  price Float
   rating_number Int
   rating_point Float
+  brand Brand @relation(fields: [brand_id], references: [id])
+  brand_id Int
+  origin String?
+  producer String?
+  manufactured_at String?
+  target String?
+  volume Int?
+  weight Int?
+  caution String?
+  instruction String?
+  preservation String?
   description String?
   category Category @relation(fields: [category_id], references: [id])
   category_id Int
+  ProductPricing ProductPricing[]
   OrderDetail OrderDetail[]
   // CartItem CartItem[]
   WishList WishList[]
 
   @@map("products")
+}
+
+model Brand {
+  id Int @id @default(autoincrement())
+  name String
+  Product Product[]
+
+  @@map("brands")
+}
+
+model ProductPricing {
+  product Product @relation(fields: [product_id], references: [id])
+  product_id Int
+  price Float
+  starting_timestamp DateTime
+  ending_timestamp DateTime?
+
+  @@id([product_id, starting_timestamp])
+
+  @@map("product_pricings")
 }
 
 model Category {
@@ -89,8 +135,29 @@ model Post {
   creator User @relation(fields: [creator_id], references: [id])
   creator_id String
   created_at DateTime @default(now())
+  PostByCategory PostByCategory[]
 
   @@map("posts")
+}
+
+model PostByCategory {
+  id Int @id @default(autoincrement())
+  post Post @relation(fields: [post_id], references: [id])
+  post_id Int
+  post_category PostCategory @relation(fields: [post_category_id], references: [id])
+  post_category_id Int
+
+  @@map("post_by_categories")
+
+}
+
+model PostCategory {
+  id Int @id @default(autoincrement())
+  name String
+  description String?
+  PostByCategory PostByCategory[]
+
+  @@map("post_categories")
 }
 
 model Image {                                                                
@@ -199,6 +266,7 @@ model Voucher {
   id Int @id @default(autoincrement())
   code String @unique
   value Float
+  trading_point Int
   created_at DateTime @default(now())
   expired_at DateTime
   status Boolean
