@@ -4,6 +4,7 @@ import express, { json } from 'express';
 import { defaultErrorHandler } from './modules/error/middlewares';
 import userRouter from './modules/user/routes';
 import categoryRouter from './modules/category/routes';
+import productRouter from './modules/product/routes';
 
 config();
 
@@ -41,6 +42,8 @@ app.get('/', (req, res) => {
 app.use('/user', userRouter);
 
 app.use('/category', categoryRouter);
+
+app.use('/product', productRouter);
 
 // error handler
 app.use(defaultErrorHandler);

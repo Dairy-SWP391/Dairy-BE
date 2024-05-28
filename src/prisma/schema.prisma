@@ -109,7 +109,7 @@ model ProductPricing {
   product Product @relation(fields: [product_id], references: [id])
   product_id Int
   price Float
-  starting_timestamp DateTime
+  starting_timestamp DateTime @default(now())
   ending_timestamp DateTime?
 
   @@id([product_id, starting_timestamp])
