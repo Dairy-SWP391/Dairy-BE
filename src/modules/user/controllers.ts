@@ -43,6 +43,17 @@ export const forgotPasswordController = async (
 export const verifyForgotPasswordTokenController = async (req: Request, res: Response) => {
   return res.json({ message: USER_MESSAGES.VERIFY_TOKEN_SUCCESSFULLY });
 };
+
+export const oAuthController = async (req: Request, res: Response) => {
+  const { code } = req.query;
+
+  const { access_token, refresh_token, new_user } = await userService.oAuth(code as string);
+
+  const url = `${process.env.CLIENT_REDIRECT_CALLBACK}?access_token=${access_token}&refresh_token=${refresh_token}&new_user=${new_user}`;
+
+  res.redirect(url);
+};
+
 export const getMeController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload;
   const result = await userService.getMe(user_id);

@@ -12,6 +12,7 @@ import {
   loginController,
   forgotPasswordController,
   verifyForgotPasswordTokenController,
+  oAuthController,
   getMeController,
 } from './controllers';
 
@@ -25,6 +26,9 @@ userRouter.post(
   verifyForgotPasswordTokenValidator,
   wrapAsync(verifyForgotPasswordTokenController),
 );
+
+userRouter.get('/oauth/google', wrapAsync(oAuthController));
+
 userRouter.get('/me', accessTokenValidator, wrapAsync(getMeController));
 
 export default userRouter;
