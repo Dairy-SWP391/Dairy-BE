@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ForgotPasswordReqBody, LoginRequestBody, RegisterReqBody } from './requests';
+import { ForgotPasswordReqBody, LoginRequestBody, RegisterReqBody, TokenPayload } from './requests';
 import { ParamsDictionary } from 'express-serve-static-core';
 import userService from './service';
 import { USER_MESSAGES } from './messages';
@@ -42,4 +42,12 @@ export const forgotPasswordController = async (
 };
 export const verifyForgotPasswordTokenController = async (req: Request, res: Response) => {
   return res.json({ message: USER_MESSAGES.VERIFY_TOKEN_SUCCESSFULLY });
+};
+export const getMeController = async (req: Request, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload;
+  const result = await userService.getMe(user_id);
+  return res.status(200).json({
+    message: USER_MESSAGES.GET_ME_SUCCESS,
+    result: result,
+  });
 };
