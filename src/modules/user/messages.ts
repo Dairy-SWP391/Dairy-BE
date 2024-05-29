@@ -29,6 +29,9 @@ export const USER_MESSAGES = {
 
   // confirm password
   CONFIRM_PASSWORD_MUST_MATCH_PASSWORD: 'Confirm password must match password',
+  CONFIRM_PASSWORD_IS_REQUIRED: 'Confirm password is required',
+  CONFIRM_PASSWORD_MUST_BE_STRING: 'Confirm password must be a string',
+  CONFIRM_PASSWORD_MUST_BE_STRONG: 'Confirm password must be strong',
 
   // first name
   FIRST_NAME_IS_REQUIRED: 'First name is required',
@@ -74,6 +77,7 @@ export const USER_MESSAGES = {
   // verify account
   VERIFY_ACCOUNT_OTP_IS_REQUIRED: 'Verify account otp is required',
   VERIFY_ACCOUNT_SUCCESSFULLY: 'Verify account successfully',
+  USER_IS_NOT_VERIFIED: 'User is not verified',
 
   // get me
   ACCESS_TOKEN_IS_REQUIRED: 'Access token is required',
