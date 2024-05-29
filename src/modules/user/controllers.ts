@@ -62,3 +62,12 @@ export const getMeController = async (req: Request, res: Response) => {
     result: result,
   });
 };
+export const resetPasswordController = async (req: Request, res: Response) => {
+  const { user_id } = req.decoded_forgot_password_token as TokenPayload;
+  const { password } = req.body;
+  const result = await userService.resetPassword(user_id, password);
+  return res.json({
+    message: USER_MESSAGES.RESET_PASSWORD_SUCCESSFULLY,
+    result: result,
+  });
+};

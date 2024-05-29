@@ -256,6 +256,19 @@ class UserService {
       };
     }
   }
+
+  async resetPassword(user_id: string, password: string) {
+    return await DatabaseInstance.getPrismaInstance().user.update({
+      where: {
+        id: user_id,
+      },
+      data: {
+        forgot_password_token: '',
+        password: hashPassword(password),
+        updated_at: new Date(),
+      },
+    });
+  }
 }
 const userService = new UserService();
 export default userService;

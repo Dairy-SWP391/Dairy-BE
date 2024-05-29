@@ -9,6 +9,7 @@ import { ErrorWithStatus } from '../error/entityError';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import HTTP_STATUS from '~/constants/httpsStatus';
 import { TokenPayload } from './requests';
+import { Request } from 'express';
 
 export const emailSchema: ParamSchema = {
   trim: true,
@@ -104,7 +105,33 @@ const lastnameSchema: ParamSchema = {
 //     errorMessage: USER_MESSAGES.IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400,
 //   },
 // };
-
+const confirmPasswordSchema: ParamSchema = {
+  trim: true,
+  notEmpty: {
+    errorMessage: USER_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED,
+  },
+  isString: {
+    errorMessage: USER_MESSAGES.CONFIRM_PASSWORD_MUST_BE_STRING,
+  },
+  isStrongPassword: {
+    options: {
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1,
+    },
+    errorMessage: USER_MESSAGES.CONFIRM_PASSWORD_MUST_BE_STRONG,
+  },
+  custom: {
+    options: (value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error(USER_MESSAGES.CONFIRM_PASSWORD_MUST_MATCH_PASSWORD);
+      }
+      return true;
+    },
+  },
+};
 export const registerValidator = validate(
   checkSchema(
     {
@@ -197,7 +224,8 @@ export const verifyForgotPasswordTokenValidator = validate(
                 token: value,
                 secretOrPublicKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
               });
-              req.decoded_forgot_password_token = decoded_forgot_password_token;
+              // lưu thông tin decoded_forgot_password_token vào req
+              (req as Request).decoded_forgot_password_token = decoded_forgot_password_token;
               const { user_id } = req.decoded_forgot_password_token as TokenPayload;
               // dựa vào user_id tìm user
               const user = await DatabaseInstance.getPrismaInstance().user.findUnique({
@@ -268,5 +296,15 @@ export const accessTokenValidator = validate(
       },
     },
     ['headers'],
+  ),
+);
+
+export const resetPasswordValidator = validate(
+  checkSchema(
+    {
+      password: passwordSchema,
+      confirm_password: confirmPasswordSchema,
+    },
+    ['body'],
   ),
 );
