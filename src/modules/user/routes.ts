@@ -6,6 +6,7 @@ import {
   loginValidator,
   registerValidator,
   resetPasswordValidator,
+  updateMeValidator,
   verifyForgotPasswordTokenValidator,
 } from './middlewares';
 import {
@@ -16,6 +17,7 @@ import {
   oAuthController,
   getMeController,
   resetPasswordController,
+  updateMeController,
 } from './controllers';
 
 const userRouter = Router();
@@ -28,14 +30,13 @@ userRouter.post(
   verifyForgotPasswordTokenValidator,
   wrapAsync(verifyForgotPasswordTokenController),
 );
-
-userRouter.get('/oauth/google', wrapAsync(oAuthController));
-
-userRouter.get('/me', accessTokenValidator, wrapAsync(getMeController));
 userRouter.post(
   '/reset-password',
   resetPasswordValidator,
   verifyForgotPasswordTokenValidator,
   wrapAsync(resetPasswordController),
 );
+userRouter.get('/oauth/google', wrapAsync(oAuthController));
+userRouter.get('/me', accessTokenValidator, wrapAsync(getMeController));
+userRouter.patch('/me', accessTokenValidator, updateMeValidator, wrapAsync(updateMeController));
 export default userRouter;

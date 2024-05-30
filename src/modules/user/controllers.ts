@@ -1,5 +1,11 @@
 import { Request, Response } from 'express';
-import { ForgotPasswordReqBody, LoginRequestBody, RegisterReqBody, TokenPayload } from './requests';
+import {
+  ForgotPasswordReqBody,
+  LoginRequestBody,
+  RegisterReqBody,
+  TokenPayload,
+  UpdateMeReqBody,
+} from './requests';
 import { ParamsDictionary } from 'express-serve-static-core';
 import userService from './service';
 import { USER_MESSAGES } from './messages';
@@ -68,6 +74,17 @@ export const resetPasswordController = async (req: Request, res: Response) => {
   const result = await userService.resetPassword(user_id, password);
   return res.json({
     message: USER_MESSAGES.RESET_PASSWORD_SUCCESSFULLY,
+    result: result,
+  });
+};
+export const updateMeController = async (
+  req: Request<ParamsDictionary, any, UpdateMeReqBody>,
+  res: Response,
+) => {
+  const { user_id } = req.decoded_authorization;
+  const result = await userService.updateMe(user_id, req.body);
+  return res.json({
+    message: USER_MESSAGES.UPDATE_ME_SUCCESS,
     result: result,
   });
 };

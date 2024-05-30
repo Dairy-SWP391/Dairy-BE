@@ -43,6 +43,9 @@ export const USER_MESSAGES = {
   LAST_NAME_MUST_BE_STRING: 'Last name must be a string',
   LAST_NAME_LENGTH_MUST_BE_FROM_1_TO_50: 'Last name must be between 1 and 50 characters',
 
+  // address
+  ADDRESS_MUST_BE_STRING: 'Address must be a string',
+
   // user messages
   REGISTER_SUCCESS: 'Register successfully',
   REGISTER_FAILED: 'Register failed',
@@ -82,6 +85,9 @@ export const USER_MESSAGES = {
   // get me
   ACCESS_TOKEN_IS_REQUIRED: 'Access token is required',
   GET_ME_SUCCESS: 'Get me successfully',
+
+  // update me
+  UPDATE_ME_SUCCESS: 'Update me successfully',
 
   // image
   IMAGE_URL_MUST_BE_A_STRING: 'Image url must be a string',

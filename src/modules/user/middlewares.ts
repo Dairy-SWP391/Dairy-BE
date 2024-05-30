@@ -91,20 +91,20 @@ const lastnameSchema: ParamSchema = {
   },
 };
 
-// const imageSchema: ParamSchema = {
-//   optional: true,
-//   isString: {
-//     errorMessage: USER_MESSAGES.IMAGE_URL_MUST_BE_A_STRING,
-//   },
-//   trim: true,
-//   isLength: {
-//     options: {
-//       min: 1,
-//       max: 400,
-//     },
-//     errorMessage: USER_MESSAGES.IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400,
-//   },
-// };
+const imageSchema: ParamSchema = {
+  optional: true,
+  isString: {
+    errorMessage: USER_MESSAGES.IMAGE_URL_MUST_BE_A_STRING,
+  },
+  trim: true,
+  isLength: {
+    options: {
+      min: 1,
+      max: 400,
+    },
+    errorMessage: USER_MESSAGES.IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400,
+  },
+};
 const confirmPasswordSchema: ParamSchema = {
   trim: true,
   notEmpty: {
@@ -132,6 +132,15 @@ const confirmPasswordSchema: ParamSchema = {
     },
   },
 };
+const addressSchema: ParamSchema = {
+  isString: {
+    errorMessage: USER_MESSAGES.ADDRESS_MUST_BE_STRING,
+  },
+  trim: true,
+  optional: true,
+  notEmpty: undefined,
+};
+
 export const registerValidator = validate(
   checkSchema(
     {
@@ -304,6 +313,24 @@ export const resetPasswordValidator = validate(
     {
       password: passwordSchema,
       confirm_password: confirmPasswordSchema,
+    },
+    ['body'],
+  ),
+);
+
+export const updateMeValidator = validate(
+  checkSchema(
+    {
+      first_name: { ...firstnameSchema, optional: true, notEmpty: undefined },
+      last_name: { ...lastnameSchema, optional: true, notEmpty: undefined },
+      phone_number: { ...phone_numberSchema },
+      address: {
+        ...addressSchema,
+      },
+      avatar_url: {
+        ...imageSchema,
+        notEmpty: undefined,
+      },
     },
     ['body'],
   ),
