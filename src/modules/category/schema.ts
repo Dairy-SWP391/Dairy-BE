@@ -3,4 +3,5 @@ export interface Category {
   name: string;
   parent_category_id?: number | null;
   child_category?: Category[];
+  path: string;
 }

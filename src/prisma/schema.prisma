@@ -72,6 +72,7 @@ enum ROLE {
 model Product {
   id Int @id @default(autoincrement())
   name String
+  name_id String
   quantity Int
   rating_number Int
   rating_point Float
@@ -83,10 +84,10 @@ model Product {
   target String?
   volume Int?
   weight Int?
-  caution String?
-  instruction String?
-  preservation String?
-  description String?
+  caution String? @db.LongText
+  instruction String? @db.LongText
+  preservation String? @db.LongText
+  description String? @db.LongText
   category Category @relation(fields: [category_id], references: [id])
   category_id Int
   ProductPricing ProductPricing[]
@@ -131,6 +132,7 @@ model Category {
 model Post {
   id Int @id @default(autoincrement())
   title String
+  title_id String
   content String
   creator User @relation(fields: [creator_id], references: [id])
   creator_id String
