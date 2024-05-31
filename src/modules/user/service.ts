@@ -1,7 +1,7 @@
 import { signToken, verifyToken } from '~/utils/jwt';
 import { TokenType, UserVerifyStatus } from './enum';
 import { DatabaseInstance } from '~/database/database.services';
-import { RegisterReqBody } from './requests';
+import { RegisterReqBody, UpdateMeReqBody } from './requests';
 import { hashPassword } from '~/utils/crypto';
 import { USER_STATUS } from '@prisma/client';
 import { generateId } from '~/utils/utils';
@@ -121,8 +121,6 @@ class UserService {
       user_id,
       verify,
     });
-    console.log('access_token', access_token);
-    console.log('refresh_token', refresh_token);
 
     const { exp, iat } = await this.decodeRefreshToken(refresh_token);
     // lưu refresh token vào database
@@ -255,6 +253,31 @@ class UserService {
         verify: USER_STATUS.UNVERIFIED,
       };
     }
+  }
+
+  async resetPassword(user_id: string, password: string) {
+    return await DatabaseInstance.getPrismaInstance().user.update({
+      where: {
+        id: user_id,
+      },
+      data: {
+        forgot_password_token: '',
+        password: hashPassword(password),
+        updated_at: new Date(),
+      },
+    });
+  }
+
+  async updateMe(user_id: string, payload: UpdateMeReqBody) {
+    return await DatabaseInstance.getPrismaInstance().user.update({
+      where: {
+        id: user_id,
+      },
+      data: {
+        ...payload,
+        updated_at: new Date(),
+      },
+    });
   }
 }
 const userService = new UserService();

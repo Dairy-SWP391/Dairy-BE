@@ -29,6 +29,9 @@ export const USER_MESSAGES = {
 
   // confirm password
   CONFIRM_PASSWORD_MUST_MATCH_PASSWORD: 'Confirm password must match password',
+  CONFIRM_PASSWORD_IS_REQUIRED: 'Confirm password is required',
+  CONFIRM_PASSWORD_MUST_BE_STRING: 'Confirm password must be a string',
+  CONFIRM_PASSWORD_MUST_BE_STRONG: 'Confirm password must be strong',
 
   // first name
   FIRST_NAME_IS_REQUIRED: 'First name is required',
@@ -39,6 +42,9 @@ export const USER_MESSAGES = {
   LAST_NAME_IS_REQUIRED: 'Last name is required',
   LAST_NAME_MUST_BE_STRING: 'Last name must be a string',
   LAST_NAME_LENGTH_MUST_BE_FROM_1_TO_50: 'Last name must be between 1 and 50 characters',
+
+  // address
+  ADDRESS_MUST_BE_STRING: 'Address must be a string',
 
   // user messages
   REGISTER_SUCCESS: 'Register successfully',
@@ -74,10 +80,14 @@ export const USER_MESSAGES = {
   // verify account
   VERIFY_ACCOUNT_OTP_IS_REQUIRED: 'Verify account otp is required',
   VERIFY_ACCOUNT_SUCCESSFULLY: 'Verify account successfully',
+  USER_IS_NOT_VERIFIED: 'User is not verified',
 
   // get me
   ACCESS_TOKEN_IS_REQUIRED: 'Access token is required',
   GET_ME_SUCCESS: 'Get me successfully',
+
+  // update me
+  UPDATE_ME_SUCCESS: 'Update me successfully',
 
   // image
   IMAGE_URL_MUST_BE_A_STRING: 'Image url must be a string',
