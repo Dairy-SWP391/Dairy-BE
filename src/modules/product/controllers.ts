@@ -5,7 +5,7 @@ import productPricingsService from '../product_pricings/service';
 import brandService from '../brand/service';
 import imageService from '../image/service';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { AddProductBodyReq } from './requests';
+import { AddProductBodyReq, getProductsByCategorySortAndPaginateBodyReq } from './requests';
 
 export const getProductDetailController = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -30,5 +30,16 @@ export const addProductController = async (
   res.json({
     message: PRODUCT_MESSAGES.ADD_PRODUCT_SUCCESS,
     result: result,
+  });
+};
+
+export const getProductsByCategorySortAndPaginateController = async (
+  req: Request<ParamsDictionary, any, getProductsByCategorySortAndPaginateBodyReq>,
+  res: Response,
+) => {
+  const result = await productService.getProductByCategorySortingAndPaginate(req.body);
+  res.json({
+    data: result,
+    message: PRODUCT_MESSAGES.GET_PRODUCT_BASED_ON_CATEGORY_SORT_PAGINATION_SUCCESS,
   });
 };

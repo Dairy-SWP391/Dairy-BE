@@ -367,3 +367,87 @@ export const addProductValidator = validate(
     ['body'],
   ),
 );
+export const getProductsByCategorySortAndPaginateValidator = validate(
+  checkSchema(
+    {
+      category_id: {
+        ...category_idSchema,
+        custom: {
+          options: async (value) => {
+            const category = await DatabaseInstance.getPrismaInstance().product.findFirst({
+              where: {
+                category_id: Number(value),
+              },
+            });
+            if (!category) {
+              throw new Error(PRODUCT_MESSAGES.CATEGORY_ID_NOT_FOUND);
+            }
+            return true;
+          },
+        },
+      },
+      num_of_product: {
+        notEmpty: {
+          errorMessage: PRODUCT_MESSAGES.NUM_OF_PRODUCT_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: PRODUCT_MESSAGES.NUM_OF_PRODUCT_MUST_BE_NUMBER,
+        },
+      },
+      num_of_items_per_page: {
+        optional: true,
+        isNumeric: {
+          errorMessage: PRODUCT_MESSAGES.NUM_OF_ITEMS_PER_PAGE_MUST_BE_NUMBER,
+        },
+      },
+      page: {
+        notEmpty: {
+          errorMessage: PRODUCT_MESSAGES.PAGE_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: PRODUCT_MESSAGES.PAGE_MUST_BE_NUMBER,
+        },
+        custom: {
+          options: (value) => {
+            if (value <= 0) {
+              throw new Error(PRODUCT_MESSAGES.PAGE_MUST_BE_GREATER_THAN_0);
+            }
+            return true;
+          },
+        },
+      },
+      sort_by: {
+        optional: true,
+        isString: {
+          errorMessage: PRODUCT_MESSAGES.SORT_BY_MUST_BE_STRING,
+        },
+        custom: {
+          options: (value) => {
+            const validSortFields = ['price', 'rating_point', 'sold'];
+            // nếu truyền sort_by mà không phải là price, rating_point, sold
+            if (value && !validSortFields.includes(value)) {
+              throw new Error(PRODUCT_MESSAGES.SORT_BY_MUST_BASED_ON_PRICE_RATING_POINT_SOLD);
+            }
+            return true;
+          },
+        },
+      },
+      order_by: {
+        optional: true,
+        isString: {
+          errorMessage: PRODUCT_MESSAGES.ORDER_BY_MUST_BE_STRING,
+        },
+        custom: {
+          options: (value) => {
+            const validOrderFields = ['ASC', 'DESC'];
+            if (value && !validOrderFields.includes(value)) {
+              throw new Error(PRODUCT_MESSAGES.ORDER_BY_MUST_BE_ASC_OR_DESC);
+            }
+            return true;
+          },
+        },
+      },
+    },
+    ['body'],
+  ),
+);
