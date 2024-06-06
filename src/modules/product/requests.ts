@@ -21,3 +21,11 @@ export interface AddProductBodyReq {
   starting_timestamp: Date;
   ending_timestamp?: Date;
 }
+export interface getProductsByCategorySortAndPaginateBodyReq {
+  category_id: number;
+  num_of_product: number;
+  num_of_items_per_page?: number;
+  page: number;
+  sort_by?: string;
+  order_by?: string;
+}

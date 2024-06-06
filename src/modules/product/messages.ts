@@ -50,4 +50,19 @@ export const PRODUCT_MESSAGES = {
   STARTING_TIMESTAMP_IS_REQUIRED: 'Starting timestamp is required',
   STARTING_TIMESTAMP_MUST_BE_A_DATE: 'Starting timestamp must be a date',
   ENDING_TIMESTAMP_MUST_BE_A_DATE: 'Ending timestamp must be a date',
+  // get product based on category, sorting, pagination
+  NUM_OF_PRODUCT_MUST_BE_NUMBER: 'Num of product must be a number',
+  NUM_OF_ITEMS_PER_PAGE_MUST_BE_NUMBER: 'Num of items per page must be a number',
+  PAGE_MUST_BE_NUMBER: 'Page must be a number',
+  PAGE_MUST_BE_GREATER_THAN_0: 'Page must be greater than 0',
+  SORT_BY_MUST_BE_STRING: 'Sort by must be a string',
+  ORDER_BY_MUST_BE_STRING: 'Order by must be a string',
+  GET_PRODUCT_BASED_ON_CATEGORY_SORT_PAGINATION_SUCCESS:
+    'Get product based on category, sort and pagination success',
+  CATEGORY_ID_NOT_FOUND: 'Category id not found',
+  NUM_OF_PRODUCT_IS_REQUIRED: 'Num of product is required',
+  PAGE_IS_REQUIRED: 'Page is required',
+  SORT_BY_MUST_BASED_ON_PRICE_RATING_POINT_SOLD:
+    'Sort by must be based on price, rating point, sold',
+  ORDER_BY_MUST_BE_ASC_OR_DESC: 'Order by must be ASC or DESC',
 } as const;

@@ -1,7 +1,15 @@
 import { Router } from 'express';
 import { wrapAsync } from '~/utils/handler';
-import { addProductController, getProductDetailController } from './controllers';
-import { roleValidator, addProductValidator } from './middlewares';
+import {
+  addProductController,
+  getProductsByCategorySortAndPaginateController,
+  getProductDetailController,
+} from './controllers';
+import {
+  roleValidator,
+  addProductValidator,
+  getProductsByCategorySortAndPaginateValidator,
+} from './middlewares';
 
 const productRouter = Router();
 productRouter.get(
@@ -9,6 +17,11 @@ productRouter.get(
   roleValidator,
   addProductValidator,
   wrapAsync(addProductController),
+);
+productRouter.post(
+  '/get-product',
+  getProductsByCategorySortAndPaginateValidator,
+  wrapAsync(getProductsByCategorySortAndPaginateController),
 );
 productRouter.get('/:id', wrapAsync(getProductDetailController));
 

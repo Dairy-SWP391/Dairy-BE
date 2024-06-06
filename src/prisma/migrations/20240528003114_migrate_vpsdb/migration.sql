@@ -46,6 +46,7 @@ CREATE TABLE `products` (
     `target` VARCHAR(191) NULL,
     `volume` INTEGER NULL,
     `weight` INTEGER NULL,
+    ` sold` INTEGER NOT NULL,
     `caution` VARCHAR(191) NULL,
     `instruction` VARCHAR(191) NULL,
     `preservation` VARCHAR(191) NULL,
@@ -86,6 +87,7 @@ CREATE TABLE `categories` (
 CREATE TABLE `posts` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(191) NOT NULL,
+    `title_id` VARCHAR(191) NOT NULL,
     `content` VARCHAR(191) NOT NULL,
     `creator_id` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

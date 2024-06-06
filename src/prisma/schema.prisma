@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,161 +8,315 @@ datasource db {
 }
 
 model User {
-  id String @id 
-  first_name String
-  last_name String
-  phone_number String? @unique
-  email String @unique
-  password String
-  address String?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  avatar_url String? 
+  id                    String         @id
+  first_name            String
+  last_name             String
+  phone_number          String?        @unique
+  email                 String         @unique
+  password              String
+  address               String?
+  created_at            DateTime       @default(now())
+  updated_at            DateTime       @updatedAt
+  avatar_url            String         @default("https://firebasestorage.googleapis.com/v0/b/dairy-7d363.appspot.com/o/avatar.png?alt=media")
   forgot_password_token String?
-  point Int @default(0)
-  role ROLE @default(MEMBER)
-  status USER_STATUS @default(UNVERIFIED)
-  Post Post[]
-  Order Order[]
-  // Cart Cart?
-  Feedback Feedback[]
-  Notification Notification[]
-  Voucher Voucher[]
-  ReporterReports Report[] @relation("Reporter")
-  HandlerReports Report[] @relation("Handler")
-  ChatRoomMember ChatRoom[] @relation("ChatRoomMember")
-  ChatRoomStaff ChatRoom[] @relation("ChatRoomStaff")
-  WishList WishList[]
-  RefreshToken RefreshToken[]
-  Address Address[]
+  point                 Int            @default(0)
+  role                  ROLE           @default(MEMBER)
+  status                USER_STATUS    @default(UNVERIFIED)
+  Address               Address[]
+  ChatRoomMember        ChatRoom[]     @relation("ChatRoomMember")
+  ChatRoomStaff         ChatRoom[]     @relation("ChatRoomStaff")
+  Feedback              Feedback[]
+  Notification          Notification[]
+  Order                 Order[]
+  Post                  Post[]
+  RefreshToken          RefreshToken[]
+  HandlerReports        Report[]       @relation("Handler")
+  ReporterReports       Report[]       @relation("Reporter")
+  Voucher               Voucher[]
+  WishList              WishList[]
 
   @@map("users")
-}   
+}
 
 model Address {
-  id Int @id @default(autoincrement())
-  name String
-  phone_number String
-  address String
+  id              Int     @id @default(autoincrement())
+  name            String
+  phone_number    String
+  address         String
   default_address Boolean @default(false)
-  user User @relation(fields: [user_id], references: [id])
-  user_id String
+  user_id         String
+  user            User    @relation(fields: [user_id], references: [id])
 
+  @@index([user_id], map: "addresses_user_id_fkey")
   @@map("addresses")
 }
 
-enum USER_STATUS {
-  UNVERIFIED
-  VERIFIED
-  BANNED
-} 
-
-enum ROLE {
-  ADMIN
-  MEMBER
-  STAFF
-}
-
 model Product {
-  id Int @id @default(autoincrement())
-  name String
-  name_id String
-  quantity Int
-  rating_number Int
-  rating_point Float
-  brand Brand @relation(fields: [brand_id], references: [id])
-  brand_id Int
-  origin String?
-  producer String?
+  id              Int              @id @default(autoincrement())
+  name            String
+  quantity        Int
+  rating_number   Int
+  rating_point    Float
+  brand_id        Int
+  origin          String?
+  producer        String?
   manufactured_at String?
-  target String?
-  volume Int?
-  weight Int?
-  caution String? @db.LongText
-  instruction String? @db.LongText
-  preservation String? @db.LongText
-  description String? @db.LongText
-  category Category @relation(fields: [category_id], references: [id])
-  category_id Int
-  ProductPricing ProductPricing[]
-  OrderDetail OrderDetail[]
-  // CartItem CartItem[]
-  WishList WishList[]
+  target          String?
+  volume          Int?
+  weight          Int?
+  sold            Int              @default(0)
+  caution         String?          @db.LongText
+  instruction     String?          @db.LongText
+  preservation    String?          @db.LongText
+  description     String?          @db.LongText
+  status          products_status  @default(ACTIVE)
+  category_id     Int
+  OrderDetail     OrderDetail[]
+  ProductPricing  ProductPricing[]
+  brand           Brand            @relation(fields: [brand_id], references: [id])
+  category        Category         @relation(fields: [category_id], references: [id])
+  WishList        WishList[]
 
+  @@index([brand_id], map: "products_brand_id_fkey")
+  @@index([category_id], map: "products_category_id_fkey")
   @@map("products")
 }
 
 model Brand {
-  id Int @id @default(autoincrement())
-  name String
+  id      Int       @id @default(autoincrement())
+  name    String
   Product Product[]
 
   @@map("brands")
 }
 
 model ProductPricing {
-  product Product @relation(fields: [product_id], references: [id])
-  product_id Int
-  price Float
-  starting_timestamp DateTime @default(now())
-  ending_timestamp DateTime?
+  product_id         Int
+  price              Float
+  starting_timestamp DateTime  @default(now())
+  ending_timestamp   DateTime?
+  product            Product   @relation(fields: [product_id], references: [id])
 
   @@id([product_id, starting_timestamp])
-
   @@map("product_pricings")
 }
 
 model Category {
-  id Int @id @default(autoincrement())
-  name String
-  parent_category Category? @relation("ParentCategory", fields: [parent_category_id], references: [id])
+  id                 Int        @id @default(autoincrement())
+  name               String
   parent_category_id Int?
-  Product Product[]
-  category Category[] @relation("ParentCategory")
+  parent_category    Category?  @relation("ParentCategory", fields: [parent_category_id], references: [id])
+  category           Category[] @relation("ParentCategory")
+  Product            Product[]
 
+  @@index([parent_category_id], map: "categories_parent_category_id_fkey")
   @@map("categories")
 }
 
 model Post {
-  id Int @id @default(autoincrement())
-  title String
-  title_id String
-  content String
-  creator User @relation(fields: [creator_id], references: [id])
-  creator_id String
-  created_at DateTime @default(now())
+  id             Int              @id @default(autoincrement())
+  title          String
+  content        String
+  creator_id     String
+  created_at     DateTime         @default(now())
   PostByCategory PostByCategory[]
+  creator        User             @relation(fields: [creator_id], references: [id])
 
+  @@index([creator_id], map: "posts_creator_id_fkey")
   @@map("posts")
 }
 
 model PostByCategory {
-  id Int @id @default(autoincrement())
-  post Post @relation(fields: [post_id], references: [id])
-  post_id Int
-  post_category PostCategory @relation(fields: [post_category_id], references: [id])
+  id               Int          @id @default(autoincrement())
+  post_id          Int
   post_category_id Int
+  post_category    PostCategory @relation(fields: [post_category_id], references: [id])
+  post             Post         @relation(fields: [post_id], references: [id])
 
+  @@index([post_category_id], map: "post_by_categories_post_category_id_fkey")
+  @@index([post_id], map: "post_by_categories_post_id_fkey")
   @@map("post_by_categories")
-
 }
 
 model PostCategory {
-  id Int @id @default(autoincrement())
-  name String
-  description String?
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String?
   PostByCategory PostByCategory[]
 
   @@map("post_categories")
 }
 
-model Image {                                                                
-  id Int @id @default(autoincrement())
-  parent_id Int
+model Image {
+  id          Int               @id @default(autoincrement())
+  parent_id   Int
   parent_type IMAGE_PARENT_TYPE
-  image_url String
-  
-  @@map("images")           
+  image_url   String            @db.VarChar(250)
+
+  @@map("images")
+}
+
+model Order {
+  id             Int           @id @default(autoincrement())
+  user_id        String
+  estimate_price Float
+  end_price      Float
+  status         String
+  created_at     DateTime      @default(now())
+  discount       Float?
+  OrderDetail    OrderDetail[]
+  user           User          @relation(fields: [user_id], references: [id])
+  Transaction    Transaction?
+
+  @@index([user_id], map: "orders_user_id_fkey")
+  @@map("orders")
+}
+
+model Transaction {
+  id                  Int      @id @default(autoincrement())
+  order_id            Int      @unique
+  payment_method      String
+  receive_destination String
+  description         String
+  status              String
+  time_stamp          DateTime @default(now())
+  order               Order    @relation(fields: [order_id], references: [id])
+
+  @@map("transactions")
+}
+
+model OrderDetail {
+  id         Int       @id @default(autoincrement())
+  order_id   Int
+  quantity   Int
+  price      Float
+  sale_price Float
+  product_id Int
+  Feedback   Feedback?
+  order      Order     @relation(fields: [order_id], references: [id])
+  product    Product   @relation(fields: [product_id], references: [id])
+
+  @@index([order_id], map: "order_details_order_id_fkey")
+  @@index([product_id], map: "order_details_product_id_fkey")
+  @@map("order_details")
+}
+
+model Feedback {
+  id              Int         @id @default(autoincrement())
+  user_id         String
+  content         String?
+  created_at      DateTime    @default(now())
+  rating_point    Float
+  order_detail_id Int         @unique
+  order_detail    OrderDetail @relation(fields: [order_detail_id], references: [id])
+  user            User        @relation(fields: [user_id], references: [id])
+
+  @@index([user_id], map: "feedbacks_user_id_fkey")
+  @@map("feedbacks")
+}
+
+model Notification {
+  id         Int      @id @default(autoincrement())
+  target_id  String
+  content    String
+  created_at DateTime @default(now())
+  status     Boolean
+  user       User     @relation(fields: [target_id], references: [id])
+
+  @@index([target_id], map: "notifications_target_id_fkey")
+  @@map("notifications")
+}
+
+model Voucher {
+  id            Int      @id @default(autoincrement())
+  code          String   @unique
+  value         Float
+  trading_point Int
+  created_at    DateTime @default(now())
+  expired_at    DateTime
+  status        Boolean
+  user_id       String?
+  user          User?    @relation(fields: [user_id], references: [id])
+
+  @@index([user_id], map: "vouchers_user_id_fkey")
+  @@map("vouchers")
+}
+
+model Report {
+  id          Int           @id @default(autoincrement())
+  reporter_id String
+  handler_id  String?
+  content     String
+  status      REPORT_STATUS @default(PENDING)
+  handler     User?         @relation("Handler", fields: [handler_id], references: [id])
+  reporter    User          @relation("Reporter", fields: [reporter_id], references: [id])
+
+  @@index([handler_id], map: "reports_handler_id_fkey")
+  @@index([reporter_id], map: "reports_reporter_id_fkey")
+  @@map("reports")
+}
+
+model WishList {
+  id         Int     @id @default(autoincrement())
+  user_id    String
+  product_id Int
+  product    Product @relation(fields: [product_id], references: [id])
+  user       User    @relation(fields: [user_id], references: [id])
+
+  @@index([product_id], map: "wish_lists_product_id_fkey")
+  @@index([user_id], map: "wish_lists_user_id_fkey")
+  @@map("wish_lists")
+}
+
+model ChatRoom {
+  id         Int        @id @default(autoincrement())
+  member_id  String
+  staff_id   String
+  created_at DateTime   @default(now())
+  ChatLine   ChatLine[]
+  member     User       @relation("ChatRoomMember", fields: [member_id], references: [id])
+  staff      User       @relation("ChatRoomStaff", fields: [staff_id], references: [id])
+
+  @@index([member_id], map: "chat_rooms_member_id_fkey")
+  @@index([staff_id], map: "chat_rooms_staff_id_fkey")
+  @@map("chat_rooms")
+}
+
+model ChatLine {
+  id           Int              @id @default(autoincrement())
+  chat_room_id Int
+  content      String
+  sender       CHAT_LINE_SENDER
+  created_at   DateTime         @default(now())
+  chat_room    ChatRoom         @relation(fields: [chat_room_id], references: [id])
+
+  @@index([chat_room_id], map: "chat_lines_chat_room_id_fkey")
+  @@map("chat_lines")
+}
+
+model RefreshToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique @db.VarChar(255)
+  created_at DateTime @default(now())
+  iat        DateTime
+  exp        DateTime
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+
+  @@index([user_id], map: "refresh_tokens_user_id_fkey")
+  @@map("refresh_tokens")
+}
+
+enum USER_STATUS {
+  UNVERIFIED
+  VERIFIED
+  BANNED
+}
+
+enum ROLE {
+  ADMIN
+  MEMBER
+  STAFF
 }
 
 enum IMAGE_PARENT_TYPE {
@@ -177,156 +325,10 @@ enum IMAGE_PARENT_TYPE {
   POST
 }
 
-model Order {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [user_id], references: [id])
-  user_id String
-  estimate_price Float
-  end_price Float
-  status String
-  created_at DateTime @default(now())
-  discount Float?
-  OrderDetail OrderDetail[]
-  Transaction Transaction?
-  @@map("orders")
-
-} 
-
-model Transaction {
-  id Int @id @default(autoincrement())
-  order Order @relation(fields: [order_id], references: [id])
-  order_id Int @unique
-  payment_method String
-  receive_destination String
-  description String
-  status String
-  time_stamp DateTime @default(now())
-
-  @@map("transactions")
-}
-
-model OrderDetail {
-  id Int @id @default(autoincrement())
-  order Order @relation(fields: [order_id], references: [id])
-  order_id Int
-  quantity Int
-  price Float
-  sale_price Float
-  product Product @relation(fields: [product_id], references: [id])
-  product_id Int
-  Feedback Feedback?
-
-  @@map("order_details")
-}
-
-// model Cart {
-//   id Int @id @default(autoincrement())
-//   user User @relation(fields: [user_id], references: [id])
-//   user_id Int @unique
-//   Cart_Item CartItem[]
-
-//   @@map("carts")
-// }
-
-// model CartItem {
-//   id Int @id @default(autoincrement())
-//   product Product @relation(fields: [product_id], references: [id])
-//   product_id Int
-//   quantity Int
-//   cart Cart @relation(fields: [cart_id], references: [id])
-//   cart_id Int
-
-//   @@map("cart_items")
-// }
-
-model Feedback {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [user_id], references: [id])
-  user_id String
-  content String?
-  created_at DateTime @default(now())
-  rating_point Float
-  order_detail OrderDetail @relation(fields: [order_detail_id], references: [id])
-  order_detail_id Int @unique
-
-  @@map("feedbacks") 
-
-}
-
-model Notification {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [target_id], references: [id])
-  target_id String
-  content String
-  created_at DateTime @default(now())
-  status Boolean
-
-  @@map("notifications")
-}
-
-model Voucher {
-  id Int @id @default(autoincrement())
-  code String @unique
-  value Float
-  trading_point Int
-  created_at DateTime @default(now())
-  expired_at DateTime
-  status Boolean
-  user User? @relation(fields: [user_id], references: [id])
-  user_id String?
-
-  @@map("vouchers")
-}
-
-model Report {
-  id Int @id @default(autoincrement())
-  reporter User @relation("Reporter", fields: [reporter_id], references: [id])
-  reporter_id String
-  handler User? @relation("Handler", fields: [handler_id], references: [id])
-  handler_id String?
-  content String
-  status REPORT_STATUS @default(PENDING)
-  
-  @@map("reports")
-}
-
 enum REPORT_STATUS {
   PENDING
   RESOLVED
   REJECTED
-}
-
-model WishList {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [user_id], references: [id])
-  user_id String
-  product Product @relation(fields: [product_id], references: [id])
-  product_id Int
-
-  @@map("wish_lists") 
-}
-
-model ChatRoom {
-  id Int @id @default(autoincrement())
-  member User @relation("ChatRoomMember", fields: [member_id], references: [id])
-  member_id String
-  staff User @relation("ChatRoomStaff", fields: [staff_id], references: [id])
-  staff_id String
-  created_at DateTime @default(now()) 
-  ChatLine ChatLine[] 
-
-  @@map("chat_rooms")
-}
-
-model ChatLine {
-  id Int @id @default(autoincrement())
-  chat_room ChatRoom @relation(fields: [chat_room_id], references: [id])
-  chat_room_id Int
-  content String
-  sender CHAT_LINE_SENDER
-  created_at DateTime @default(now())
-
-  @@map("chat_lines")
 }
 
 enum CHAT_LINE_SENDER {
@@ -334,14 +336,7 @@ enum CHAT_LINE_SENDER {
   STAFF
 }
 
-model RefreshToken {
-  id Int @id @default(autoincrement())
-  token String @unique @db.VarChar(255)
-  created_at DateTime @default(now())
-  iat DateTime
-  exp DateTime
-  user User @relation(fields: [user_id], references: [id])
-  user_id String
-
-  @@map("refresh_tokens")
+enum products_status {
+  ACTIVE
+  INACTIVE
 }
