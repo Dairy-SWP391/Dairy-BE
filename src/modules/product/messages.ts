@@ -51,9 +51,13 @@ export const PRODUCT_MESSAGES = {
   STARTING_TIMESTAMP_MUST_BE_A_DATE: 'Starting timestamp must be a date',
   ENDING_TIMESTAMP_MUST_BE_A_DATE: 'Ending timestamp must be a date',
   // get product based on category, sorting, pagination
+  PARENT_CATEGORY_ID_IS_REQUIRED: 'Parent category id is required',
+  PARENT_CATEGORY_ID_NOT_FOUND: 'Parent category id not found',
+  PARENT_CATEGORY_ID_MUST_BE_NUMBER: 'Parent category id must be a number',
   NUM_OF_PRODUCT_MUST_BE_NUMBER: 'Num of product must be a number',
   NUM_OF_ITEMS_PER_PAGE_MUST_BE_NUMBER: 'Num of items per page must be a number',
   PAGE_MUST_BE_NUMBER: 'Page must be a number',
+  PAGINATION_IS_INVALID: 'Pagination is invalid',
   PAGE_MUST_BE_GREATER_THAN_0: 'Page must be greater than 0',
   SORT_BY_MUST_BE_STRING: 'Sort by must be a string',
   ORDER_BY_MUST_BE_STRING: 'Order by must be a string',

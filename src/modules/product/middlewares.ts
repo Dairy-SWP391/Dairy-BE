@@ -370,21 +370,17 @@ export const addProductValidator = validate(
 export const getProductsByCategorySortAndPaginateValidator = validate(
   checkSchema(
     {
+      parent_category_id: {
+        notEmpty: {
+          errorMessage: PRODUCT_MESSAGES.PARENT_CATEGORY_ID_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: PRODUCT_MESSAGES.PARENT_CATEGORY_ID_MUST_BE_NUMBER,
+        },
+      },
       category_id: {
         ...category_idSchema,
-        custom: {
-          options: async (value) => {
-            const category = await DatabaseInstance.getPrismaInstance().product.findFirst({
-              where: {
-                category_id: Number(value),
-              },
-            });
-            if (!category) {
-              throw new Error(PRODUCT_MESSAGES.CATEGORY_ID_NOT_FOUND);
-            }
-            return true;
-          },
-        },
+        optional: true,
       },
       num_of_product: {
         notEmpty: {
@@ -408,9 +404,12 @@ export const getProductsByCategorySortAndPaginateValidator = validate(
           errorMessage: PRODUCT_MESSAGES.PAGE_MUST_BE_NUMBER,
         },
         custom: {
-          options: (value) => {
+          options: (value, { req }) => {
             if (value <= 0) {
               throw new Error(PRODUCT_MESSAGES.PAGE_MUST_BE_GREATER_THAN_0);
+            }
+            if (!req.body.num_of_items_per_page && value > 1) {
+              throw new Error(PRODUCT_MESSAGES.PAGINATION_IS_INVALID);
             }
             return true;
           },
