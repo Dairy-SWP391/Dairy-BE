@@ -9,13 +9,10 @@ import productRouter from './modules/product/routes';
 config();
 
 // env
-const isProduction = process.env.NODE_ENV === 'production';
-const frontendURL = isProduction
-  ? process.env.PRODUCTION_FRONTEND_URL
-  : process.env.DEVELOPMENT_FRONTEND_URL;
+// const isProduction = process.env.NODE_ENV === 'production';
 
 const corsOptions = {
-  origin: frontendURL,
+  origin: ['https://oyster-app-kl49u.ondigitalocean.app', 'http://localhost:3000'],
   credentials: true, // access-control-allow-credentials:true
   allowedHeaders: ['Content-Type', 'Authorization'], // access-control-allow-headers
   optionSuccessStatus: 200,
