@@ -30,3 +30,29 @@ export interface getProductsByCategorySortAndPaginateBodyReq {
   sort_by?: string;
   order_by?: string;
 }
+export interface ProductWithOtherFields {
+  id: number;
+  name: string;
+  quantity: number;
+  rating_number: number;
+  rating_point: number;
+  brand_id: number;
+  origin?: string | null;
+  producer?: string | null;
+  manufactured_at?: string | null;
+  target?: string | null;
+  volume?: number | null;
+  weight?: number | null;
+  sold: number;
+  caution?: string | null;
+  instruction?: string | null;
+  preservation?: string | null;
+  description?: string | null;
+  status: string;
+  // category: {
+  //   parent_category_id: number | null;
+  // };
+  ProductPricing: {
+    price: number;
+  }[];
+}

@@ -1,6 +1,11 @@
 import { DatabaseInstance } from '~/database/database.services';
-import { AddProductBodyReq, getProductsByCategorySortAndPaginateBodyReq } from './requests';
+import {
+  AddProductBodyReq,
+  ProductWithOtherFields,
+  getProductsByCategorySortAndPaginateBodyReq,
+} from './requests';
 import { IMAGE_PARENT_TYPE } from '@prisma/client';
+import productPricingsService from '../product_pricings/service';
 
 class ProductService {
   async getProductDetail(id: number) {
@@ -189,12 +194,30 @@ class ProductService {
         // nếu có category_id thì lấy theo category_id
         if (payload.sort_by === 'price') {
           const products = await this.getProductByCategoryIDAndSortByPrice(payload);
+
           if (payload.num_of_product < products.length) {
             return products.slice(0, payload.num_of_product);
           }
-          console.log(products.slice(0, payload.num_of_product));
+          const productsWithImages = await Promise.all(
+            products.map(async (product) => {
+              const images = await DatabaseInstance.getPrismaInstance().image.findMany({
+                where: {
+                  parent_id: product.id,
+                  parent_type: IMAGE_PARENT_TYPE.PRODUCT,
+                },
+                select: {
+                  image_url: true,
+                },
+              });
 
-          return products;
+              const imageUrls = images.map((image) => image.image_url);
+              return {
+                ...product,
+                image_urls: imageUrls,
+              };
+            }),
+          );
+          return productsWithImages;
         } else {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
           const products = await this.getProductByCategoryIDAndSortByRatingPoint_Sold_ID(payload);
@@ -202,7 +225,7 @@ class ProductService {
           if (payload.num_of_product < products.length) {
             return products.slice(0, payload.num_of_product);
           }
-          console.log(products.slice(0, payload.num_of_product));
+
           return products;
         }
       }
@@ -226,6 +249,7 @@ class ProductService {
               starting_timestamp: 'desc',
             },
           ],
+
           select: {
             price: true,
           },
@@ -242,7 +266,31 @@ class ProductService {
     } else {
       products.sort((a, b) => b.ProductPricing[0].price - a.ProductPricing[0].price);
     }
-    return products;
+
+    const productsWithPriceDetails = await Promise.all(
+      products.map(async (item) => {
+        const productPricing = await productPricingsService.getProductPrice(item.id);
+
+        const { price, sale_price, starting_timestamp, ending_timestamp } = productPricing;
+        return {
+          ...item,
+          parent_category_id: item.category.parent_category_id,
+          price,
+          sale_price,
+          starting_timestamp,
+          ending_timestamp,
+        };
+      }),
+    );
+
+    const productsWithParentCategoryId = productsWithPriceDetails.map((product) => {
+      const { category, ...rest } = product;
+      return {
+        ...rest,
+        parent_category_id: category.parent_category_id,
+      };
+    });
+    return this.getProductWithImages(productsWithParentCategoryId);
   }
 
   async getProductByParentCategoryIdAndSortByRatingPoint_Sold_ID(
@@ -276,7 +324,30 @@ class ProductService {
         [payload.sort_by || 'id']: payload.order_by === 'DESC' ? 'desc' : 'asc',
       },
     });
-    return products;
+
+    const productsWithPriceDetails = await Promise.all(
+      products.map(async (item) => {
+        const productPricing = await productPricingsService.getProductPrice(item.id);
+
+        const { price, sale_price, starting_timestamp, ending_timestamp } = productPricing;
+        return {
+          ...item,
+          parent_category_id: item.category.parent_category_id,
+          price,
+          sale_price,
+          starting_timestamp,
+          ending_timestamp,
+        };
+      }),
+    );
+    const productsWithParentCategoryId = productsWithPriceDetails.map((product) => {
+      const { category, ...rest } = product;
+      return {
+        ...rest,
+        parent_category_id: category.parent_category_id,
+      };
+    });
+    return this.getProductWithImages(productsWithParentCategoryId);
   }
 
   async getProductByCategoryIDAndSortByPrice(payload: getProductsByCategorySortAndPaginateBodyReq) {
@@ -312,7 +383,30 @@ class ProductService {
     } else {
       products.sort((a, b) => b.ProductPricing[0].price - a.ProductPricing[0].price);
     }
-    return products;
+
+    const productsWithPriceDetails = await Promise.all(
+      products.map(async (item) => {
+        const productPricing = await productPricingsService.getProductPrice(item.id);
+
+        const { price, sale_price, starting_timestamp, ending_timestamp } = productPricing;
+        return {
+          ...item,
+          parent_category_id: item.category.parent_category_id,
+          price,
+          sale_price,
+          starting_timestamp,
+          ending_timestamp,
+        };
+      }),
+    );
+    const productsWithParentCategoryId = productsWithPriceDetails.map((product) => {
+      const { category, ...rest } = product;
+      return {
+        ...rest,
+        parent_category_id: category.parent_category_id,
+      };
+    });
+    return this.getProductWithImages(productsWithParentCategoryId);
   }
 
   async getProductByCategoryIDAndSortByRatingPoint_Sold_ID(
@@ -347,7 +441,55 @@ class ProductService {
         },
       },
     });
-    return products;
+
+    const productsWithPriceDetails = await Promise.all(
+      products.map(async (item) => {
+        const productPricing = await productPricingsService.getProductPrice(item.id);
+
+        const { price, sale_price, starting_timestamp, ending_timestamp } = productPricing;
+        return {
+          ...item,
+          parent_category_id: item.category.parent_category_id,
+          price,
+          sale_price,
+          starting_timestamp,
+          ending_timestamp,
+        };
+      }),
+    );
+    const productsWithParentCategoryId = productsWithPriceDetails.map((product) => {
+      const { category, ...rest } = product;
+      return {
+        ...rest,
+        parent_category_id: category.parent_category_id,
+      };
+    });
+
+    return this.getProductWithImages(productsWithParentCategoryId);
+  }
+
+  async getProductWithImages(products: ProductWithOtherFields[]) {
+    const productsWithImages = await Promise.all(
+      products.map(async (product) => {
+        const images = await DatabaseInstance.getPrismaInstance().image.findMany({
+          where: {
+            parent_id: product.id,
+            parent_type: IMAGE_PARENT_TYPE.PRODUCT,
+          },
+          select: {
+            image_url: true,
+          },
+        });
+
+        const imageUrls = images.map((image) => image.image_url);
+
+        return {
+          ...product,
+          image_urls: imageUrls, // Thêm một trường mới chứa các URL hình ảnh
+        };
+      }),
+    );
+    return productsWithImages;
   }
 }
 
