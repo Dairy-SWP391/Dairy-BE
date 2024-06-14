@@ -92,4 +92,7 @@ export const USER_MESSAGES = {
   // image
   IMAGE_URL_MUST_BE_A_STRING: 'Image url must be a string',
   IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400: 'Image url length must be between 1 and 400 characters',
+
+  // get access token
+  GET_ACCESS_TOKEN_SUCCESS: 'Get access token successfully',
 } as const;

@@ -10,6 +10,7 @@ import { JsonWebTokenError } from 'jsonwebtoken';
 import HTTP_STATUS from '~/constants/httpsStatus';
 import { TokenPayload } from './requests';
 import { Request } from 'express';
+import { REFRESH_TOKEN_MESSAGES } from '../refreshToken/messages';
 
 export const emailSchema: ParamSchema = {
   trim: true,
@@ -330,6 +331,54 @@ export const updateMeValidator = validate(
       avatar_url: {
         ...imageSchema,
         notEmpty: undefined,
+      },
+    },
+    ['body'],
+  ),
+);
+export const refreshTokenValidator = validate(
+  checkSchema(
+    {
+      refresh_token: {
+        notEmpty: {
+          errorMessage: REFRESH_TOKEN_MESSAGES.REFRESH_TOKEN_IS_REQUIRED,
+        },
+        trim: true,
+        custom: {
+          options: async (value: string, { req }) => {
+            // 1. verify refresh_token này xem có phải của server tạo ra không
+            try {
+              const [decoded_refresh_token, refresh_token] = await Promise.all([
+                verifyToken({
+                  token: value,
+                  secretOrPublicKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
+                }),
+                DatabaseInstance.getPrismaInstance().refreshToken.findUnique({
+                  where: { token: value },
+                }),
+              ]);
+
+              if (refresh_token === null) {
+                throw new ErrorWithStatus({
+                  message: REFRESH_TOKEN_MESSAGES.REFRESH_TOKEN_DOES_NOT_EXIST,
+                  status: HTTP_STATUS.UNAUTHORIZED,
+                });
+              }
+              req.decoded_refresh_token = decoded_refresh_token;
+            } catch (error) {
+              // nếu lỗi phát sinh trong quá trinh verify thì mình tạo thành lỗi có status
+              if (error instanceof JsonWebTokenError) {
+                throw new ErrorWithStatus({
+                  message: REFRESH_TOKEN_MESSAGES.REFRESH_TOKEN_IS_INVALID,
+                  status: HTTP_STATUS.UNAUTHORIZED,
+                });
+              }
+              // nếu lỗi không phải dạng JsonWebTokenError
+              throw error;
+            }
+            return true;
+          },
+        },
       },
     },
     ['body'],

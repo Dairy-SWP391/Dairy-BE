@@ -4,6 +4,7 @@ import {
   accessTokenValidator,
   forgotPasswordValidator,
   loginValidator,
+  refreshTokenValidator,
   registerValidator,
   resetPasswordValidator,
   updateMeValidator,
@@ -18,7 +19,9 @@ import {
   getMeController,
   resetPasswordController,
   updateMeController,
+  accessTokenController,
 } from './controllers';
+import { refreshTokenController } from './controllers';
 
 const userRouter = Router();
 
@@ -39,4 +42,6 @@ userRouter.post(
 userRouter.get('/oauth/google', wrapAsync(oAuthController));
 userRouter.get('/me', accessTokenValidator, wrapAsync(getMeController));
 userRouter.patch('/me', accessTokenValidator, updateMeValidator, wrapAsync(updateMeController));
+userRouter.post('/refresh-token', refreshTokenValidator, wrapAsync(refreshTokenController));
+userRouter.get('/access-token', refreshTokenValidator, wrapAsync(accessTokenController));
 export default userRouter;

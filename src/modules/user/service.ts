@@ -279,6 +279,15 @@ class UserService {
       },
     });
   }
+
+  async getAccessToken(user_id: string, verify: USER_STATUS) {
+    const access_token = await this.signAccessToken({
+      user_id,
+      verify,
+    });
+
+    return { access_token };
+  }
 }
 const userService = new UserService();
 export default userService;
