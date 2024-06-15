@@ -11,6 +11,7 @@ import HTTP_STATUS from '~/constants/httpsStatus';
 import { TokenPayload } from './requests';
 import { Request } from 'express';
 import { REFRESH_TOKEN_MESSAGES } from '../refreshToken/messages';
+import { ROLE } from '@prisma/client';
 
 export const emailSchema: ParamSchema = {
   trim: true,
@@ -511,5 +512,65 @@ export const updateAddressValidator = validate(
       },
     },
     ['body'],
+  ),
+);
+export const roleValidator = validate(
+  checkSchema(
+    {
+      Authorization: {
+        trim: true,
+        custom: {
+          options: async (value, { req }) => {
+            // lấy ra access_token từ header
+            const access_token = value.split(' ')[1];
+            // kiểm tra xem access_token có được truyền không
+            if (!access_token) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUIRED,
+                status: HTTP_STATUS.UNAUTHORIZED,
+              });
+            }
+            // kiểm tra xem access_token có tồn tại trong database không
+            try {
+              const decoded_authorization = await verifyToken({
+                token: access_token,
+                secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
+              });
+              const { user_id } = decoded_authorization as TokenPayload;
+              console.log('user_id: ', user_id);
+
+              // lấy ra user từ database
+              const user = await DatabaseInstance.getPrismaInstance().user.findUnique({
+                where: {
+                  id: user_id,
+                },
+              });
+              if (!user) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.ACCESS_TOKEN_IS_INVALID,
+                  status: HTTP_STATUS.UNAUTHORIZED,
+                });
+              }
+
+              if (user.role === ROLE.MEMBER) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.USER_IS_NOT_AUTHORIZED,
+                  status: HTTP_STATUS.UNAUTHORIZED,
+                });
+              }
+              req.role = user.role as string;
+              console.log('role: ', req.role);
+            } catch (error) {
+              throw new ErrorWithStatus({
+                message: (error as JsonWebTokenError).message,
+                status: HTTP_STATUS.UNAUTHORIZED,
+              });
+            }
+            return true;
+          },
+        },
+      },
+    },
+    ['headers'],
   ),
 );

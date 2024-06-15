@@ -111,4 +111,9 @@ export const USER_MESSAGES = {
   UPDATE_ADDRESS_SUCCESS: 'Update address successfully',
   ID_NOT_FOUND: 'Id is not found',
   ADDRESS_NOT_FOUND: 'Address is not found',
+
+  // get all users
+  ACCESS_TOKEN_IS_INVALID: 'Access token is invalid',
+  GET_ALL_USERS_SUCCESS: 'Get all users successfully',
+  USER_IS_NOT_AUTHORIZED: 'User is not authorized',
 } as const;
