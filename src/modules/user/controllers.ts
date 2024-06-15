@@ -14,7 +14,7 @@ import refreshTokenService from '../refreshToken/service';
 import { REFRESH_TOKEN_MESSAGES } from '../refreshToken/messages';
 import { RefreshTokenReq } from '../refreshToken/requests';
 import addressService from '../address/services';
-import { AddAddressReqBody } from '../address/requests';
+import { AddAddressReqBody, UpdateAddressReqBody } from '../address/requests';
 
 export const registerController = async (
   req: Request<ParamsDictionary, any, RegisterReqBody>,
@@ -138,4 +138,11 @@ export const getAllAddressesController = async (req: Request, res: Response) => 
     message: USER_MESSAGES.GET_ALL_ADDRESSES_SUCCESS,
     result: result,
   });
+};
+export const updateAddressController = async (
+  req: Request<ParamsDictionary, any, UpdateAddressReqBody>,
+  res: Response,
+) => {
+  const result = await addressService.updateAddress(req.body);
+  return res.json({ message: USER_MESSAGES.UPDATE_ADDRESS_SUCCESS, result: result });
 };
