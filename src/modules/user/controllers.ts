@@ -115,7 +115,6 @@ export const refreshTokenController = async (
 export const accessTokenController = async (req: Request, res: Response) => {
   console.log(req.decoded_authorization);
   const { user_id, verify } = req.decoded_refresh_token as TokenPayload;
-  console.log(user_id, verify);
   const result = await userService.getAccessToken(user_id, verify);
   return res.json({
     message: USER_MESSAGES.GET_ACCESS_TOKEN_SUCCESS,
@@ -129,6 +128,14 @@ export const addAddressController = async (
   const result = await addressService.addAddress(req.body);
   return res.json({
     message: USER_MESSAGES.ADD_ADDRESS_SUCCESS,
+    result: result,
+  });
+};
+export const getAllAddressesController = async (req: Request, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload;
+  const result = await addressService.getAllAddresses(user_id);
+  return res.json({
+    message: USER_MESSAGES.GET_ALL_ADDRESSES_SUCCESS,
     result: result,
   });
 };

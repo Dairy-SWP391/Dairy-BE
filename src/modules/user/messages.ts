@@ -103,4 +103,7 @@ export const USER_MESSAGES = {
   ADDRESS_IS_REQUIRED: 'Address is required',
   DEFAULT_ADDRESS_IS_REQUIRED: 'Default address is required',
   ADDRESS_LENGTH_MUST_BE_FROM_10_TO_255: 'Address length must be between 10 and 255 characters',
+
+  // get all addresses of users
+  GET_ALL_ADDRESSES_SUCCESS: 'Get all addresses successfully',
 } as const;
