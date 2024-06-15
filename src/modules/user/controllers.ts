@@ -13,6 +13,8 @@ import { USER_STATUS, User } from '@prisma/client';
 import refreshTokenService from '../refreshToken/service';
 import { REFRESH_TOKEN_MESSAGES } from '../refreshToken/messages';
 import { RefreshTokenReq } from '../refreshToken/requests';
+import addressService from '../address/services';
+import { AddAddressReqBody } from '../address/requests';
 
 export const registerController = async (
   req: Request<ParamsDictionary, any, RegisterReqBody>,
@@ -118,5 +120,15 @@ export const accessTokenController = async (req: Request, res: Response) => {
   return res.json({
     message: USER_MESSAGES.GET_ACCESS_TOKEN_SUCCESS,
     result,
+  });
+};
+export const addAddressController = async (
+  req: Request<ParamsDictionary, any, AddAddressReqBody>,
+  res: Response,
+) => {
+  const result = await addressService.addAddress(req.body);
+  return res.json({
+    message: USER_MESSAGES.ADD_ADDRESS_SUCCESS,
+    result: result,
   });
 };

@@ -9,7 +9,7 @@ CREATE TABLE `users` (
     `address` VARCHAR(191) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
-    `avatar_url` VARCHAR(191) NULL,
+    `avatar_url` VARCHAR(191) NOT NULL DEFAULT 'https://firebasestorage.googleapis.com/v0/b/dairy-7d363.appspot.com/o/avatar.png?alt=media',
     `forgot_password_token` VARCHAR(191) NULL,
     `point` INTEGER NOT NULL DEFAULT 0,
     `role` ENUM('ADMIN', 'MEMBER', 'STAFF') NOT NULL DEFAULT 'MEMBER',
@@ -29,6 +29,7 @@ CREATE TABLE `addresses` (
     `default_address` BOOLEAN NOT NULL DEFAULT false,
     `user_id` VARCHAR(191) NOT NULL,
 
+    INDEX `addresses_user_id_fkey`(`user_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -46,13 +47,16 @@ CREATE TABLE `products` (
     `target` VARCHAR(191) NULL,
     `volume` INTEGER NULL,
     `weight` INTEGER NULL,
-    ` sold` INTEGER NOT NULL,
-    `caution` VARCHAR(191) NULL,
-    `instruction` VARCHAR(191) NULL,
-    `preservation` VARCHAR(191) NULL,
-    `description` VARCHAR(191) NULL,
+    `sold` INTEGER NOT NULL DEFAULT 0,
+    `caution` LONGTEXT NULL,
+    `instruction` LONGTEXT NULL,
+    `preservation` LONGTEXT NULL,
+    `description` LONGTEXT NULL,
+    `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
     `category_id` INTEGER NOT NULL,
 
+    INDEX `products_brand_id_fkey`(`brand_id`),
+    INDEX `products_category_id_fkey`(`category_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -68,7 +72,7 @@ CREATE TABLE `brands` (
 CREATE TABLE `product_pricings` (
     `product_id` INTEGER NOT NULL,
     `price` DOUBLE NOT NULL,
-    `starting_timestamp` DATETIME(3) NOT NULL,
+    `starting_timestamp` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `ending_timestamp` DATETIME(3) NULL,
 
     PRIMARY KEY (`product_id`, `starting_timestamp`)
@@ -80,6 +84,7 @@ CREATE TABLE `categories` (
     `name` VARCHAR(191) NOT NULL,
     `parent_category_id` INTEGER NULL,
 
+    INDEX `categories_parent_category_id_fkey`(`parent_category_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -87,11 +92,11 @@ CREATE TABLE `categories` (
 CREATE TABLE `posts` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(191) NOT NULL,
-    `title_id` VARCHAR(191) NOT NULL,
     `content` VARCHAR(191) NOT NULL,
     `creator_id` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    INDEX `posts_creator_id_fkey`(`creator_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -101,6 +106,8 @@ CREATE TABLE `post_by_categories` (
     `post_id` INTEGER NOT NULL,
     `post_category_id` INTEGER NOT NULL,
 
+    INDEX `post_by_categories_post_category_id_fkey`(`post_category_id`),
+    INDEX `post_by_categories_post_id_fkey`(`post_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -118,7 +125,7 @@ CREATE TABLE `images` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `parent_id` INTEGER NOT NULL,
     `parent_type` ENUM('PRODUCT', 'FEEDBACK', 'POST') NOT NULL,
-    `image_url` VARCHAR(191) NOT NULL,
+    `image_url` VARCHAR(250) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -133,6 +140,7 @@ CREATE TABLE `orders` (
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `discount` DOUBLE NULL,
 
+    INDEX `orders_user_id_fkey`(`user_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -159,6 +167,8 @@ CREATE TABLE `order_details` (
     `sale_price` DOUBLE NOT NULL,
     `product_id` INTEGER NOT NULL,
 
+    INDEX `order_details_order_id_fkey`(`order_id`),
+    INDEX `order_details_product_id_fkey`(`product_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -172,6 +182,7 @@ CREATE TABLE `feedbacks` (
     `order_detail_id` INTEGER NOT NULL,
 
     UNIQUE INDEX `feedbacks_order_detail_id_key`(`order_detail_id`),
+    INDEX `feedbacks_user_id_fkey`(`user_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -183,6 +194,7 @@ CREATE TABLE `notifications` (
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `status` BOOLEAN NOT NULL,
 
+    INDEX `notifications_target_id_fkey`(`target_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -198,6 +210,7 @@ CREATE TABLE `vouchers` (
     `user_id` VARCHAR(191) NULL,
 
     UNIQUE INDEX `vouchers_code_key`(`code`),
+    INDEX `vouchers_user_id_fkey`(`user_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -209,6 +222,8 @@ CREATE TABLE `reports` (
     `content` VARCHAR(191) NOT NULL,
     `status` ENUM('PENDING', 'RESOLVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
 
+    INDEX `reports_handler_id_fkey`(`handler_id`),
+    INDEX `reports_reporter_id_fkey`(`reporter_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -218,6 +233,8 @@ CREATE TABLE `wish_lists` (
     `user_id` VARCHAR(191) NOT NULL,
     `product_id` INTEGER NOT NULL,
 
+    INDEX `wish_lists_product_id_fkey`(`product_id`),
+    INDEX `wish_lists_user_id_fkey`(`user_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -228,6 +245,8 @@ CREATE TABLE `chat_rooms` (
     `staff_id` VARCHAR(191) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    INDEX `chat_rooms_member_id_fkey`(`member_id`),
+    INDEX `chat_rooms_staff_id_fkey`(`staff_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -239,6 +258,7 @@ CREATE TABLE `chat_lines` (
     `sender` ENUM('MEMBER', 'STAFF') NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    INDEX `chat_lines_chat_room_id_fkey`(`chat_room_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -252,6 +272,7 @@ CREATE TABLE `refresh_tokens` (
     `user_id` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `refresh_tokens_token_key`(`token`),
+    INDEX `refresh_tokens_user_id_fkey`(`user_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -274,10 +295,10 @@ ALTER TABLE `categories` ADD CONSTRAINT `categories_parent_category_id_fkey` FOR
 ALTER TABLE `posts` ADD CONSTRAINT `posts_creator_id_fkey` FOREIGN KEY (`creator_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `post_by_categories` ADD CONSTRAINT `post_by_categories_post_id_fkey` FOREIGN KEY (`post_id`) REFERENCES `posts`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `post_by_categories` ADD CONSTRAINT `post_by_categories_post_category_id_fkey` FOREIGN KEY (`post_category_id`) REFERENCES `post_categories`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `post_by_categories` ADD CONSTRAINT `post_by_categories_post_category_id_fkey` FOREIGN KEY (`post_category_id`) REFERENCES `post_categories`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `post_by_categories` ADD CONSTRAINT `post_by_categories_post_id_fkey` FOREIGN KEY (`post_id`) REFERENCES `posts`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `orders` ADD CONSTRAINT `orders_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -292,10 +313,10 @@ ALTER TABLE `order_details` ADD CONSTRAINT `order_details_order_id_fkey` FOREIGN
 ALTER TABLE `order_details` ADD CONSTRAINT `order_details_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `feedbacks` ADD CONSTRAINT `feedbacks_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `feedbacks` ADD CONSTRAINT `feedbacks_order_detail_id_fkey` FOREIGN KEY (`order_detail_id`) REFERENCES `order_details`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `feedbacks` ADD CONSTRAINT `feedbacks_order_detail_id_fkey` FOREIGN KEY (`order_detail_id`) REFERENCES `order_details`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `feedbacks` ADD CONSTRAINT `feedbacks_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `notifications` ADD CONSTRAINT `notifications_target_id_fkey` FOREIGN KEY (`target_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -304,16 +325,16 @@ ALTER TABLE `notifications` ADD CONSTRAINT `notifications_target_id_fkey` FOREIG
 ALTER TABLE `vouchers` ADD CONSTRAINT `vouchers_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `reports` ADD CONSTRAINT `reports_reporter_id_fkey` FOREIGN KEY (`reporter_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `reports` ADD CONSTRAINT `reports_handler_id_fkey` FOREIGN KEY (`handler_id`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `wish_lists` ADD CONSTRAINT `wish_lists_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `reports` ADD CONSTRAINT `reports_reporter_id_fkey` FOREIGN KEY (`reporter_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `wish_lists` ADD CONSTRAINT `wish_lists_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `wish_lists` ADD CONSTRAINT `wish_lists_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `chat_rooms` ADD CONSTRAINT `chat_rooms_member_id_fkey` FOREIGN KEY (`member_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

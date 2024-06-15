@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { wrapAsync } from '~/utils/handler';
 import {
   accessTokenValidator,
+  addAddressValidator,
   forgotPasswordValidator,
   loginValidator,
   refreshTokenValidator,
@@ -20,6 +21,7 @@ import {
   resetPasswordController,
   updateMeController,
   accessTokenController,
+  addAddressController,
 } from './controllers';
 import { refreshTokenController } from './controllers';
 
@@ -44,4 +46,11 @@ userRouter.get('/me', accessTokenValidator, wrapAsync(getMeController));
 userRouter.patch('/me', accessTokenValidator, updateMeValidator, wrapAsync(updateMeController));
 userRouter.post('/refresh-token', refreshTokenValidator, wrapAsync(refreshTokenController));
 userRouter.get('/access-token', refreshTokenValidator, wrapAsync(accessTokenController));
+
+userRouter.get(
+  '/add-address',
+  accessTokenValidator,
+  addAddressValidator,
+  wrapAsync(addAddressController),
+);
 export default userRouter;

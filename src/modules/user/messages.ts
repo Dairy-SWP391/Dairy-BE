@@ -95,4 +95,12 @@ export const USER_MESSAGES = {
 
   // get access token
   GET_ACCESS_TOKEN_SUCCESS: 'Get access token successfully',
+
+  // add address
+  DEFAULT_ADDRESS_MUST_BE_BOOLEAN: 'Default address must be a boolean',
+  ADD_ADDRESS_SUCCESS: 'Add address successfully',
+  USER_ID_MUST_MATCH_USER_ID_IN_TOKEN: 'User id must match user id in token',
+  ADDRESS_IS_REQUIRED: 'Address is required',
+  DEFAULT_ADDRESS_IS_REQUIRED: 'Default address is required',
+  ADDRESS_LENGTH_MUST_BE_FROM_10_TO_255: 'Address length must be between 10 and 255 characters',
 } as const;
