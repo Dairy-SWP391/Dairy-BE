@@ -146,3 +146,12 @@ export const updateAddressController = async (
   const result = await addressService.updateAddress(req.body);
   return res.json({ message: USER_MESSAGES.UPDATE_ADDRESS_SUCCESS, result: result });
 };
+export const getAllUsersController = async (req: Request, res: Response) => {
+  const role = req.role as string;
+
+  const result = await userService.getAllUsers(role);
+  return res.json({
+    message: USER_MESSAGES.GET_ALL_USERS_SUCCESS,
+    result: result,
+  });
+};

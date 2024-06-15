@@ -11,6 +11,7 @@ import {
   updateAddressValidator,
   updateMeValidator,
   verifyForgotPasswordTokenValidator,
+  roleValidator,
 } from './middlewares';
 import {
   registerController,
@@ -23,8 +24,9 @@ import {
   updateMeController,
   accessTokenController,
   addAddressController,
-  getAllAddressesController,
   updateAddressController,
+  getAllUsersController,
+  getAllAddressesController,
 } from './controllers';
 import { refreshTokenController } from './controllers';
 
@@ -64,4 +66,5 @@ userRouter.patch(
   updateAddressValidator,
   wrapAsync(updateAddressController),
 );
+userRouter.get('/users', roleValidator, wrapAsync(getAllUsersController));
 export default userRouter;

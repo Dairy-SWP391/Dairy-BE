@@ -3,7 +3,7 @@ import { TokenType, UserVerifyStatus } from './enum';
 import { DatabaseInstance } from '~/database/database.services';
 import { RegisterReqBody, UpdateMeReqBody } from './requests';
 import { hashPassword } from '~/utils/crypto';
-import { USER_STATUS } from '@prisma/client';
+import { ROLE, USER_STATUS } from '@prisma/client';
 import { generateId } from '~/utils/utils';
 import axios from 'axios';
 import { ErrorWithStatus } from '../error/entityError';
@@ -287,6 +287,24 @@ class UserService {
     });
 
     return { access_token };
+  }
+
+  async getAllUsers(role: string) {
+    if (role === ROLE.ADMIN) {
+      return await DatabaseInstance.getPrismaInstance().user.findMany({
+        where: {
+          role: {
+            not: ROLE.ADMIN,
+          },
+        },
+      });
+    } else {
+      return await DatabaseInstance.getPrismaInstance().user.findMany({
+        where: {
+          role: ROLE.MEMBER,
+        },
+      });
+    }
   }
 }
 const userService = new UserService();
