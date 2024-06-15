@@ -92,4 +92,12 @@ export const USER_MESSAGES = {
   // image
   IMAGE_URL_MUST_BE_A_STRING: 'Image url must be a string',
   IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400: 'Image url length must be between 1 and 400 characters',
+
+  // add address
+  DEFAULT_ADDRESS_MUST_BE_BOOLEAN: 'Default address must be a boolean',
+  ADD_ADDRESS_SUCCESS: 'Add address successfully',
+  USER_ID_MUST_MATCH_USER_ID_IN_TOKEN: 'User id must match user id in token',
+  ADDRESS_IS_REQUIRED: 'Address is required',
+  DEFAULT_ADDRESS_IS_REQUIRED: 'Default address is required',
+  ADDRESS_LENGTH_MUST_BE_FROM_10_TO_255: 'Address length must be between 10 and 255 characters',
 } as const;

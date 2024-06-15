@@ -10,6 +10,8 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import userService from './service';
 import { USER_MESSAGES } from './messages';
 import { USER_STATUS, User } from '@prisma/client';
+import addressService from '../address/services';
+import { AddAddressReqBody } from '../address/requests';
 
 export const registerController = async (
   req: Request<ParamsDictionary, any, RegisterReqBody>,
@@ -85,6 +87,16 @@ export const updateMeController = async (
   const result = await userService.updateMe(user_id, req.body);
   return res.json({
     message: USER_MESSAGES.UPDATE_ME_SUCCESS,
+    result: result,
+  });
+};
+export const addAddressController = async (
+  req: Request<ParamsDictionary, any, AddAddressReqBody>,
+  res: Response,
+) => {
+  const result = await addressService.addAddress(req.body);
+  return res.json({
+    message: USER_MESSAGES.ADD_ADDRESS_SUCCESS,
     result: result,
   });
 };
