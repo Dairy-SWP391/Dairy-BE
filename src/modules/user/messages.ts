@@ -106,4 +106,9 @@ export const USER_MESSAGES = {
 
   // get all addresses of users
   GET_ALL_ADDRESSES_SUCCESS: 'Get all addresses successfully',
+
+  // update address
+  UPDATE_ADDRESS_SUCCESS: 'Update address successfully',
+  ID_NOT_FOUND: 'Id is not found',
+  ADDRESS_NOT_FOUND: 'Address is not found',
 } as const;

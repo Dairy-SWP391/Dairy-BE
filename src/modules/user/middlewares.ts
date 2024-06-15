@@ -451,3 +451,65 @@ export const addAddressValidator = validate(
     ['body'],
   ),
 );
+export const updateAddressValidator = validate(
+  checkSchema(
+    {
+      id: {
+        custom: {
+          options: async (value, { req }) => {
+            const id = await DatabaseInstance.getPrismaInstance().address.findUnique({
+              where: {
+                id: value,
+              },
+            });
+            if (!id || id.user_id !== req.decoded_authorization.user_id) {
+              throw new Error(USER_MESSAGES.ID_NOT_FOUND);
+            }
+
+            return true;
+          },
+        },
+      },
+      name: firstnameSchema,
+      address: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.ADDRESS_IS_REQUIRED,
+        },
+        isString: {
+          errorMessage: USER_MESSAGES.ADDRESS_MUST_BE_STRING,
+        },
+        trim: true,
+        isLength: {
+          options: {
+            min: 10,
+            max: 255,
+          },
+          errorMessage: USER_MESSAGES.ADDRESS_LENGTH_MUST_BE_FROM_10_TO_255,
+        },
+      },
+
+      default_address: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.DEFAULT_ADDRESS_IS_REQUIRED,
+        },
+        isBoolean: {
+          errorMessage: USER_MESSAGES.DEFAULT_ADDRESS_MUST_BE_BOOLEAN,
+        },
+      },
+      phone_number: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_REQUIRED,
+        },
+        trim: true,
+        isString: {
+          errorMessage: USER_MESSAGES.PHONE_NUMBER_MUST_BE_STRING,
+        },
+        isMobilePhone: {
+          options: ['vi-VN'],
+          errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_INVALID,
+        },
+      },
+    },
+    ['body'],
+  ),
+);
