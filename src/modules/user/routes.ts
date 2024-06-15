@@ -22,6 +22,7 @@ import {
   updateMeController,
   accessTokenController,
   addAddressController,
+  getAllAddressesController,
 } from './controllers';
 import { refreshTokenController } from './controllers';
 
@@ -53,4 +54,5 @@ userRouter.get(
   addAddressValidator,
   wrapAsync(addAddressController),
 );
+userRouter.get('/addresses', accessTokenValidator, wrapAsync(getAllAddressesController));
 export default userRouter;
