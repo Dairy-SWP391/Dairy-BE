@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { wrapAsync } from '~/utils/handler';
 import {
   accessTokenValidator,
+  addAddressValidator,
   forgotPasswordValidator,
   loginValidator,
   registerValidator,
@@ -18,6 +19,7 @@ import {
   getMeController,
   resetPasswordController,
   updateMeController,
+  addAddressController,
 } from './controllers';
 
 const userRouter = Router();
@@ -39,4 +41,11 @@ userRouter.post(
 userRouter.get('/oauth/google', wrapAsync(oAuthController));
 userRouter.get('/me', accessTokenValidator, wrapAsync(getMeController));
 userRouter.patch('/me', accessTokenValidator, updateMeValidator, wrapAsync(updateMeController));
+
+userRouter.get(
+  '/add-address',
+  accessTokenValidator,
+  addAddressValidator,
+  wrapAsync(addAddressController),
+);
 export default userRouter;
