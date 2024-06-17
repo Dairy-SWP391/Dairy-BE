@@ -422,10 +422,12 @@ export const getProductsByCategorySortAndPaginateValidator = validate(
         },
         custom: {
           options: (value) => {
-            const validSortFields = ['price', 'rating_point', 'sold'];
+            const validSortFields = ['price', 'rating_point', 'sold', 'discount'];
             // nếu truyền sort_by mà không phải là price, rating_point, sold
             if (value && !validSortFields.includes(value)) {
-              throw new Error(PRODUCT_MESSAGES.SORT_BY_MUST_BASED_ON_PRICE_RATING_POINT_SOLD);
+              throw new Error(
+                PRODUCT_MESSAGES.SORT_BY_MUST_BASED_ON_PRICE_RATING_POINT_SOLD_DISCOUNT,
+              );
             }
             return true;
           },

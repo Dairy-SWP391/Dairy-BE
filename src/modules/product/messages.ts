@@ -66,7 +66,8 @@ export const PRODUCT_MESSAGES = {
   CATEGORY_ID_NOT_FOUND: 'Category id not found',
   NUM_OF_PRODUCT_IS_REQUIRED: 'Num of product is required',
   PAGE_IS_REQUIRED: 'Page is required',
-  SORT_BY_MUST_BASED_ON_PRICE_RATING_POINT_SOLD:
-    'Sort by must be based on price, rating point, sold',
+  SORT_BY_MUST_BASED_ON_PRICE_RATING_POINT_SOLD_DISCOUNT:
+    'Sort by must be based on price, rating point, sold, discount',
+
   ORDER_BY_MUST_BE_ASC_OR_DESC: 'Order by must be ASC or DESC',
 } as const;
