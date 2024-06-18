@@ -1,0 +1,21 @@
+export const POST_MESSAGES = {
+  // add post
+  TITLE_IS_REQUIRED: 'Title is required',
+  TITLE_LENGTH_MUST_BE_BETWEEN_1_AND_191_CHARS: 'Title length must be between 1 and 191 chars',
+  CONTENT_MUST_BE_BETWEEN_1_AND_191_CHARS: 'Content must be between 1 and 191 chars',
+  CONTENT_MUST_BE_STRING: 'Content must be a string',
+  INVALID_CATEGORY_ID: 'Invalid category id',
+  CREATOR_ID_IS_REQUIRED: 'Creator id is required',
+  CONTENT_IS_REQUIRED: 'Content is required',
+  CREATOR_ID_MUST_BE_STRING: 'Creator id must be a string',
+  CREATOR_ID_MUST_MATCH_USER_ID_IN_ACCESS_TOKEN: 'Creator id must match user id in access token',
+  IMAGE_URL_MUST_BE_A_STRING: 'Image url must be a string',
+  IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400: 'Image url length must be from 1 to 400',
+  POST_CATOGERY_ID_IS_REQUIRED: 'Post category id is required',
+  POST_CATOGORY_ID_MUST_BE_A_NUMBER: 'Post category id must be a number',
+  POST_CATOGORY_ID_NOT_FOUND: 'Post category id not found',
+  POST_CREATED_SUCCESSFULLY: 'Post created successfully',
+  IMAGES_MUST_BE_ARRAY: 'Images must be an array',
+  IMAGES_MUST_BE_NOT_EMPTY: 'Images must be not empty',
+  IMAGES_MUST_BE_URL: 'Images must be URL',
+};
