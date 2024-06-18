@@ -71,6 +71,7 @@ model Product {
   description     String?          @db.LongText
   status          products_status  @default(ACTIVE)
   category_id     Int
+  ship_category_id SHIP_CATEGORY_ID
   OrderDetail     OrderDetail[]
   ProductPricing  ProductPricing[]
   brand           Brand            @relation(fields: [brand_id], references: [id])
@@ -80,6 +81,11 @@ model Product {
   @@index([brand_id], map: "products_brand_id_fkey")
   @@index([category_id], map: "products_category_id_fkey")
   @@map("products")
+}
+
+enum SHIP_CATEGORY_ID {
+  BABY
+  MOMY
 }
 
 model Brand {
