@@ -76,6 +76,17 @@ class UserService {
 
   async getUserByEmail(email: string) {
     return await DatabaseInstance.getPrismaInstance().user.findUnique({
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        phone_number: true,
+        email: true,
+        created_at: true,
+        updated_at: true,
+        role: true,
+        status: true,
+      },
       where: {
         email,
       },

@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum SHIP_CATEGORY_ID {
+  BABY
+  MOMY
+}
+
 model User {
   id                    String         @id
   first_name            String
@@ -76,7 +81,8 @@ model Product {
   brand           Brand            @relation(fields: [brand_id], references: [id])
   category        Category         @relation(fields: [category_id], references: [id])
   WishList        WishList[]
-
+  ship_category_id SHIP_CATEGORY_ID
+  
   @@index([brand_id], map: "products_brand_id_fkey")
   @@index([category_id], map: "products_category_id_fkey")
   @@map("products")

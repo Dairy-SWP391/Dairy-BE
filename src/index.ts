@@ -6,6 +6,7 @@ import userRouter from './modules/user/routes';
 import categoryRouter from './modules/category/routes';
 import productRouter from './modules/product/routes';
 import ImageRouter from './modules/image/routes';
+import shipRouter from './modules/ship/routes';
 
 config();
 
@@ -44,6 +45,8 @@ app.use('/category', categoryRouter);
 app.use('/product', productRouter);
 
 app.use('/image', ImageRouter);
+
+app.use('/ship', shipRouter);
 // error handler
 app.use(defaultErrorHandler);
 

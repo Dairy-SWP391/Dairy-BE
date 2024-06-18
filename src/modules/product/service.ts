@@ -34,6 +34,7 @@ class ProductService {
       description,
       instruction,
       category_id,
+      ship_category_id,
     } = payload;
 
     const product = await DatabaseInstance.getPrismaInstance().product.create({
@@ -54,6 +55,7 @@ class ProductService {
         description,
         instruction,
         category_id,
+        ship_category_id,
       },
     });
 
