@@ -40,3 +40,7 @@ export interface UpdateMeReqBody {
   avatar_url?: string;
   address?: string;
 }
+export interface UpdateUserReqBody {
+  user_id: string;
+  status: UserVerifyStatus;
+}
