@@ -116,4 +116,12 @@ export const USER_MESSAGES = {
   ACCESS_TOKEN_IS_INVALID: 'Access token is invalid',
   GET_ALL_USERS_SUCCESS: 'Get all users successfully',
   USER_IS_NOT_AUTHORIZED: 'User is not authorized',
+
+  // update user
+  USER_ID_IS_REQUIRED: 'User id is required',
+  USER_ID_MUST_BE_STRING: 'User id must be a string',
+  STATUS_IS_REQUIRED: 'Status is required',
+  UPDATE_USER_SUCCESS: 'Update user successfully',
+  USER_CANNOT_BE_UPDATED: 'User cannot be updated',
+  STATUS_MUST_BE_UNVERIFIED_VERIFIED_BANNED: 'Status must be unverified, verified, banned',
 } as const;

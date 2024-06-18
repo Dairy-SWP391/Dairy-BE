@@ -537,7 +537,7 @@ export const roleValidator = validate(
                 secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
               });
               const { user_id } = decoded_authorization as TokenPayload;
-              console.log('user_id: ', user_id);
+              req.decoded_authorization = decoded_authorization;
 
               // lấy ra user từ database
               const user = await DatabaseInstance.getPrismaInstance().user.findUnique({
@@ -559,7 +559,6 @@ export const roleValidator = validate(
                 });
               }
               req.role = user.role as string;
-              console.log('role: ', req.role);
             } catch (error) {
               throw new ErrorWithStatus({
                 message: (error as JsonWebTokenError).message,
@@ -572,5 +571,63 @@ export const roleValidator = validate(
       },
     },
     ['headers'],
+  ),
+);
+export const updateUserValidator = validate(
+  checkSchema(
+    {
+      user_id: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.USER_ID_IS_REQUIRED,
+        },
+        trim: true,
+        isString: {
+          errorMessage: USER_MESSAGES.USER_ID_MUST_BE_STRING,
+        },
+        custom: {
+          options: async (value, { req }) => {
+            const updateUser = await DatabaseInstance.getPrismaInstance().user.findUnique({
+              where: {
+                id: value,
+              },
+            });
+            if (!updateUser) {
+              throw new Error(USER_MESSAGES.USER_NOT_FOUND);
+            }
+
+            if (updateUser.role === ROLE.ADMIN) {
+              throw new ErrorWithStatus({
+                status: HTTP_STATUS.UNAUTHORIZED,
+                message: USER_MESSAGES.USER_CANNOT_BE_UPDATED,
+              });
+            }
+
+            if (req.role === ROLE.STAFF && updateUser.role === ROLE.STAFF) {
+              throw new ErrorWithStatus({
+                status: HTTP_STATUS.UNAUTHORIZED,
+                message: USER_MESSAGES.USER_CANNOT_BE_UPDATED,
+              });
+            }
+            return true;
+          },
+        },
+      },
+      status: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.STATUS_IS_REQUIRED,
+        },
+        trim: true,
+        custom: {
+          options: (value) => {
+            const fields = ['unverified', 'verified', 'banned'];
+            if (value && !fields.includes(value)) {
+              throw new Error(USER_MESSAGES.STATUS_MUST_BE_UNVERIFIED_VERIFIED_BANNED);
+            }
+            return true;
+          },
+        },
+      },
+    },
+    ['body'],
   ),
 );

@@ -1,7 +1,7 @@
 import { signToken, verifyToken } from '~/utils/jwt';
 import { TokenType, UserVerifyStatus } from './enum';
 import { DatabaseInstance } from '~/database/database.services';
-import { RegisterReqBody, UpdateMeReqBody } from './requests';
+import { RegisterReqBody, UpdateMeReqBody, UpdateUserReqBody } from './requests';
 import { hashPassword } from '~/utils/crypto';
 import { ROLE, USER_STATUS } from '@prisma/client';
 import { generateId } from '~/utils/utils';
@@ -9,6 +9,7 @@ import axios from 'axios';
 import { ErrorWithStatus } from '../error/entityError';
 import HTTP_STATUS from '~/constants/httpsStatus';
 import { USER_MESSAGES } from './messages';
+import { upperCase } from 'lodash';
 
 class UserService {
   private decodeRefreshToken(refresh_token: string) {
@@ -305,6 +306,17 @@ class UserService {
         },
       });
     }
+  }
+
+  async updateUser(payload: UpdateUserReqBody) {
+    return await DatabaseInstance.getPrismaInstance().user.update({
+      where: {
+        id: payload.user_id,
+      },
+      data: {
+        status: upperCase(payload.status) as USER_STATUS,
+      },
+    });
   }
 }
 const userService = new UserService();

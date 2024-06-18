@@ -5,6 +5,7 @@ import {
   RegisterReqBody,
   TokenPayload,
   UpdateMeReqBody,
+  UpdateUserReqBody,
 } from './requests';
 import { ParamsDictionary } from 'express-serve-static-core';
 import userService from './service';
@@ -152,6 +153,16 @@ export const getAllUsersController = async (req: Request, res: Response) => {
   const result = await userService.getAllUsers(role);
   return res.json({
     message: USER_MESSAGES.GET_ALL_USERS_SUCCESS,
+    result: result,
+  });
+};
+export const updateUsersController = async (
+  req: Request<ParamsDictionary, any, UpdateUserReqBody>,
+  res: Response,
+) => {
+  const result = await userService.updateUser(req.body);
+  return res.json({
+    message: USER_MESSAGES.UPDATE_USER_SUCCESS,
     result: result,
   });
 };
