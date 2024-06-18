@@ -318,6 +318,29 @@ class UserService {
       },
     });
   }
+
+  async deleteUser(user_id: string) {
+    await DatabaseInstance.getPrismaInstance().address.deleteMany({
+      where: {
+        user_id,
+      },
+    });
+    await DatabaseInstance.getPrismaInstance().order.deleteMany({
+      where: {
+        user_id,
+      },
+    });
+    await DatabaseInstance.getPrismaInstance().refreshToken.deleteMany({
+      where: {
+        user_id,
+      },
+    });
+    return await DatabaseInstance.getPrismaInstance().user.delete({
+      where: {
+        id: user_id,
+      },
+    });
+  }
 }
 const userService = new UserService();
 export default userService;

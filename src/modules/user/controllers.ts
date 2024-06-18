@@ -6,6 +6,7 @@ import {
   TokenPayload,
   UpdateMeReqBody,
   UpdateUserReqBody,
+  deleteUserReqBody,
 } from './requests';
 import { ParamsDictionary } from 'express-serve-static-core';
 import userService from './service';
@@ -163,6 +164,17 @@ export const updateUsersController = async (
   const result = await userService.updateUser(req.body);
   return res.json({
     message: USER_MESSAGES.UPDATE_USER_SUCCESS,
+    result: result,
+  });
+};
+export const deleteUserController = async (
+  req: Request<ParamsDictionary, any, deleteUserReqBody>,
+  res: Response,
+) => {
+  const { user_id } = req.body;
+  const result = await userService.deleteUser(user_id);
+  return res.json({
+    message: USER_MESSAGES.DELETE_USER_SUCCESS,
     result: result,
   });
 };

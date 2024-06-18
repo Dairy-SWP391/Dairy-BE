@@ -13,6 +13,7 @@ import {
   verifyForgotPasswordTokenValidator,
   roleValidator,
   updateUserValidator,
+  deleteUserValidator,
 } from './middlewares';
 import {
   registerController,
@@ -29,6 +30,7 @@ import {
   getAllUsersController,
   getAllAddressesController,
   updateUsersController,
+  deleteUserController,
 } from './controllers';
 import { refreshTokenController } from './controllers';
 
@@ -74,5 +76,11 @@ userRouter.patch(
   roleValidator,
   updateUserValidator,
   wrapAsync(updateUsersController),
+);
+userRouter.delete(
+  '/delete-user',
+  roleValidator,
+  deleteUserValidator,
+  wrapAsync(deleteUserController),
 );
 export default userRouter;

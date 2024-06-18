@@ -44,3 +44,6 @@ export interface UpdateUserReqBody {
   user_id: string;
   status: UserVerifyStatus;
 }
+export interface deleteUserReqBody {
+  user_id: string;
+}
