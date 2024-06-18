@@ -530,6 +530,7 @@ export const roleValidator = validate(
                 status: HTTP_STATUS.UNAUTHORIZED,
               });
             }
+
             // kiểm tra xem access_token có tồn tại trong database không
             try {
               const decoded_authorization = await verifyToken({
@@ -537,7 +538,6 @@ export const roleValidator = validate(
                 secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
               });
               const { user_id } = decoded_authorization as TokenPayload;
-              req.decoded_authorization = decoded_authorization;
 
               // lấy ra user từ database
               const user = await DatabaseInstance.getPrismaInstance().user.findUnique({
@@ -558,6 +558,8 @@ export const roleValidator = validate(
                   status: HTTP_STATUS.UNAUTHORIZED,
                 });
               }
+
+              req.decoded_authorization = decoded_authorization;
               req.role = user.role as string;
             } catch (error) {
               throw new ErrorWithStatus({
@@ -622,6 +624,50 @@ export const updateUserValidator = validate(
             const fields = ['unverified', 'verified', 'banned'];
             if (value && !fields.includes(value)) {
               throw new Error(USER_MESSAGES.STATUS_MUST_BE_UNVERIFIED_VERIFIED_BANNED);
+            }
+            return true;
+          },
+        },
+      },
+    },
+    ['body'],
+  ),
+);
+
+export const deleteUserValidator = validate(
+  checkSchema(
+    {
+      user_id: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.USER_ID_IS_REQUIRED,
+        },
+        trim: true,
+        isString: {
+          errorMessage: USER_MESSAGES.USER_ID_MUST_BE_STRING,
+        },
+        custom: {
+          options: async (value, { req }) => {
+            const deleteUser = await DatabaseInstance.getPrismaInstance().user.findUnique({
+              where: {
+                id: value,
+              },
+            });
+            if (!deleteUser) {
+              throw new Error(USER_MESSAGES.USER_NOT_FOUND);
+            }
+
+            if (deleteUser.role === ROLE.ADMIN) {
+              throw new ErrorWithStatus({
+                status: HTTP_STATUS.UNAUTHORIZED,
+                message: USER_MESSAGES.USER_CANNOT_BE_DELETED,
+              });
+            }
+
+            if (req.role === ROLE.STAFF && deleteUser.role === ROLE.STAFF) {
+              throw new ErrorWithStatus({
+                status: HTTP_STATUS.UNAUTHORIZED,
+                message: USER_MESSAGES.USER_CANNOT_BE_DELETED,
+              });
             }
             return true;
           },
