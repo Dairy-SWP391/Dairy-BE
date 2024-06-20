@@ -166,6 +166,7 @@ class UserService {
         email: true,
         created_at: true,
         updated_at: true,
+        avatar_url: true,
         role: true,
         status: true,
       },
