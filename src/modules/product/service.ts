@@ -718,6 +718,87 @@ class ProductService {
       });
     return this.getProductWithImages(productsWithParentCategoryId);
   }
+
+  async searchProduct(search: string, num_of_items_per_page: number, page: number) {
+    const products = await DatabaseInstance.getPrismaInstance().product.findMany({
+      where: {
+        name: {
+          contains: search,
+        },
+      },
+      include: {
+        category: {
+          select: {
+            parent_category_id: true,
+          },
+        },
+      },
+    });
+
+    const productsWithImages = await Promise.all(
+      products.map(async (product) => {
+        const images = await DatabaseInstance.getPrismaInstance().image.findMany({
+          where: {
+            parent_id: product.id,
+            parent_type: IMAGE_PARENT_TYPE.PRODUCT,
+          },
+          select: {
+            image_url: true,
+          },
+        });
+
+        const imageUrls = images.map((image) => image.image_url);
+
+        return {
+          ...product,
+          image_urls: imageUrls,
+        };
+      }),
+    );
+    const productsWithPriceDetails = await Promise.all(
+      productsWithImages.map(async (item) => {
+        const productPricing = await productPricingsService.getProductPrice(item.id);
+
+        const { price, sale_price, starting_timestamp, ending_timestamp } = productPricing;
+        return {
+          ...item,
+          parent_category_id: item.category.parent_category_id,
+          price,
+          sale_price,
+          starting_timestamp,
+          ending_timestamp,
+        };
+      }),
+    );
+    const productsWithParentCategoryId = productsWithPriceDetails.map((product) => {
+      const { category, ...rest } = product;
+      return {
+        ...rest,
+        parent_category_id: category.parent_category_id,
+      };
+    });
+
+    // có phân trang
+    if (num_of_items_per_page) {
+      const totalPage = Math.ceil(productsWithParentCategoryId.length / num_of_items_per_page);
+      if (page > totalPage) {
+        return [];
+      } else if (page == totalPage) {
+        const skip = (page - 1) * num_of_items_per_page;
+        return productsWithParentCategoryId.splice(
+          skip,
+          productsWithParentCategoryId.length - skip,
+        );
+      } else {
+        const skip = (page - 1) * num_of_items_per_page;
+        return productsWithParentCategoryId.splice(skip, num_of_items_per_page);
+      }
+    } else if (page > 1) {
+      return [];
+    }
+
+    return productsWithParentCategoryId;
+  }
 }
 
 const productService = new ProductService();
