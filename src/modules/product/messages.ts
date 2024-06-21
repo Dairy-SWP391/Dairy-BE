@@ -73,4 +73,12 @@ export const PRODUCT_MESSAGES = {
     'Sort by must be based on price, rating point, sold, discount',
 
   ORDER_BY_MUST_BE_ASC_OR_DESC: 'Order by must be ASC or DESC',
+
+  // search product
+  SEARCH_IS_REQUIRED: 'Search is required',
+  SEARCH_MUST_BE_STRING: 'Search must be a string',
+  SEARCH_LENGTH_MUST_BE_FROM_1_TO_50: 'Search length must be from 1 to 50',
+  NUM_OF_ITEMS_PER_PAGE_IS_REQUIRED: 'Num of items per page is required',
+  NUM_OF_ITEMS_PER_PAGE_MUST_BE_A_NUMBER: 'Num of items per page must be a number',
+  SEARCH_PRODUCT_SUCCESS: 'search products successfully',
 } as const;
