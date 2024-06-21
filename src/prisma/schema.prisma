@@ -83,7 +83,6 @@ model Product {
   category        Category         @relation(fields: [category_id], references: [id])
   WishList        WishList[]
   ship_category_id SHIP_CATEGORY_ID
-  SHIP_CATEGORY_ID
 
   @@index([brand_id], map: "products_brand_id_fkey")
   @@index([category_id], map: "products_category_id_fkey")
