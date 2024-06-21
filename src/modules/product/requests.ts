@@ -22,7 +22,7 @@ export interface AddProductBodyReq {
   sale_price: number;
   starting_timestamp: Date;
   ending_timestamp?: Date;
-  ship_category_id: products_ship_category_id;
+  ship_category_id: 'BABY' | 'MOMY';
 }
 export interface getProductsByCategorySortAndPaginateBodyReq {
   parent_category_id: number;

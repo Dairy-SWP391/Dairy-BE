@@ -275,6 +275,8 @@ export const verifyForgotPasswordTokenValidator = validate(
     ['body'],
   ),
 );
+
+// hàm này có có vấn đề, nó log ra terminal [object Object] khi có lỗi từ jwt hết hạn
 export const accessTokenValidator = validate(
   checkSchema(
     {

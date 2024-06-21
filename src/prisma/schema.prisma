@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum SHIP_CATEGORY_ID {
+  BABY
+  MOMY
+}
+
 model User {
   id                    String         @id
   first_name            String
@@ -53,31 +58,32 @@ model Address {
 }
 
 model Product {
-  id               Int                       @id @default(autoincrement())
-  name             String
-  quantity         Int
-  rating_number    Int
-  rating_point     Float
-  brand_id         Int
-  origin           String?
-  producer         String?
-  manufactured_at  String?
-  target           String?
-  volume           Int?
-  weight           Int?
-  sold             Int                       @default(0)
-  caution          String?                   @db.LongText
-  instruction      String?                   @db.LongText
-  preservation     String?                   @db.LongText
-  description      String?                   @db.LongText
-  status           products_status           @default(ACTIVE)
-  category_id      Int
-  ship_category_id products_ship_category_id
-  OrderDetail      OrderDetail[]
-  ProductPricing   ProductPricing[]
-  brand            Brand                     @relation(fields: [brand_id], references: [id])
-  category         Category                  @relation(fields: [category_id], references: [id])
-  WishList         WishList[]
+  id              Int              @id @default(autoincrement())
+  name            String
+  quantity        Int
+  rating_number   Int
+  rating_point    Float
+  brand_id        Int
+  origin          String?
+  producer        String?
+  manufactured_at String?
+  target          String?
+  volume          Int?
+  weight          Int?
+  sold            Int              @default(0)
+  caution         String?          @db.LongText
+  instruction     String?          @db.LongText
+  preservation    String?          @db.LongText
+  description     String?          @db.LongText
+  status          products_status  @default(ACTIVE)
+  category_id     Int
+  OrderDetail     OrderDetail[]
+  ProductPricing  ProductPricing[]
+  brand           Brand            @relation(fields: [brand_id], references: [id])
+  category        Category         @relation(fields: [category_id], references: [id])
+  WishList        WishList[]
+  ship_category_id SHIP_CATEGORY_ID
+  SHIP_CATEGORY_ID
 
   @@index([brand_id], map: "products_brand_id_fkey")
   @@index([category_id], map: "products_category_id_fkey")
