@@ -50,6 +50,9 @@ export const PRODUCT_MESSAGES = {
   STARTING_TIMESTAMP_IS_REQUIRED: 'Starting timestamp is required',
   STARTING_TIMESTAMP_MUST_BE_A_DATE: 'Starting timestamp must be a date',
   ENDING_TIMESTAMP_MUST_BE_A_DATE: 'Ending timestamp must be a date',
+  SHIP_CATEGORY_ID_IS_REQUIRED: 'Ship category id is required',
+  SHIP_CATEGORY_ID_MUST_BE_A__STRING: 'Ship category id must be a string',
+  SHIP_CATEGORY_ID_MUST_BE_BABY_OR_MOM: 'Ship category id must be BABY or MOMY',
   // get product based on category, sorting, pagination
   PARENT_CATEGORY_ID_IS_REQUIRED: 'Parent category id is required',
   PARENT_CATEGORY_ID_NOT_FOUND: 'Parent category id not found',
@@ -66,7 +69,8 @@ export const PRODUCT_MESSAGES = {
   CATEGORY_ID_NOT_FOUND: 'Category id not found',
   NUM_OF_PRODUCT_IS_REQUIRED: 'Num of product is required',
   PAGE_IS_REQUIRED: 'Page is required',
-  SORT_BY_MUST_BASED_ON_PRICE_RATING_POINT_SOLD:
-    'Sort by must be based on price, rating point, sold',
+  SORT_BY_MUST_BASED_ON_PRICE_RATING_POINT_SOLD_DISCOUNT:
+    'Sort by must be based on price, rating point, sold, discount',
+
   ORDER_BY_MUST_BE_ASC_OR_DESC: 'Order by must be ASC or DESC',
 } as const;

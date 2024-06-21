@@ -2,12 +2,18 @@ import { Router } from 'express';
 import { wrapAsync } from '~/utils/handler';
 import {
   accessTokenValidator,
+  addAddressValidator,
   forgotPasswordValidator,
   loginValidator,
+  refreshTokenValidator,
   registerValidator,
   resetPasswordValidator,
+  updateAddressValidator,
   updateMeValidator,
   verifyForgotPasswordTokenValidator,
+  roleValidator,
+  updateUserValidator,
+  deleteUserValidator,
 } from './middlewares';
 import {
   registerController,
@@ -18,7 +24,15 @@ import {
   getMeController,
   resetPasswordController,
   updateMeController,
+  accessTokenController,
+  addAddressController,
+  updateAddressController,
+  getAllUsersController,
+  getAllAddressesController,
+  updateUsersController,
+  deleteUserController,
 } from './controllers';
+import { refreshTokenController } from './controllers';
 
 const userRouter = Router();
 
@@ -39,4 +53,34 @@ userRouter.post(
 userRouter.get('/oauth/google', wrapAsync(oAuthController));
 userRouter.get('/me', accessTokenValidator, wrapAsync(getMeController));
 userRouter.patch('/me', accessTokenValidator, updateMeValidator, wrapAsync(updateMeController));
+userRouter.post('/refresh-token', refreshTokenValidator, wrapAsync(refreshTokenController));
+userRouter.get('/access-token', refreshTokenValidator, wrapAsync(accessTokenController));
+
+userRouter.get(
+  '/add-address',
+  accessTokenValidator,
+  addAddressValidator,
+  wrapAsync(addAddressController),
+);
+userRouter.get('/addresses', accessTokenValidator, wrapAsync(getAllAddressesController));
+
+userRouter.patch(
+  '/address',
+  accessTokenValidator,
+  updateAddressValidator,
+  wrapAsync(updateAddressController),
+);
+userRouter.get('/users', roleValidator, wrapAsync(getAllUsersController));
+userRouter.patch(
+  '/update-user',
+  roleValidator,
+  updateUserValidator,
+  wrapAsync(updateUsersController),
+);
+userRouter.delete(
+  '/delete-user',
+  roleValidator,
+  deleteUserValidator,
+  wrapAsync(deleteUserController),
+);
 export default userRouter;

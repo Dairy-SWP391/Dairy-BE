@@ -6,7 +6,7 @@ import HTTP_STATUS from '~/constants/httpsStatus';
 import { verifyToken } from '~/utils/jwt';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { DatabaseInstance } from '~/database/database.services';
-import { ROLE } from '@prisma/client';
+import { ROLE, products_ship_category_id } from '@prisma/client';
 
 const nameSchema: ParamSchema = {
   trim: true,
@@ -279,6 +279,23 @@ const endingTimestampSchema: ParamSchema = {
     errorMessage: PRODUCT_MESSAGES.ENDING_TIMESTAMP_MUST_BE_A_DATE,
   },
 };
+
+const shipCategoryIDSchema: ParamSchema = {
+  notEmpty: {
+    errorMessage: PRODUCT_MESSAGES.SHIP_CATEGORY_ID_IS_REQUIRED,
+  },
+  trim: true,
+  isString: {
+    errorMessage: PRODUCT_MESSAGES.SHIP_CATEGORY_ID_MUST_BE_A__STRING,
+  },
+  custom: {
+    options: async (value) => {
+      if (value !== products_ship_category_id.BABY && value !== products_ship_category_id.MOMY) {
+        throw new Error(PRODUCT_MESSAGES.SHIP_CATEGORY_ID_MUST_BE_BABY_OR_MOM);
+      }
+    },
+  },
+};
 export const roleValidator = validate(
   checkSchema(
     {
@@ -363,6 +380,7 @@ export const addProductValidator = validate(
       sale_price: salePriceSchema,
       starting_timestamp: startingTimestampSchema,
       ending_timestamp: endingTimestampSchema,
+      ship_category_id: shipCategoryIDSchema,
     },
     ['body'],
   ),
@@ -422,10 +440,12 @@ export const getProductsByCategorySortAndPaginateValidator = validate(
         },
         custom: {
           options: (value) => {
-            const validSortFields = ['price', 'rating_point', 'sold'];
+            const validSortFields = ['price', 'rating_point', 'sold', 'discount'];
             // nếu truyền sort_by mà không phải là price, rating_point, sold
             if (value && !validSortFields.includes(value)) {
-              throw new Error(PRODUCT_MESSAGES.SORT_BY_MUST_BASED_ON_PRICE_RATING_POINT_SOLD);
+              throw new Error(
+                PRODUCT_MESSAGES.SORT_BY_MUST_BASED_ON_PRICE_RATING_POINT_SOLD_DISCOUNT,
+              );
             }
             return true;
           },

@@ -117,6 +117,23 @@ class ProductService {
             // nếu page > tổng số trang thì trả về rỗng
             return [];
           }
+        } else if (payload.sort_by === 'discount') {
+          // giảm giá
+          const products = await this.getProductByParentCategoryIdAndSortByDiscount(payload);
+          if (payload.page == totalPage) {
+            // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
+            const skip = (payload.page - 1) * payload.num_of_items_per_page;
+            const res = products.splice(skip, payload.num_of_product - skip);
+            return res;
+          } else if (payload.page < totalPage) {
+            // nếu không phải trang cuối cùng thì lấy số sản phẩm theo số sản phẩm trên 1 trang
+            const skip = (payload.page - 1) * payload.num_of_items_per_page;
+            const res = products.splice(skip, payload.num_of_items_per_page);
+            return res;
+          } else {
+            // nếu page > tổng số trang thì trả về rỗng
+            return [];
+          }
         } else {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
           // sắp xếp theo rating_point | sold | id
@@ -156,9 +173,24 @@ class ProductService {
             // nếu page > tổng số trang thì trả về rỗng
             return [];
           }
+        } else if (payload.sort_by === 'discount') {
+          // giảm giá
+          const products = await this.getProductByCategoryIDAndSortByDiscount(payload);
+          if (payload.page == totalPage) {
+            const skip = (payload.page - 1) * payload.num_of_items_per_page;
+            const res = products.splice(skip, payload.num_of_product - skip);
+            return res;
+          } else if (payload.page < totalPage) {
+            const skip = (payload.page - 1) * payload.num_of_items_per_page;
+            const res = products.splice(skip, payload.num_of_items_per_page);
+            return res;
+          } else {
+            return [];
+          }
         } else {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
           // sắp xếp theo rating_point | sold | id
+
           const products = await this.getProductByCategoryIDAndSortByRatingPoint_Sold_ID(payload);
           if (payload.page == totalPage) {
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
@@ -179,6 +211,12 @@ class ProductService {
         // nếu không có category_id thì lấy tất cả category
         if (payload.sort_by === 'price') {
           const products = await this.getProductByParentCategoryIdAndSortByPrice(payload);
+          if (payload.num_of_product < products.length) {
+            return products.slice(0, payload.num_of_product);
+          }
+          return products;
+        } else if (payload.sort_by === 'discount') {
+          const products = await this.getProductByParentCategoryIdAndSortByDiscount(payload);
           if (payload.num_of_product < products.length) {
             return products.slice(0, payload.num_of_product);
           }
@@ -220,6 +258,14 @@ class ProductService {
             }),
           );
           return productsWithImages;
+        } else if (payload.sort_by === 'discount') {
+          const products = await this.getProductByCategoryIDAndSortByDiscount(payload);
+
+          if (payload.num_of_product < products.length) {
+            return products.slice(0, payload.num_of_product);
+          }
+
+          return products;
         } else {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
           const products = await this.getProductByCategoryIDAndSortByRatingPoint_Sold_ID(payload);
@@ -240,7 +286,12 @@ class ProductService {
     const products = await DatabaseInstance.getPrismaInstance().product.findMany({
       where: {
         category: {
-          parent_category_id: payload.parent_category_id,
+          parent_category_id:
+            payload.parent_category_id !== 0
+              ? payload.parent_category_id
+              : {
+                  not: null,
+                },
         },
       },
       include: {
@@ -301,7 +352,12 @@ class ProductService {
     const products = await DatabaseInstance.getPrismaInstance().product.findMany({
       where: {
         category: {
-          parent_category_id: payload.parent_category_id,
+          parent_category_id:
+            payload.parent_category_id !== 0
+              ? payload.parent_category_id
+              : {
+                  not: null,
+                },
         },
       },
       include: {
@@ -379,7 +435,6 @@ class ProductService {
         },
       },
     });
-
     if (payload.order_by === 'ASC' || !payload.order_by) {
       products.sort((a, b) => a.ProductPricing[0].price - b.ProductPricing[0].price);
     } else {
@@ -401,6 +456,7 @@ class ProductService {
         };
       }),
     );
+
     const productsWithParentCategoryId = productsWithPriceDetails.map((product) => {
       const { category, ...rest } = product;
       return {
@@ -408,6 +464,7 @@ class ProductService {
         parent_category_id: category.parent_category_id,
       };
     });
+
     return this.getProductWithImages(productsWithParentCategoryId);
   }
 
@@ -492,6 +549,174 @@ class ProductService {
       }),
     );
     return productsWithImages;
+  }
+
+  async getProductByCategoryIDAndSortByDiscount(
+    payload: getProductsByCategorySortAndPaginateBodyReq,
+  ) {
+    const products = await DatabaseInstance.getPrismaInstance().product.findMany({
+      where: {
+        category: {
+          id: payload.category_id,
+        },
+      },
+      include: {
+        ProductPricing: {
+          distinct: ['product_id'],
+          orderBy: [
+            {
+              starting_timestamp: 'desc',
+            },
+          ],
+          select: {
+            price: true,
+          },
+        },
+        category: {
+          select: {
+            parent_category_id: true,
+          },
+        },
+      },
+    });
+
+    const productsWithPriceDetails = await Promise.all(
+      products.map(async (item) => {
+        const productPricing = await productPricingsService.getProductPrice(item.id);
+
+        const { price, sale_price, starting_timestamp, ending_timestamp } = productPricing;
+        return {
+          ...item,
+          parent_category_id: item.category.parent_category_id,
+          price,
+          sale_price,
+          starting_timestamp,
+          ending_timestamp,
+        };
+      }),
+    );
+
+    const productsWithParentCategoryId = productsWithPriceDetails.map((product) => {
+      const { category, ...rest } = product;
+      return {
+        ...rest,
+        parent_category_id: category.parent_category_id,
+      };
+    });
+
+    const discounts: number[] = [];
+
+    await Promise.all(
+      productsWithParentCategoryId.map(async (product) => {
+        if (product.price && typeof product.price !== 'undefined') {
+          const discount = product.sale_price
+            ? ((product.price - product.sale_price) / product.price) * 100
+            : 0;
+
+          discounts.push(discount);
+        }
+      }),
+    );
+    if (payload.order_by === 'ASC' || !payload.order_by) {
+      productsWithParentCategoryId.sort((a, b) => {
+        const discountA = discounts[productsWithParentCategoryId.indexOf(a)];
+        const discountB = discounts[productsWithParentCategoryId.indexOf(b)];
+        return discountA - discountB;
+      });
+    } else
+      productsWithParentCategoryId.sort((a, b) => {
+        const discountA = discounts[productsWithParentCategoryId.indexOf(a)];
+        const discountB = discounts[productsWithParentCategoryId.indexOf(b)];
+        return discountB - discountA;
+      });
+
+    return this.getProductWithImages(productsWithParentCategoryId);
+  }
+
+  async getProductByParentCategoryIdAndSortByDiscount(
+    payload: getProductsByCategorySortAndPaginateBodyReq,
+  ) {
+    const products = await DatabaseInstance.getPrismaInstance().product.findMany({
+      where: {
+        category: {
+          parent_category_id:
+            payload.parent_category_id !== 0
+              ? payload.parent_category_id
+              : {
+                  not: null,
+                },
+        },
+      },
+      include: {
+        ProductPricing: {
+          distinct: ['product_id'],
+          orderBy: [
+            {
+              starting_timestamp: 'desc',
+            },
+          ],
+
+          select: {
+            price: true,
+          },
+        },
+        category: {
+          select: {
+            parent_category_id: true,
+          },
+        },
+      },
+    });
+
+    const productsWithPriceDetails = await Promise.all(
+      products.map(async (item) => {
+        const productPricing = await productPricingsService.getProductPrice(item.id);
+
+        const { price, sale_price, starting_timestamp, ending_timestamp } = productPricing;
+        return {
+          ...item,
+          parent_category_id: item.category.parent_category_id,
+          price,
+          sale_price,
+          starting_timestamp,
+          ending_timestamp,
+        };
+      }),
+    );
+
+    const productsWithParentCategoryId = productsWithPriceDetails.map((product) => {
+      const { category, ...rest } = product;
+      return {
+        ...rest,
+        parent_category_id: category.parent_category_id,
+      };
+    });
+    const discounts: number[] = [];
+
+    await Promise.all(
+      productsWithParentCategoryId.map(async (product) => {
+        if (product.price && typeof product.price !== 'undefined') {
+          const discount = product.sale_price
+            ? ((product.price - product.sale_price) / product.price) * 100
+            : 0;
+
+          discounts.push(discount);
+        }
+      }),
+    );
+    if (payload.order_by === 'ASC' || !payload.order_by) {
+      productsWithParentCategoryId.sort((a, b) => {
+        const discountA = discounts[productsWithParentCategoryId.indexOf(a)];
+        const discountB = discounts[productsWithParentCategoryId.indexOf(b)];
+        return discountA - discountB;
+      });
+    } else
+      productsWithParentCategoryId.sort((a, b) => {
+        const discountA = discounts[productsWithParentCategoryId.indexOf(a)];
+        const discountB = discounts[productsWithParentCategoryId.indexOf(b)];
+        return discountB - discountA;
+      });
+    return this.getProductWithImages(productsWithParentCategoryId);
   }
 }
 

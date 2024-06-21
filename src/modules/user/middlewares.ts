@@ -10,6 +10,8 @@ import { JsonWebTokenError } from 'jsonwebtoken';
 import HTTP_STATUS from '~/constants/httpsStatus';
 import { TokenPayload } from './requests';
 import { Request } from 'express';
+import { REFRESH_TOKEN_MESSAGES } from '../refreshToken/messages';
+import { ROLE } from '@prisma/client';
 
 export const emailSchema: ParamSchema = {
   trim: true,
@@ -133,10 +135,10 @@ const confirmPasswordSchema: ParamSchema = {
   },
 };
 const addressSchema: ParamSchema = {
+  trim: true,
   isString: {
     errorMessage: USER_MESSAGES.ADDRESS_MUST_BE_STRING,
   },
-  trim: true,
   optional: true,
   notEmpty: undefined,
 };
@@ -332,6 +334,346 @@ export const updateMeValidator = validate(
       avatar_url: {
         ...imageSchema,
         notEmpty: undefined,
+      },
+    },
+    ['body'],
+  ),
+);
+export const refreshTokenValidator = validate(
+  checkSchema(
+    {
+      refresh_token: {
+        notEmpty: {
+          errorMessage: REFRESH_TOKEN_MESSAGES.REFRESH_TOKEN_IS_REQUIRED,
+        },
+        trim: true,
+        custom: {
+          options: async (value: string, { req }) => {
+            // 1. verify refresh_token này xem có phải của server tạo ra không
+            try {
+              const [decoded_refresh_token, refresh_token] = await Promise.all([
+                verifyToken({
+                  token: value,
+                  secretOrPublicKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
+                }),
+                DatabaseInstance.getPrismaInstance().refreshToken.findUnique({
+                  where: { token: value },
+                }),
+              ]);
+
+              if (refresh_token === null) {
+                throw new ErrorWithStatus({
+                  message: REFRESH_TOKEN_MESSAGES.REFRESH_TOKEN_DOES_NOT_EXIST,
+                  status: HTTP_STATUS.UNAUTHORIZED,
+                });
+              }
+              req.decoded_refresh_token = decoded_refresh_token;
+            } catch (error) {
+              // nếu lỗi phát sinh trong quá trinh verify thì mình tạo thành lỗi có status
+              if (error instanceof JsonWebTokenError) {
+                throw new ErrorWithStatus({
+                  message: REFRESH_TOKEN_MESSAGES.REFRESH_TOKEN_IS_INVALID,
+                  status: HTTP_STATUS.UNAUTHORIZED,
+                });
+              }
+              // nếu lỗi không phải dạng JsonWebTokenError
+              throw error;
+            }
+            return true;
+          },
+        },
+      },
+    },
+    ['body'],
+  ),
+);
+export const addAddressValidator = validate(
+  checkSchema(
+    {
+      user_id: {
+        custom: {
+          options: async (value, { req }) => {
+            const { user_id } = req.decoded_authorization;
+
+            if (value !== user_id) {
+              throw new Error(USER_MESSAGES.USER_ID_MUST_MATCH_USER_ID_IN_TOKEN);
+            }
+            const user = await DatabaseInstance.getPrismaInstance().user.findUnique({
+              where: {
+                id: value,
+              },
+            });
+            if (!user) {
+              throw new Error(USER_MESSAGES.USER_NOT_FOUND);
+            }
+
+            return true;
+          },
+        },
+      },
+      name: firstnameSchema,
+      address: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.ADDRESS_IS_REQUIRED,
+        },
+        isString: {
+          errorMessage: USER_MESSAGES.ADDRESS_MUST_BE_STRING,
+        },
+        trim: true,
+        isLength: {
+          options: {
+            min: 10,
+            max: 255,
+          },
+          errorMessage: USER_MESSAGES.ADDRESS_LENGTH_MUST_BE_FROM_10_TO_255,
+        },
+      },
+
+      default_address: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.DEFAULT_ADDRESS_IS_REQUIRED,
+        },
+        isBoolean: {
+          errorMessage: USER_MESSAGES.DEFAULT_ADDRESS_MUST_BE_BOOLEAN,
+        },
+      },
+      phone_number: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_REQUIRED,
+        },
+        trim: true,
+        isString: {
+          errorMessage: USER_MESSAGES.PHONE_NUMBER_MUST_BE_STRING,
+        },
+        isMobilePhone: {
+          options: ['vi-VN'],
+          errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_INVALID,
+        },
+      },
+    },
+    ['body'],
+  ),
+);
+export const updateAddressValidator = validate(
+  checkSchema(
+    {
+      id: {
+        custom: {
+          options: async (value, { req }) => {
+            const id = await DatabaseInstance.getPrismaInstance().address.findUnique({
+              where: {
+                id: value,
+              },
+            });
+            if (!id || id.user_id !== req.decoded_authorization.user_id) {
+              throw new Error(USER_MESSAGES.ID_NOT_FOUND);
+            }
+
+            return true;
+          },
+        },
+      },
+      name: firstnameSchema,
+      address: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.ADDRESS_IS_REQUIRED,
+        },
+        isString: {
+          errorMessage: USER_MESSAGES.ADDRESS_MUST_BE_STRING,
+        },
+        trim: true,
+        isLength: {
+          options: {
+            min: 10,
+            max: 255,
+          },
+          errorMessage: USER_MESSAGES.ADDRESS_LENGTH_MUST_BE_FROM_10_TO_255,
+        },
+      },
+
+      default_address: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.DEFAULT_ADDRESS_IS_REQUIRED,
+        },
+        isBoolean: {
+          errorMessage: USER_MESSAGES.DEFAULT_ADDRESS_MUST_BE_BOOLEAN,
+        },
+      },
+      phone_number: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_REQUIRED,
+        },
+        trim: true,
+        isString: {
+          errorMessage: USER_MESSAGES.PHONE_NUMBER_MUST_BE_STRING,
+        },
+        isMobilePhone: {
+          options: ['vi-VN'],
+          errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_INVALID,
+        },
+      },
+    },
+    ['body'],
+  ),
+);
+export const roleValidator = validate(
+  checkSchema(
+    {
+      Authorization: {
+        trim: true,
+        custom: {
+          options: async (value, { req }) => {
+            // lấy ra access_token từ header
+            const access_token = value.split(' ')[1];
+            // kiểm tra xem access_token có được truyền không
+            if (!access_token) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUIRED,
+                status: HTTP_STATUS.UNAUTHORIZED,
+              });
+            }
+
+            // kiểm tra xem access_token có tồn tại trong database không
+            try {
+              const decoded_authorization = await verifyToken({
+                token: access_token,
+                secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
+              });
+              const { user_id } = decoded_authorization as TokenPayload;
+
+              // lấy ra user từ database
+              const user = await DatabaseInstance.getPrismaInstance().user.findUnique({
+                where: {
+                  id: user_id,
+                },
+              });
+              if (!user) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.ACCESS_TOKEN_IS_INVALID,
+                  status: HTTP_STATUS.UNAUTHORIZED,
+                });
+              }
+
+              if (user.role === ROLE.MEMBER) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.USER_IS_NOT_AUTHORIZED,
+                  status: HTTP_STATUS.UNAUTHORIZED,
+                });
+              }
+
+              req.decoded_authorization = decoded_authorization;
+              req.role = user.role as string;
+            } catch (error) {
+              throw new ErrorWithStatus({
+                message: (error as JsonWebTokenError).message,
+                status: HTTP_STATUS.UNAUTHORIZED,
+              });
+            }
+            return true;
+          },
+        },
+      },
+    },
+    ['headers'],
+  ),
+);
+export const updateUserValidator = validate(
+  checkSchema(
+    {
+      user_id: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.USER_ID_IS_REQUIRED,
+        },
+        trim: true,
+        isString: {
+          errorMessage: USER_MESSAGES.USER_ID_MUST_BE_STRING,
+        },
+        custom: {
+          options: async (value, { req }) => {
+            const updateUser = await DatabaseInstance.getPrismaInstance().user.findUnique({
+              where: {
+                id: value,
+              },
+            });
+            if (!updateUser) {
+              throw new Error(USER_MESSAGES.USER_NOT_FOUND);
+            }
+
+            if (updateUser.role === ROLE.ADMIN) {
+              throw new ErrorWithStatus({
+                status: HTTP_STATUS.UNAUTHORIZED,
+                message: USER_MESSAGES.USER_CANNOT_BE_UPDATED,
+              });
+            }
+
+            if (req.role === ROLE.STAFF && updateUser.role === ROLE.STAFF) {
+              throw new ErrorWithStatus({
+                status: HTTP_STATUS.UNAUTHORIZED,
+                message: USER_MESSAGES.USER_CANNOT_BE_UPDATED,
+              });
+            }
+            return true;
+          },
+        },
+      },
+      status: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.STATUS_IS_REQUIRED,
+        },
+        trim: true,
+        custom: {
+          options: (value) => {
+            const fields = ['unverified', 'verified', 'banned'];
+            if (value && !fields.includes(value)) {
+              throw new Error(USER_MESSAGES.STATUS_MUST_BE_UNVERIFIED_VERIFIED_BANNED);
+            }
+            return true;
+          },
+        },
+      },
+    },
+    ['body'],
+  ),
+);
+
+export const deleteUserValidator = validate(
+  checkSchema(
+    {
+      user_id: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.USER_ID_IS_REQUIRED,
+        },
+        trim: true,
+        isString: {
+          errorMessage: USER_MESSAGES.USER_ID_MUST_BE_STRING,
+        },
+        custom: {
+          options: async (value, { req }) => {
+            const deleteUser = await DatabaseInstance.getPrismaInstance().user.findUnique({
+              where: {
+                id: value,
+              },
+            });
+            if (!deleteUser) {
+              throw new Error(USER_MESSAGES.USER_NOT_FOUND);
+            }
+
+            if (deleteUser.role === ROLE.ADMIN) {
+              throw new ErrorWithStatus({
+                status: HTTP_STATUS.UNAUTHORIZED,
+                message: USER_MESSAGES.USER_CANNOT_BE_DELETED,
+              });
+            }
+
+            if (req.role === ROLE.STAFF && deleteUser.role === ROLE.STAFF) {
+              throw new ErrorWithStatus({
+                status: HTTP_STATUS.UNAUTHORIZED,
+                message: USER_MESSAGES.USER_CANNOT_BE_DELETED,
+              });
+            }
+            return true;
+          },
+        },
       },
     },
     ['body'],

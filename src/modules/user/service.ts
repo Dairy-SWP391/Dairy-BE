@@ -1,14 +1,15 @@
 import { signToken, verifyToken } from '~/utils/jwt';
 import { TokenType, UserVerifyStatus } from './enum';
 import { DatabaseInstance } from '~/database/database.services';
-import { RegisterReqBody, UpdateMeReqBody } from './requests';
+import { RegisterReqBody, UpdateMeReqBody, UpdateUserReqBody } from './requests';
 import { hashPassword } from '~/utils/crypto';
-import { USER_STATUS } from '@prisma/client';
+import { ROLE, USER_STATUS } from '@prisma/client';
 import { generateId } from '~/utils/utils';
 import axios from 'axios';
 import { ErrorWithStatus } from '../error/entityError';
 import HTTP_STATUS from '~/constants/httpsStatus';
 import { USER_MESSAGES } from './messages';
+import { upperCase } from 'lodash';
 
 class UserService {
   private decodeRefreshToken(refresh_token: string) {
@@ -176,6 +177,7 @@ class UserService {
         email: true,
         created_at: true,
         updated_at: true,
+        avatar_url: true,
         role: true,
         status: true,
       },
@@ -287,6 +289,67 @@ class UserService {
       data: {
         ...payload,
         updated_at: new Date(),
+      },
+    });
+  }
+
+  async getAccessToken(user_id: string, verify: USER_STATUS) {
+    const access_token = await this.signAccessToken({
+      user_id,
+      verify,
+    });
+
+    return { access_token };
+  }
+
+  async getAllUsers(role: string) {
+    if (role === ROLE.ADMIN) {
+      return await DatabaseInstance.getPrismaInstance().user.findMany({
+        where: {
+          role: {
+            not: ROLE.ADMIN,
+          },
+        },
+      });
+    } else {
+      return await DatabaseInstance.getPrismaInstance().user.findMany({
+        where: {
+          role: ROLE.MEMBER,
+        },
+      });
+    }
+  }
+
+  async updateUser(payload: UpdateUserReqBody) {
+    return await DatabaseInstance.getPrismaInstance().user.update({
+      where: {
+        id: payload.user_id,
+      },
+      data: {
+        status: upperCase(payload.status) as USER_STATUS,
+      },
+    });
+  }
+
+  async deleteUser(user_id: string) {
+    await DatabaseInstance.getPrismaInstance().address.deleteMany({
+      where: {
+        user_id,
+      },
+    });
+    await DatabaseInstance.getPrismaInstance().order.deleteMany({
+      where: {
+        user_id,
+      },
+    });
+    await DatabaseInstance.getPrismaInstance().refreshToken.deleteMany({
+      where: {
+        user_id,
+      },
+    });
+    return await DatabaseInstance.getPrismaInstance().user.delete({
+      where: {
+        id: user_id,
       },
     });
   }

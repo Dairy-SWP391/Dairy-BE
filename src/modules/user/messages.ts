@@ -92,4 +92,40 @@ export const USER_MESSAGES = {
   // image
   IMAGE_URL_MUST_BE_A_STRING: 'Image url must be a string',
   IMAGE_URL_LENGTH_MUST_BE_FROM_1_TO_400: 'Image url length must be between 1 and 400 characters',
+
+  // get access token
+  GET_ACCESS_TOKEN_SUCCESS: 'Get access token successfully',
+
+  // add address
+  DEFAULT_ADDRESS_MUST_BE_BOOLEAN: 'Default address must be a boolean',
+  ADD_ADDRESS_SUCCESS: 'Add address successfully',
+  USER_ID_MUST_MATCH_USER_ID_IN_TOKEN: 'User id must match user id in token',
+  ADDRESS_IS_REQUIRED: 'Address is required',
+  DEFAULT_ADDRESS_IS_REQUIRED: 'Default address is required',
+  ADDRESS_LENGTH_MUST_BE_FROM_10_TO_255: 'Address length must be between 10 and 255 characters',
+
+  // get all addresses of users
+  GET_ALL_ADDRESSES_SUCCESS: 'Get all addresses successfully',
+
+  // update address
+  UPDATE_ADDRESS_SUCCESS: 'Update address successfully',
+  ID_NOT_FOUND: 'Id is not found',
+  ADDRESS_NOT_FOUND: 'Address is not found',
+
+  // get all users
+  ACCESS_TOKEN_IS_INVALID: 'Access token is invalid',
+  GET_ALL_USERS_SUCCESS: 'Get all users successfully',
+  USER_IS_NOT_AUTHORIZED: 'User is not authorized',
+
+  // update user
+  USER_ID_IS_REQUIRED: 'User id is required',
+  USER_ID_MUST_BE_STRING: 'User id must be a string',
+  STATUS_IS_REQUIRED: 'Status is required',
+  UPDATE_USER_SUCCESS: 'Update user successfully',
+  USER_CANNOT_BE_UPDATED: 'User cannot be updated',
+  STATUS_MUST_BE_UNVERIFIED_VERIFIED_BANNED: 'Status must be unverified, verified, banned',
+
+  // delete user
+  DELETE_USER_SUCCESS: 'Delete user successfully',
+  USER_CANNOT_BE_DELETED: 'User cannot be deleted',
 } as const;

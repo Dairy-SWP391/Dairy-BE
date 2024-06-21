@@ -1,3 +1,5 @@
+import { products_ship_category_id } from '@prisma/client';
+
 export interface AddProductBodyReq {
   name: string;
   quantity: number;
