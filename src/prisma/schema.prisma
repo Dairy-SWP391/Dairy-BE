@@ -28,6 +28,7 @@ model User {
   Feedback              Feedback[]
   Notification          Notification[]
   Order                 Order[]
+  otps                  otps[]
   Post                  Post[]
   RefreshToken          RefreshToken[]
   HandlerReports        Report[]       @relation("Handler")
@@ -52,30 +53,31 @@ model Address {
 }
 
 model Product {
-  id              Int              @id @default(autoincrement())
-  name            String
-  quantity        Int
-  rating_number   Int
-  rating_point    Float
-  brand_id        Int
-  origin          String?
-  producer        String?
-  manufactured_at String?
-  target          String?
-  volume          Int?
-  weight          Int?
-  sold            Int              @default(0)
-  caution         String?          @db.LongText
-  instruction     String?          @db.LongText
-  preservation    String?          @db.LongText
-  description     String?          @db.LongText
-  status          products_status  @default(ACTIVE)
-  category_id     Int
-  OrderDetail     OrderDetail[]
-  ProductPricing  ProductPricing[]
-  brand           Brand            @relation(fields: [brand_id], references: [id])
-  category        Category         @relation(fields: [category_id], references: [id])
-  WishList        WishList[]
+  id               Int                       @id @default(autoincrement())
+  name             String
+  quantity         Int
+  rating_number    Int
+  rating_point     Float
+  brand_id         Int
+  origin           String?
+  producer         String?
+  manufactured_at  String?
+  target           String?
+  volume           Int?
+  weight           Int?
+  sold             Int                       @default(0)
+  caution          String?                   @db.LongText
+  instruction      String?                   @db.LongText
+  preservation     String?                   @db.LongText
+  description      String?                   @db.LongText
+  status           products_status           @default(ACTIVE)
+  category_id      Int
+  ship_category_id products_ship_category_id
+  OrderDetail      OrderDetail[]
+  ProductPricing   ProductPricing[]
+  brand            Brand                     @relation(fields: [brand_id], references: [id])
+  category         Category                  @relation(fields: [category_id], references: [id])
+  WishList         WishList[]
 
   @@index([brand_id], map: "products_brand_id_fkey")
   @@index([category_id], map: "products_category_id_fkey")
@@ -307,6 +309,17 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
+model otps {
+  id         Int      @id @default(autoincrement())
+  otp        String
+  user_id    String
+  created_at DateTime @default(now())
+  count      Int
+  users      User     @relation(fields: [user_id], references: [id])
+
+  @@index([user_id], map: "otps_user_id_fkey")
+}
+
 enum USER_STATUS {
   UNVERIFIED
   VERIFIED
@@ -339,4 +352,9 @@ enum CHAT_LINE_SENDER {
 enum products_status {
   ACTIVE
   INACTIVE
+}
+
+enum products_ship_category_id {
+  BABY
+  MOMY
 }

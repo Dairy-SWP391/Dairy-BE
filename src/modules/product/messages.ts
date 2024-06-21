@@ -50,6 +50,9 @@ export const PRODUCT_MESSAGES = {
   STARTING_TIMESTAMP_IS_REQUIRED: 'Starting timestamp is required',
   STARTING_TIMESTAMP_MUST_BE_A_DATE: 'Starting timestamp must be a date',
   ENDING_TIMESTAMP_MUST_BE_A_DATE: 'Ending timestamp must be a date',
+  SHIP_CATEGORY_ID_IS_REQUIRED: 'Ship category id is required',
+  SHIP_CATEGORY_ID_MUST_BE_A__STRING: 'Ship category id must be a string',
+  SHIP_CATEGORY_ID_MUST_BE_BABY_OR_MOM: 'Ship category id must be BABY or MOMY',
   // get product based on category, sorting, pagination
   PARENT_CATEGORY_ID_IS_REQUIRED: 'Parent category id is required',
   PARENT_CATEGORY_ID_NOT_FOUND: 'Parent category id not found',

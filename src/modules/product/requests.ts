@@ -1,3 +1,5 @@
+import { products_ship_category_id } from '@prisma/client';
+
 export interface AddProductBodyReq {
   name: string;
   quantity: number;
@@ -20,6 +22,7 @@ export interface AddProductBodyReq {
   sale_price: number;
   starting_timestamp: Date;
   ending_timestamp?: Date;
+  ship_category_id: products_ship_category_id;
 }
 export interface getProductsByCategorySortAndPaginateBodyReq {
   parent_category_id: number;
