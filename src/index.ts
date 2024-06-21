@@ -5,7 +5,6 @@ import { defaultErrorHandler } from './modules/error/middlewares';
 import userRouter from './modules/user/routes';
 import categoryRouter from './modules/category/routes';
 import productRouter from './modules/product/routes';
-import ImageRouter from './modules/image/routes';
 import shipRouter from './modules/ship/routes';
 import postRouter from './modules/post/routes';
 import imageRouter from './modules/image/routes';
