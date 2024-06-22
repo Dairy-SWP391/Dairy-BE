@@ -128,4 +128,12 @@ export const USER_MESSAGES = {
   // delete user
   DELETE_USER_SUCCESS: 'Delete user successfully',
   USER_CANNOT_BE_DELETED: 'User cannot be deleted',
+
+  // add product to wishlist
+  PRODUCT_ID_IS_REQUIRED: 'Product id is required',
+  PRODUCT_ID_MUST_BE_NUMBER: 'Product id must be a number',
+  ADD_PRODUCT_TO_WISHLIST_SUCCESS: 'Add product to wishlist success',
+  PRODUCT_ID_NOT_FOUND: 'Product id is not found',
+  PRODUCT_ALREADY_ADD_TO_WISHLIST: 'Product already add to wishlist',
+  USER_MUST_BE_MEMBER: 'User must be member',
 } as const;

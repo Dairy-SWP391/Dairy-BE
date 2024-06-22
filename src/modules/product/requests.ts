@@ -59,6 +59,3 @@ export interface ProductWithOtherFields {
     price: number;
   }[];
 }
-export interface AddProductToWishListBodyReq {
-  product_id: number;
-}

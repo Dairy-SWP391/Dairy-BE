@@ -5,13 +5,7 @@ import productPricingsService from '../product_pricings/service';
 import brandService from '../brand/service';
 import imageService from '../image/service';
 import { ParamsDictionary } from 'express-serve-static-core';
-import {
-  AddProductBodyReq,
-  AddProductToWishListBodyReq,
-  getProductsByCategorySortAndPaginateBodyReq,
-} from './requests';
-
-import { TokenPayload } from '../user/requests';
+import { AddProductBodyReq, getProductsByCategorySortAndPaginateBodyReq } from './requests';
 
 export const getProductDetailController = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -59,16 +53,4 @@ export const searchProductController = async (req: Request, res: Response) => {
   );
 
   res.json({ message: PRODUCT_MESSAGES.SEARCH_PRODUCT_SUCCESS, data: result });
-};
-
-export const addProductToWishListController = async (
-  req: Request<ParamsDictionary, any, AddProductToWishListBodyReq>,
-  res: Response,
-) => {
-  const { user_id } = req.decoded_authorization as TokenPayload;
-
-  const product_id = req.body.product_id as number;
-
-  const result = await productService.addProductToWishList(user_id, product_id);
-  res.json({ message: PRODUCT_MESSAGES.ADD_PRODUCT_TO_WISHLIST_SUCCESS, data: result });
 };

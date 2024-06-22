@@ -81,11 +81,4 @@ export const PRODUCT_MESSAGES = {
   NUM_OF_ITEMS_PER_PAGE_IS_REQUIRED: 'Num of items per page is required',
   NUM_OF_ITEMS_PER_PAGE_MUST_BE_A_NUMBER: 'Num of items per page must be a number',
   SEARCH_PRODUCT_SUCCESS: 'search products successfully',
-
-  // add product to wishlist
-  PRODUCT_ID_IS_REQUIRED: 'Product id is required',
-  PRODUCT_ID_MUST_BE_NUMBER: 'Product id must be a number',
-  ADD_PRODUCT_TO_WISHLIST_SUCCESS: 'Add product to wishlist success',
-  PRODUCT_ALREADY_ADD_TO_WISHLIST: 'Product already add to wishlist',
-  USER_MUST_BE_MEMBER: 'User must be member',
 } as const;
