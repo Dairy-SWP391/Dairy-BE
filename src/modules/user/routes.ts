@@ -34,8 +34,9 @@ import {
   updateUsersController,
   deleteUserController,
   addProductToWishListController,
+  getWishListController,
+  refreshTokenController,
 } from './controllers';
-import { refreshTokenController } from './controllers';
 
 const userRouter = Router();
 
@@ -86,11 +87,14 @@ userRouter.delete(
   deleteUserValidator,
   wrapAsync(deleteUserController),
 );
+
 userRouter.post(
   '/add-wishlist',
   memberValidator,
   addProductToWishListValidator,
   wrapAsync(addProductToWishListController),
 );
+
+userRouter.get('/wishlist', memberValidator, wrapAsync(getWishListController));
 
 export default userRouter;
