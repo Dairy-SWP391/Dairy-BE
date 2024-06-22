@@ -16,6 +16,7 @@ import {
   deleteUserValidator,
   memberValidator,
   addProductToWishListValidator,
+  deleteProductFromWishListValidator,
 } from './middlewares';
 import {
   registerController,
@@ -36,6 +37,7 @@ import {
   addProductToWishListController,
   getWishListController,
   refreshTokenController,
+  deleteProductFromWishListController,
 } from './controllers';
 
 const userRouter = Router();
@@ -96,5 +98,10 @@ userRouter.post(
 );
 
 userRouter.get('/wishlist', memberValidator, wrapAsync(getWishListController));
-
+userRouter.delete(
+  '/delete-wishlist',
+  memberValidator,
+  deleteProductFromWishListValidator,
+  wrapAsync(deleteProductFromWishListController),
+);
 export default userRouter;

@@ -765,3 +765,34 @@ export const addProductToWishListValidator = validate(
     },
   }),
 );
+export const deleteProductFromWishListValidator = validate(
+  checkSchema({
+    product_id: {
+      notEmpty: { errorMessage: USER_MESSAGES.PRODUCT_ID_IS_REQUIRED },
+      isNumeric: { errorMessage: USER_MESSAGES.PRODUCT_ID_MUST_BE_NUMBER },
+      custom: {
+        options: async (value, { req }) => {
+          const user_id = req.decoded_authorization.user_id;
+          const found = await DatabaseInstance.getPrismaInstance().product.findUnique({
+            where: {
+              id: value,
+            },
+          });
+          if (!found) {
+            throw new Error(USER_MESSAGES.PRODUCT_ID_NOT_FOUND);
+          }
+          const product = await DatabaseInstance.getPrismaInstance().wishList.findFirst({
+            where: {
+              user_id: user_id,
+              product_id: value,
+            },
+          });
+          if (!product) {
+            throw new Error(USER_MESSAGES.PRODUCT_NOT_FOUND_IN_WISHLIST);
+          }
+          return true;
+        },
+      },
+    },
+  }),
+);

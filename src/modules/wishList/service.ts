@@ -77,6 +77,20 @@ class WishlistService {
       },
     });
   }
+
+  async deleteProductFromWishList(user_id: string, product_id: number) {
+    const product = await DatabaseInstance.getPrismaInstance().wishList.findFirst({
+      where: {
+        user_id,
+        product_id,
+      },
+    });
+    return await DatabaseInstance.getPrismaInstance().wishList.delete({
+      where: {
+        id: product?.id,
+      },
+    });
+  }
 }
 const wishlistService = new WishlistService();
 export default wishlistService;
