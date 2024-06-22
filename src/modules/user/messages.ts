@@ -140,4 +140,8 @@ export const USER_MESSAGES = {
 
   // get wishlist
   GET_WISHLIST_SUCCESS: 'Get wishlist success',
+
+  // delete product from wishlist
+  PRODUCT_NOT_FOUND_IN_WISHLIST: 'Product not found in wishlist',
+  DELETE_PRODUCT_FROM_WISHLIST_SUCCESS: 'Delete product from wishlist success',
 } as const;

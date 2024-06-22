@@ -50,3 +50,6 @@ export interface deleteUserReqBody {
 export interface AddProductToWishListBodyReq {
   product_id: number;
 }
+export interface DeleteProductFromWishlistReqBody {
+  product_id: number;
+}

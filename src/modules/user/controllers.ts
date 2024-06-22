@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import {
   AddProductToWishListBodyReq,
+  DeleteProductFromWishlistReqBody,
   ForgotPasswordReqBody,
   LoginRequestBody,
   RegisterReqBody,
@@ -197,4 +198,13 @@ export const getWishListController = async (req: Request, res: Response) => {
 
   const result = await wishlistService.getWishList(user_id);
   res.json({ result, message: USER_MESSAGES.GET_WISHLIST_SUCCESS });
+};
+export const deleteProductFromWishListController = async (
+  req: Request<ParamsDictionary, any, DeleteProductFromWishlistReqBody>,
+  res: Response,
+) => {
+  const { user_id } = req.decoded_authorization as TokenPayload;
+  const product_id = req.body.product_id as number;
+  const result = await wishlistService.deleteProductFromWishList(user_id, product_id);
+  res.json({ message: USER_MESSAGES.DELETE_PRODUCT_FROM_WISHLIST_SUCCESS, result: result });
 };
