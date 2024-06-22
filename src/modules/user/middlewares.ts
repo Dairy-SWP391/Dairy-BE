@@ -679,3 +679,90 @@ export const deleteUserValidator = validate(
     ['body'],
   ),
 );
+export const memberValidator = validate(
+  checkSchema(
+    {
+      Authorization: {
+        trim: true,
+        custom: {
+          options: async (value, { req }) => {
+            const access_token = value.split(' ')[1];
+            if (!access_token) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUIRED,
+                status: HTTP_STATUS.UNAUTHORIZED,
+              });
+            }
+
+            try {
+              const decoded_authorization = await verifyToken({
+                token: access_token,
+                secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
+              });
+              const { user_id } = decoded_authorization;
+
+              const user = await DatabaseInstance.getPrismaInstance().user.findUnique({
+                where: {
+                  id: user_id,
+                },
+              });
+              if (!user) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.ACCESS_TOKEN_IS_INVALID,
+                  status: HTTP_STATUS.UNAUTHORIZED,
+                });
+              }
+
+              if (user.role !== ROLE.MEMBER) {
+                throw new ErrorWithStatus({
+                  message: USER_MESSAGES.USER_MUST_BE_MEMBER,
+                  status: HTTP_STATUS.UNAUTHORIZED,
+                });
+              }
+              req.decoded_authorization = decoded_authorization;
+            } catch (error) {
+              throw new ErrorWithStatus({
+                message: (error as JsonWebTokenError).message,
+                status: HTTP_STATUS.UNAUTHORIZED,
+              });
+            }
+            return true;
+          },
+        },
+      },
+    },
+    ['headers'],
+  ),
+);
+
+export const addProductToWishListValidator = validate(
+  checkSchema({
+    product_id: {
+      notEmpty: { errorMessage: USER_MESSAGES.PRODUCT_ID_IS_REQUIRED },
+      isNumeric: { errorMessage: USER_MESSAGES.PRODUCT_ID_MUST_BE_NUMBER },
+      custom: {
+        options: async (value, { req }) => {
+          const user_id = req.decoded_authorization.user_id;
+          const found = await DatabaseInstance.getPrismaInstance().product.findUnique({
+            where: {
+              id: value,
+            },
+          });
+          if (!found) {
+            throw new Error(USER_MESSAGES.PRODUCT_ID_NOT_FOUND);
+          }
+          const product = await DatabaseInstance.getPrismaInstance().wishList.findFirst({
+            where: {
+              user_id: user_id,
+              product_id: value,
+            },
+          });
+          if (product) {
+            throw new Error(USER_MESSAGES.PRODUCT_ALREADY_ADD_TO_WISHLIST);
+          }
+          return true;
+        },
+      },
+    },
+  }),
+);

@@ -47,3 +47,6 @@ export interface UpdateUserReqBody {
 export interface deleteUserReqBody {
   user_id: string;
 }
+export interface AddProductToWishListBodyReq {
+  product_id: number;
+}

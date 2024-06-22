@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import {
+  AddProductToWishListBodyReq,
   ForgotPasswordReqBody,
   LoginRequestBody,
   RegisterReqBody,
@@ -17,6 +18,7 @@ import { REFRESH_TOKEN_MESSAGES } from '../refreshToken/messages';
 import { RefreshTokenReq } from '../refreshToken/requests';
 import addressService from '../address/services';
 import { AddAddressReqBody, UpdateAddressReqBody } from '../address/requests';
+import wishlistService from '../wishList/service';
 
 export const registerController = async (
   req: Request<ParamsDictionary, any, RegisterReqBody>,
@@ -115,7 +117,6 @@ export const refreshTokenController = async (
   });
 };
 export const accessTokenController = async (req: Request, res: Response) => {
-  console.log(req.decoded_authorization);
   const { user_id, verify } = req.decoded_refresh_token as TokenPayload;
   const result = await userService.getAccessToken(user_id, verify);
   return res.json({
@@ -177,4 +178,15 @@ export const deleteUserController = async (
     message: USER_MESSAGES.DELETE_USER_SUCCESS,
     result: result,
   });
+};
+export const addProductToWishListController = async (
+  req: Request<ParamsDictionary, any, AddProductToWishListBodyReq>,
+  res: Response,
+) => {
+  const { user_id } = req.decoded_authorization as TokenPayload;
+
+  const product_id = req.body.product_id as number;
+
+  const result = await wishlistService.addProductToWishList(user_id, product_id);
+  res.json({ message: USER_MESSAGES.ADD_PRODUCT_TO_WISHLIST_SUCCESS, data: result });
 };

@@ -5,15 +5,12 @@ import {
   getProductsByCategorySortAndPaginateController,
   getProductDetailController,
   searchProductController,
-  addProductToWishListController,
 } from './controllers';
 import {
   roleValidator,
   addProductValidator,
   getProductsByCategorySortAndPaginateValidator,
   searchProductValidator,
-  addProductToWishListValidator,
-  memberValidator,
 } from './middlewares';
 
 const productRouter = Router();
@@ -29,12 +26,6 @@ productRouter.post(
   wrapAsync(getProductsByCategorySortAndPaginateController),
 );
 productRouter.get('/search-product', searchProductValidator, wrapAsync(searchProductController));
-productRouter.get(
-  '/add-wishlist',
-  memberValidator,
-  addProductToWishListValidator,
-  wrapAsync(addProductToWishListController),
-);
 
 productRouter.get('/:id', wrapAsync(getProductDetailController));
 

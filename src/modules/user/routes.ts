@@ -14,6 +14,8 @@ import {
   roleValidator,
   updateUserValidator,
   deleteUserValidator,
+  memberValidator,
+  addProductToWishListValidator,
 } from './middlewares';
 import {
   registerController,
@@ -31,6 +33,7 @@ import {
   getAllAddressesController,
   updateUsersController,
   deleteUserController,
+  addProductToWishListController,
 } from './controllers';
 import { refreshTokenController } from './controllers';
 
@@ -83,4 +86,11 @@ userRouter.delete(
   deleteUserValidator,
   wrapAsync(deleteUserController),
 );
+userRouter.get(
+  '/add-wishlist',
+  memberValidator,
+  addProductToWishListValidator,
+  wrapAsync(addProductToWishListController),
+);
+
 export default userRouter;
