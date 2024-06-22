@@ -86,7 +86,7 @@ userRouter.delete(
   deleteUserValidator,
   wrapAsync(deleteUserController),
 );
-userRouter.get(
+userRouter.post(
   '/add-wishlist',
   memberValidator,
   addProductToWishListValidator,
