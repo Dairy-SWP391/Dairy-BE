@@ -296,6 +296,7 @@ export const accessTokenValidator = validate(
                 token: access_token,
                 secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
               });
+
               req.decoded_authorization = decoded_authorization;
             } catch (error) {
               throw new ErrorWithStatus({
@@ -348,8 +349,7 @@ export const refreshTokenValidator = validate(
         },
         trim: true,
         custom: {
-          options: async (value: string, { req }) => {
-            // 1. verify refresh_token này xem có phải của server tạo ra không
+          options: async (value, { req }) => {
             try {
               const [decoded_refresh_token, refresh_token] = await Promise.all([
                 verifyToken({
@@ -367,16 +367,15 @@ export const refreshTokenValidator = validate(
                   status: HTTP_STATUS.UNAUTHORIZED,
                 });
               }
+
               req.decoded_refresh_token = decoded_refresh_token;
             } catch (error) {
-              // nếu lỗi phát sinh trong quá trinh verify thì mình tạo thành lỗi có status
               if (error instanceof JsonWebTokenError) {
                 throw new ErrorWithStatus({
                   message: REFRESH_TOKEN_MESSAGES.REFRESH_TOKEN_IS_INVALID,
                   status: HTTP_STATUS.UNAUTHORIZED,
                 });
               }
-              // nếu lỗi không phải dạng JsonWebTokenError
               throw error;
             }
             return true;

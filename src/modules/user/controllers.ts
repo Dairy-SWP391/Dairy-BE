@@ -179,6 +179,7 @@ export const deleteUserController = async (
     result: result,
   });
 };
+
 export const addProductToWishListController = async (
   req: Request<ParamsDictionary, any, AddProductToWishListBodyReq>,
   res: Response,
@@ -189,4 +190,11 @@ export const addProductToWishListController = async (
 
   const result = await wishlistService.addProductToWishList(user_id, product_id);
   res.json({ message: USER_MESSAGES.ADD_PRODUCT_TO_WISHLIST_SUCCESS, data: result });
+};
+
+export const getWishListController = async (req: Request, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload;
+
+  const result = await wishlistService.getWishList(user_id);
+  res.json({ result, message: USER_MESSAGES.GET_WISHLIST_SUCCESS });
 };
