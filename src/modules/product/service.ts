@@ -799,6 +799,15 @@ class ProductService {
 
     return productsWithParentCategoryId;
   }
+
+  async addProductToWishList(user_id: string, product_id: number) {
+    return await DatabaseInstance.getPrismaInstance().wishList.create({
+      data: {
+        user_id,
+        product_id,
+      },
+    });
+  }
 }
 
 const productService = new ProductService();
