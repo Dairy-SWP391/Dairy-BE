@@ -93,65 +93,74 @@ class ProductService {
     //   "sort_by": "rating_point",
     //   "order_by": "DESC"
     // }
-
+    let totalPage: number = 1;
     // nếu có items_per_page thì phân trang
     if (payload.num_of_items_per_page) {
       // lấy tổng số trang
-      const totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
+      totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
       // nếu không có category_id thì lấy tất cả category
       if (!payload.category_id) {
         // nếu sắp xếp theo giá thì join với bảng product_pricing
         if (payload.sort_by === 'price') {
           const products = await this.getProductByParentCategoryIdAndSortByPrice(payload);
+          if (products.length < payload.num_of_product) {
+            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          }
           if (payload.page === totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_product - skip);
-            return res;
+            return { totalPage, products: res };
           } else if (payload.page < totalPage) {
             // nếu không phải trang cuối cùng thì lấy số sản phẩm theo số sản phẩm trên 1 trang
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_items_per_page);
-            return res;
+            return { totalPage, products: res };
           } else {
             // nếu page > tổng số trang thì trả về rỗng
-            return [];
+            return { totalPage, products: [] };
           }
         } else if (payload.sort_by === 'discount') {
           // giảm giá
           const products = await this.getProductByParentCategoryIdAndSortByDiscount(payload);
+          if (products.length < payload.num_of_product) {
+            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          }
           if (payload.page == totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_product - skip);
-            return res;
+            return { totalPage, products: res };
           } else if (payload.page < totalPage) {
             // nếu không phải trang cuối cùng thì lấy số sản phẩm theo số sản phẩm trên 1 trang
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_items_per_page);
-            return res;
+            return { totalPage, products: res };
           } else {
             // nếu page > tổng số trang thì trả về rỗng
-            return [];
+            return { totalPage, products: [] };
           }
         } else {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
           // sắp xếp theo rating_point | sold | id
           const products =
             await this.getProductByParentCategoryIdAndSortByRatingPoint_Sold_ID(payload);
+          if (products.length < payload.num_of_product) {
+            totalPage = products.length / payload.num_of_items_per_page;
+          }
           if (payload.page == totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_product - skip);
-            return res;
+            return { totalPage, products: res };
           } else if (payload.page < totalPage) {
             // nếu không phải trang cuối cùng thì lấy số sản phẩm theo số sản phẩm trên 1 trang
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_items_per_page);
-            return res;
+            return { totalPage, products: res };
           } else {
             // nếu page > tổng số trang thì trả về rỗng
-            return [];
+            return { totalPage, products: [] };
           }
         }
       } else {
@@ -159,122 +168,119 @@ class ProductService {
         if (payload.sort_by === 'price') {
           // nếu sắp xếp theo giá thì join với bảng product_pricing
           const products = await this.getProductByCategoryIDAndSortByPrice(payload);
+          if (products.length < payload.num_of_product) {
+            totalPage = products.length / payload.num_of_items_per_page;
+          }
           if (payload.page == totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_product - skip);
-            return res;
+            return { totalPage, products: res };
           } else if (payload.page < totalPage) {
             // nếu không phải trang cuối cùng thì lấy số sản phẩm theo số sản phẩm trên 1 trang
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_items_per_page);
-            return res;
+            return { totalPage, products: res };
           } else {
             // nếu page > tổng số trang thì trả về rỗng
-            return [];
+            return { totalPage, products: [] };
           }
         } else if (payload.sort_by === 'discount') {
           // giảm giá
           const products = await this.getProductByCategoryIDAndSortByDiscount(payload);
+          if (products.length < payload.num_of_product) {
+            totalPage = products.length / payload.num_of_items_per_page;
+          }
           if (payload.page == totalPage) {
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_product - skip);
-            return res;
+            return { totalPage, products: res };
           } else if (payload.page < totalPage) {
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_items_per_page);
-            return res;
+            return { totalPage, products: res };
           } else {
-            return [];
+            return { totalPage, products: [] };
           }
         } else {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
           // sắp xếp theo rating_point | sold | id
-
           const products = await this.getProductByCategoryIDAndSortByRatingPoint_Sold_ID(payload);
+
+          if (products.length < payload.num_of_product) {
+            totalPage = products.length / payload.num_of_items_per_page;
+          }
           if (payload.page == totalPage) {
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_product - skip);
-            return res;
+            return { totalPage, products: res };
           } else if (payload.page < totalPage) {
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_items_per_page);
-            return res;
+            return { totalPage, products: res };
           } else {
-            return [];
+            return { totalPage, products: [] };
           }
         }
       }
     } else {
+      if (payload.page > 1) {
+        return { totalPage, products: [] };
+      }
       // nếu không có items_per_page thì không phân trang
       if (!payload.category_id) {
         // nếu không có category_id thì lấy tất cả category
         if (payload.sort_by === 'price') {
           const products = await this.getProductByParentCategoryIdAndSortByPrice(payload);
+
           if (payload.num_of_product < products.length) {
-            return products.slice(0, payload.num_of_product);
+            const res = products.slice(0, payload.num_of_product);
+            return { totalPage, products: res };
           }
-          return products;
+          return { totalPage, products };
         } else if (payload.sort_by === 'discount') {
           const products = await this.getProductByParentCategoryIdAndSortByDiscount(payload);
           if (payload.num_of_product < products.length) {
-            return products.slice(0, payload.num_of_product);
+            const res = products.slice(0, payload.num_of_product);
+            return { totalPage, products: res };
           }
-          return products;
+          return { totalPage, products };
         } else {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
           const products =
             await this.getProductByParentCategoryIdAndSortByRatingPoint_Sold_ID(payload);
           if (payload.num_of_product < products.length) {
-            return products.slice(0, payload.num_of_product);
+            const res = products.slice(0, payload.num_of_product);
+            return { totalPage, products: res };
           }
-          return products;
+          return { totalPage, products };
         }
       } else {
         // nếu có category_id thì lấy theo category_id
         if (payload.sort_by === 'price') {
           const products = await this.getProductByCategoryIDAndSortByPrice(payload);
-
           if (payload.num_of_product < products.length) {
-            return products.slice(0, payload.num_of_product);
+            const res = products.slice(0, payload.num_of_product);
+            return { totalPage, products: res };
           }
-          const productsWithImages = await Promise.all(
-            products.map(async (product) => {
-              const images = await DatabaseInstance.getPrismaInstance().image.findMany({
-                where: {
-                  parent_id: product.id,
-                  parent_type: IMAGE_PARENT_TYPE.PRODUCT,
-                },
-                select: {
-                  image_url: true,
-                },
-              });
-
-              const imageUrls = images.map((image) => image.image_url);
-              return {
-                ...product,
-                image_urls: imageUrls,
-              };
-            }),
-          );
-          return productsWithImages;
+          return { totalPage, products };
         } else if (payload.sort_by === 'discount') {
           const products = await this.getProductByCategoryIDAndSortByDiscount(payload);
 
           if (payload.num_of_product < products.length) {
-            return products.slice(0, payload.num_of_product);
+            const res = products.slice(0, payload.num_of_product);
+            return { totalPage, products: res };
           }
-
-          return products;
+          return { totalPage, products: products };
         } else {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
           const products = await this.getProductByCategoryIDAndSortByRatingPoint_Sold_ID(payload);
 
           if (payload.num_of_product < products.length) {
-            return products.slice(0, payload.num_of_product);
+            const res = products.slice(0, payload.num_of_product);
+            return { totalPage, products: res };
           }
-
-          return products;
+          return { totalPage, products };
         }
       }
     }
@@ -412,7 +418,6 @@ class ProductService {
     const products = await DatabaseInstance.getPrismaInstance().product.findMany({
       where: {
         category: {
-          parent_category_id: payload.parent_category_id,
           id: payload.category_id,
         },
       },
@@ -474,7 +479,6 @@ class ProductService {
     const products = await DatabaseInstance.getPrismaInstance().product.findMany({
       where: {
         category: {
-          parent_category_id: payload.parent_category_id,
           id: payload.category_id,
         },
       },
@@ -777,27 +781,30 @@ class ProductService {
         parent_category_id: category.parent_category_id,
       };
     });
-
+    let totalPage: number = 1;
     // có phân trang
     if (num_of_items_per_page) {
-      const totalPage = Math.ceil(productsWithParentCategoryId.length / num_of_items_per_page);
+      totalPage = Math.ceil(productsWithParentCategoryId.length / num_of_items_per_page);
+
       if (page > totalPage) {
-        return [];
+        return { totalPage, products: [] };
       } else if (page == totalPage) {
         const skip = (page - 1) * num_of_items_per_page;
-        return productsWithParentCategoryId.splice(
+        const products = productsWithParentCategoryId.splice(
           skip,
           productsWithParentCategoryId.length - skip,
         );
+        return { totalPage, products: products };
       } else {
         const skip = (page - 1) * num_of_items_per_page;
-        return productsWithParentCategoryId.splice(skip, num_of_items_per_page);
+        const products = productsWithParentCategoryId.splice(skip, num_of_items_per_page);
+        return { totalPage, products: products };
       }
     } else if (page > 1) {
-      return [];
+      return { totalPage, products: [] };
     }
 
-    return productsWithParentCategoryId;
+    return { totalPage, products: productsWithParentCategoryId };
   }
 }
 

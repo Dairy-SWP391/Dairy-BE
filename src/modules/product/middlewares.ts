@@ -422,13 +422,11 @@ export const getProductsByCategorySortAndPaginateValidator = validate(
           errorMessage: PRODUCT_MESSAGES.PAGE_MUST_BE_NUMBER,
         },
         custom: {
-          options: (value, { req }) => {
+          options: (value) => {
             if (value <= 0) {
               throw new Error(PRODUCT_MESSAGES.PAGE_MUST_BE_GREATER_THAN_0);
             }
-            if (!req.body.num_of_items_per_page && value > 1) {
-              throw new Error(PRODUCT_MESSAGES.PAGINATION_IS_INVALID);
-            }
+
             return true;
           },
         },
