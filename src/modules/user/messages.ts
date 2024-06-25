@@ -140,6 +140,10 @@ export const USER_MESSAGES = {
 
   // get wishlist
   GET_WISHLIST_SUCCESS: 'Get wishlist success',
+  NUM_OF_ITEMS_PER_PAGE_MUST_BE_NUMBER: 'Num of items per page must be a number',
+  PAGE_IS_REQUIRED: 'Page is required',
+  PAGE_MUST_BE_NUMBER: 'Page must be a number',
+  PAGE_MUST_BE_GREATER_THAN_0: 'Page must be greater than 0',
 
   // delete product from wishlist
   PRODUCT_NOT_FOUND_IN_WISHLIST: 'Product not found in wishlist',

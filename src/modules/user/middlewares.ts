@@ -796,3 +796,32 @@ export const deleteProductFromWishListValidator = validate(
     },
   }),
 );
+export const getWishListValidator = validate(
+  checkSchema(
+    {
+      num_of_items_per_page: {
+        optional: true,
+        isNumeric: {
+          errorMessage: USER_MESSAGES.NUM_OF_ITEMS_PER_PAGE_MUST_BE_NUMBER,
+        },
+      },
+      page: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.PAGE_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: USER_MESSAGES.PAGE_MUST_BE_NUMBER,
+        },
+        custom: {
+          options: (value) => {
+            if (value <= 0) {
+              throw new Error(USER_MESSAGES.PAGE_MUST_BE_GREATER_THAN_0);
+            }
+            return true;
+          },
+        },
+      },
+    },
+    ['query'],
+  ),
+);

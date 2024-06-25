@@ -195,8 +195,12 @@ export const addProductToWishListController = async (
 
 export const getWishListController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload;
-
-  const result = await wishlistService.getWishList(user_id);
+  const { num_of_items_per_page, page } = req.query;
+  const result = await wishlistService.getWishList(
+    user_id,
+    Number(num_of_items_per_page),
+    Number(page),
+  );
   res.json({ result, message: USER_MESSAGES.GET_WISHLIST_SUCCESS });
 };
 export const deleteProductFromWishListController = async (

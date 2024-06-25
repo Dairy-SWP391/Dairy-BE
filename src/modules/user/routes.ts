@@ -17,6 +17,7 @@ import {
   memberValidator,
   addProductToWishListValidator,
   deleteProductFromWishListValidator,
+  getWishListValidator,
 } from './middlewares';
 import {
   registerController,
@@ -97,7 +98,12 @@ userRouter.post(
   wrapAsync(addProductToWishListController),
 );
 
-userRouter.get('/wishlist', memberValidator, wrapAsync(getWishListController));
+userRouter.get(
+  '/wishlist',
+  memberValidator,
+  getWishListValidator,
+  wrapAsync(getWishListController),
+);
 userRouter.delete(
   '/delete-wishlist',
   memberValidator,
