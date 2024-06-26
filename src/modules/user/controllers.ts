@@ -152,8 +152,8 @@ export const updateAddressController = async (
 };
 export const getAllUsersController = async (req: Request, res: Response) => {
   const role = req.role as string;
-
-  const result = await userService.getAllUsers(role);
+  const { num_of_items_per_page, page } = req.query;
+  const result = await userService.getAllUsers(role, Number(num_of_items_per_page), Number(page));
   return res.json({
     message: USER_MESSAGES.GET_ALL_USERS_SUCCESS,
     result: result,

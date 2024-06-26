@@ -18,6 +18,7 @@ import {
   addProductToWishListValidator,
   deleteProductFromWishListValidator,
   getWishListValidator,
+  getAllUsersValidator,
 } from './middlewares';
 import {
   registerController,
@@ -77,7 +78,7 @@ userRouter.patch(
   updateAddressValidator,
   wrapAsync(updateAddressController),
 );
-userRouter.get('/users', roleValidator, wrapAsync(getAllUsersController));
+userRouter.get('/users', roleValidator, getAllUsersValidator, wrapAsync(getAllUsersController));
 userRouter.patch(
   '/update-user',
   roleValidator,
