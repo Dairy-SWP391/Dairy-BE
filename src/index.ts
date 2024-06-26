@@ -8,7 +8,7 @@ import productRouter from './modules/product/routes';
 import shipRouter from './modules/ship/routes';
 import postRouter from './modules/post/routes';
 import imageRouter from './modules/image/routes';
-
+import cartRouter from './modules/cart/routes';
 config();
 
 // env
@@ -50,6 +50,8 @@ app.use('/ship', shipRouter);
 app.use('/image', imageRouter);
 
 app.use('/post', postRouter);
+
+app.use('/cart', cartRouter);
 // error handler
 app.use(defaultErrorHandler);
 
