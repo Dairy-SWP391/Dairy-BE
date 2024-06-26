@@ -304,19 +304,57 @@ class UserService {
 
   async getAllUsers(role: string) {
     if (role === ROLE.ADMIN) {
-      return await DatabaseInstance.getPrismaInstance().user.findMany({
+      const users = await DatabaseInstance.getPrismaInstance().user.findMany({
         where: {
           role: {
             not: ROLE.ADMIN,
           },
         },
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true,
+          phone_number: true,
+          email: true,
+          point: true,
+          role: true,
+          status: true,
+        },
       });
+      return users.map((user) => ({
+        id: user.id,
+        name: `${user.first_name} ${user.last_name}`,
+        phone_number: user.phone_number,
+        email: user.email,
+        point: user.point,
+        role: user.role,
+        status: user.status,
+      }));
     } else {
-      return await DatabaseInstance.getPrismaInstance().user.findMany({
+      const users = await DatabaseInstance.getPrismaInstance().user.findMany({
         where: {
           role: ROLE.MEMBER,
         },
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true,
+          phone_number: true,
+          email: true,
+          point: true,
+          role: true,
+          status: true,
+        },
       });
+      return users.map((user) => ({
+        id: user.id,
+        name: `${user.first_name} ${user.last_name}`,
+        phone_number: user.phone_number,
+        email: user.email,
+        point: user.point,
+        role: user.role,
+        status: user.status,
+      }));
     }
   }
 
