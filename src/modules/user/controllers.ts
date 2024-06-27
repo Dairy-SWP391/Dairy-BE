@@ -154,6 +154,7 @@ export const addAddressController = async (
     result: result,
   });
 };
+
 export const getAllAddressesController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload;
   const result = await addressService.getAllAddresses(user_id);
@@ -162,6 +163,16 @@ export const getAllAddressesController = async (req: Request, res: Response) => 
     result: result,
   });
 };
+
+export const getDefaultAddressController = async (req: Request, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload;
+  const result = await addressService.getDefaultAddress(user_id);
+  return res.json({
+    message: USER_MESSAGES.GET_ALL_ADDRESSES_SUCCESS,
+    result: result,
+  });
+};
+
 export const updateAddressController = async (
   req: Request<ParamsDictionary, any, UpdateAddressReqBody>,
   res: Response,

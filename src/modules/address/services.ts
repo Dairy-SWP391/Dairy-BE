@@ -49,6 +49,26 @@ class AddressService {
     });
   }
 
+  async getDefaultAddress(user_id: string) {
+    const address = await DatabaseInstance.getPrismaInstance().address.findFirst({
+      where: {
+        user_id,
+        default_address: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        phone_number: true,
+        address: true,
+        default_address: true,
+        province_id: true,
+        district_id: true,
+        ward_code: true,
+      },
+    });
+    return address;
+  }
+
   async updateAddress(payload: {
     id: number;
     name: string;
