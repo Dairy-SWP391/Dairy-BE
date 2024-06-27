@@ -129,7 +129,26 @@ export const addAddressController = async (
   req: Request<ParamsDictionary, any, AddAddressReqBody>,
   res: Response,
 ) => {
-  const result = await addressService.addAddress(req.body);
+  const {
+    name,
+    user_id,
+    address,
+    default_address,
+    district_id,
+    phone_number,
+    province_id,
+    ward_code,
+  } = req.body;
+  const result = await addressService.addAddress({
+    name,
+    user_id,
+    address,
+    default_address,
+    phone_number,
+    district_id: Number.parseInt(district_id),
+    province_id: Number.parseInt(province_id),
+    ward_code: Number.parseInt(ward_code),
+  });
   return res.json({
     message: USER_MESSAGES.ADD_ADDRESS_SUCCESS,
     result: result,
@@ -147,7 +166,18 @@ export const updateAddressController = async (
   req: Request<ParamsDictionary, any, UpdateAddressReqBody>,
   res: Response,
 ) => {
-  const result = await addressService.updateAddress(req.body);
+  const { address, default_address, district_id, id, name, phone_number, province_id, ward_code } =
+    req.body;
+  const result = await addressService.updateAddress({
+    address,
+    default_address,
+    id: Number.parseInt(id),
+    name,
+    phone_number,
+    district_id: Number.parseInt(district_id),
+    province_id: Number.parseInt(province_id),
+    ward_code: Number.parseInt(ward_code),
+  });
   return res.json({ message: USER_MESSAGES.UPDATE_ADDRESS_SUCCESS, result: result });
 };
 export const getAllUsersController = async (req: Request, res: Response) => {
