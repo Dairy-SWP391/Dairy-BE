@@ -40,6 +40,7 @@ import {
   getWishListController,
   refreshTokenController,
   deleteProductFromWishListController,
+  getDefaultAddressController,
 } from './controllers';
 
 const userRouter = Router();
@@ -71,6 +72,7 @@ userRouter.post(
   wrapAsync(addAddressController),
 );
 userRouter.get('/addresses', accessTokenValidator, wrapAsync(getAllAddressesController));
+userRouter.get('/default-address', accessTokenValidator, wrapAsync(getDefaultAddressController));
 
 userRouter.patch(
   '/address',
