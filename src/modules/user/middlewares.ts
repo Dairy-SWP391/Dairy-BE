@@ -143,6 +143,25 @@ const addressSchema: ParamSchema = {
   notEmpty: undefined,
 };
 
+export const userIdSchema: ParamSchema = {
+  trim: true,
+  isString: {
+    errorMessage: USER_MESSAGES.USER_ID_MUST_BE_STRING,
+  },
+  notEmpty: {
+    errorMessage: USER_MESSAGES.USER_ID_IS_REQUIRED,
+  },
+  custom: {
+    options: async (value) => {
+      const user = await userService.getUserById(value);
+      if (!user) {
+        throw new Error(USER_MESSAGES.USER_NOT_FOUND);
+      }
+      return true;
+    },
+  },
+};
+
 export const registerValidator = validate(
   checkSchema(
     {
