@@ -4,6 +4,9 @@ export interface AddAddressReqBody {
   address: string;
   default_address: boolean;
   user_id: string;
+  district_id: number;
+  province_id: number;
+  ward_code: number;
 }
 export interface UpdateAddressReqBody {
   id: number;
