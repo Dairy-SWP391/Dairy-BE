@@ -14,4 +14,7 @@ export interface UpdateAddressReqBody {
   phone_number: string;
   address: string;
   default_address: boolean;
+  district_id: number;
+  province_id: number;
+  ward_code: number;
 }
