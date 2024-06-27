@@ -532,7 +532,6 @@ export const updateAddressValidator = validate(
           errorMessage: USER_MESSAGES.ADDRESS_LENGTH_MUST_BE_FROM_10_TO_255,
         },
       },
-
       default_address: {
         notEmpty: {
           errorMessage: USER_MESSAGES.DEFAULT_ADDRESS_IS_REQUIRED,
@@ -552,6 +551,30 @@ export const updateAddressValidator = validate(
         isMobilePhone: {
           options: ['vi-VN'],
           errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_INVALID,
+        },
+      },
+      province_id: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.PROVINCE_ID_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: USER_MESSAGES.PROVINCE_ID_MUST_BE_NUMBER,
+        },
+      },
+      district_id: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.DISTRICT_ID_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: USER_MESSAGES.DISTRICT_ID_MUST_BE_NUMBER,
+        },
+      },
+      ward_code: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.WARD_CODE_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: USER_MESSAGES.WARD_CODE_MUST_BE_NUMBER,
         },
       },
     },

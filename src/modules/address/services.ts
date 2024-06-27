@@ -17,30 +17,56 @@ class AddressService {
         user_id: user_id,
       },
     });
-    return addresses.map((address) => {
+    return addresses.map((item) => {
+      const {
+        id,
+        name,
+        phone_number,
+        address,
+        default_address,
+        province_id,
+        district_id,
+        ward_code,
+      } = item;
       return {
-        id: address.id,
-        name: address.name,
-        phone: address.phone_number,
-        address: address.address,
-        default_address: address.default_address,
+        id,
+        name,
+        phone_number,
+        address,
+        default_address,
+        province_id,
+        district_id,
+        ward_code,
       };
     });
   }
 
   async updateAddress(payload: UpdateAddressReqBody) {
-    const address = await DatabaseInstance.getPrismaInstance().address.update({
+    const {
+      id,
+      name,
+      phone_number,
+      address,
+      default_address,
+      province_id,
+      district_id,
+      ward_code,
+    } = payload;
+    const item = await DatabaseInstance.getPrismaInstance().address.update({
       where: {
-        id: payload.id,
+        id,
       },
       data: {
-        name: payload.name,
-        phone_number: payload.phone_number,
-        address: payload.address,
-        default_address: payload.default_address,
+        name,
+        phone_number,
+        address,
+        default_address,
+        province_id,
+        district_id,
+        ward_code,
       },
     });
-    return address;
+    return item;
   }
 }
 const addressService = new AddressService();
