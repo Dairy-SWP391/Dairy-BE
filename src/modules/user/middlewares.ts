@@ -488,8 +488,8 @@ export const addAddressValidator = validate(
         notEmpty: {
           errorMessage: USER_MESSAGES.WARD_CODE_IS_REQUIRED,
         },
-        isString: {
-          errorMessage: USER_MESSAGES.WARD_CODE_MUST_BE_STRING,
+        isNumeric: {
+          errorMessage: USER_MESSAGES.WARD_CODE_MUST_BE_NUMBER,
         },
       },
     },
