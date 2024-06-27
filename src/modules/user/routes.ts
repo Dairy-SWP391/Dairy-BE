@@ -64,7 +64,7 @@ userRouter.patch('/me', accessTokenValidator, updateMeValidator, wrapAsync(updat
 userRouter.post('/refresh-token', refreshTokenValidator, wrapAsync(refreshTokenController));
 userRouter.get('/access-token', refreshTokenValidator, wrapAsync(accessTokenController));
 
-userRouter.get(
+userRouter.post(
   '/add-address',
   accessTokenValidator,
   addAddressValidator,
