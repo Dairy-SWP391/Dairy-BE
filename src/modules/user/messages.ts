@@ -155,5 +155,5 @@ export const USER_MESSAGES = {
   DISTRICT_ID_IS_REQUIRED: 'District id is required',
   DISTRICT_ID_MUST_BE_NUMBER: 'District id must be a number',
   WARD_CODE_IS_REQUIRED: 'Ward code is required',
-  WARD_CODE_MUST_BE_STRING: 'Ward code must be a string',
+  WARD_CODE_MUST_BE_NUMBER: 'Ward code must be a number',
 } as const;
