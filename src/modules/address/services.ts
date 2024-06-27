@@ -1,8 +1,16 @@
 import { DatabaseInstance } from '~/database/database.services';
-import { AddAddressReqBody, UpdateAddressReqBody } from './requests';
 
 class AddressService {
-  async addAddress(payload: AddAddressReqBody) {
+  async addAddress(payload: {
+    name: string;
+    phone_number: string;
+    address: string;
+    default_address: boolean;
+    user_id: string;
+    district_id: number;
+    province_id: number;
+    ward_code: number;
+  }) {
     const address = await DatabaseInstance.getPrismaInstance().address.create({
       data: {
         ...payload,
@@ -41,7 +49,16 @@ class AddressService {
     });
   }
 
-  async updateAddress(payload: UpdateAddressReqBody) {
+  async updateAddress(payload: {
+    id: number;
+    name: string;
+    phone_number: string;
+    address: string;
+    default_address: boolean;
+    district_id: number;
+    province_id: number;
+    ward_code: number;
+  }) {
     const {
       id,
       name,
