@@ -75,6 +75,25 @@ class UserService {
     ]);
   }
 
+  async getUserById(user_id: string) {
+    return await DatabaseInstance.getPrismaInstance().user.findUnique({
+      where: {
+        id: user_id,
+      },
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        phone_number: true,
+        email: true,
+        created_at: true,
+        updated_at: true,
+        role: true,
+        status: true,
+      },
+    });
+  }
+
   async getUserByEmail(email: string) {
     return await DatabaseInstance.getPrismaInstance().user.findUnique({
       select: {
@@ -390,6 +409,17 @@ class UserService {
     return await DatabaseInstance.getPrismaInstance().user.delete({
       where: {
         id: user_id,
+      },
+    });
+  }
+
+  async getUserRole(user_id: string) {
+    return await DatabaseInstance.getPrismaInstance().user.findUnique({
+      where: {
+        id: user_id,
+      },
+      select: {
+        role: true,
       },
     });
   }
