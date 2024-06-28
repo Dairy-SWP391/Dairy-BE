@@ -61,7 +61,6 @@ shipRouter.post('/wards', getWardsMiddleware, wrapAsync(getWardsController));
 path: /package-services
 method: post
 body:{
-    "from_district": string,
     "to_district": string
 }
 description: lấy ra các hình thức vận chuyển của ghn dành cho tuyến đường từ from_district đến to_district
