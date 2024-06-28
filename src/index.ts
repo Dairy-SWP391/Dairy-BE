@@ -8,6 +8,7 @@ import productRouter from './modules/product/routes';
 import shipRouter from './modules/ship/routes';
 import postRouter from './modules/post/routes';
 import imageRouter from './modules/image/routes';
+import cartRouter from './modules/cart/routes';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import chatRoomService from './modules/chat_room/service';
@@ -112,7 +113,10 @@ app.use('/image', imageRouter);
 
 app.use('/post', postRouter);
 
+app.use('/cart', cartRouter);
+
 app.use('/conversations', chatRoomRouter);
+
 // error handler
 app.use(defaultErrorHandler);
 
