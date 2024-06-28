@@ -18,6 +18,7 @@ import {
   addProductToWishListValidator,
   deleteProductFromWishListValidator,
   getWishListValidator,
+  getAllUsersValidator,
 } from './middlewares';
 import {
   registerController,
@@ -39,6 +40,7 @@ import {
   getWishListController,
   refreshTokenController,
   deleteProductFromWishListController,
+  getDefaultAddressController,
 } from './controllers';
 
 const userRouter = Router();
@@ -63,13 +65,14 @@ userRouter.patch('/me', accessTokenValidator, updateMeValidator, wrapAsync(updat
 userRouter.post('/refresh-token', refreshTokenValidator, wrapAsync(refreshTokenController));
 userRouter.get('/access-token', refreshTokenValidator, wrapAsync(accessTokenController));
 
-userRouter.get(
+userRouter.post(
   '/add-address',
   accessTokenValidator,
   addAddressValidator,
   wrapAsync(addAddressController),
 );
 userRouter.get('/addresses', accessTokenValidator, wrapAsync(getAllAddressesController));
+userRouter.get('/default-address', accessTokenValidator, wrapAsync(getDefaultAddressController));
 
 userRouter.patch(
   '/address',
@@ -77,7 +80,7 @@ userRouter.patch(
   updateAddressValidator,
   wrapAsync(updateAddressController),
 );
-userRouter.get('/users', roleValidator, wrapAsync(getAllUsersController));
+userRouter.get('/users', roleValidator, getAllUsersValidator, wrapAsync(getAllUsersController));
 userRouter.patch(
   '/update-user',
   roleValidator,

@@ -143,6 +143,25 @@ const addressSchema: ParamSchema = {
   notEmpty: undefined,
 };
 
+export const userIdSchema: ParamSchema = {
+  trim: true,
+  isString: {
+    errorMessage: USER_MESSAGES.USER_ID_MUST_BE_STRING,
+  },
+  notEmpty: {
+    errorMessage: USER_MESSAGES.USER_ID_IS_REQUIRED,
+  },
+  custom: {
+    options: async (value) => {
+      const user = await userService.getUserById(value);
+      if (!user) {
+        throw new Error(USER_MESSAGES.USER_NOT_FOUND);
+      }
+      return true;
+    },
+  },
+};
+
 export const registerValidator = validate(
   checkSchema(
     {
@@ -449,6 +468,30 @@ export const addAddressValidator = validate(
           errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_INVALID,
         },
       },
+      province_id: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.PROVINCE_ID_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: USER_MESSAGES.PROVINCE_ID_MUST_BE_NUMBER,
+        },
+      },
+      district_id: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.DISTRICT_ID_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: USER_MESSAGES.DISTRICT_ID_MUST_BE_NUMBER,
+        },
+      },
+      ward_code: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.WARD_CODE_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: USER_MESSAGES.WARD_CODE_MUST_BE_NUMBER,
+        },
+      },
     },
     ['body'],
   ),
@@ -489,7 +532,6 @@ export const updateAddressValidator = validate(
           errorMessage: USER_MESSAGES.ADDRESS_LENGTH_MUST_BE_FROM_10_TO_255,
         },
       },
-
       default_address: {
         notEmpty: {
           errorMessage: USER_MESSAGES.DEFAULT_ADDRESS_IS_REQUIRED,
@@ -509,6 +551,30 @@ export const updateAddressValidator = validate(
         isMobilePhone: {
           options: ['vi-VN'],
           errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_INVALID,
+        },
+      },
+      province_id: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.PROVINCE_ID_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: USER_MESSAGES.PROVINCE_ID_MUST_BE_NUMBER,
+        },
+      },
+      district_id: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.DISTRICT_ID_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: USER_MESSAGES.DISTRICT_ID_MUST_BE_NUMBER,
+        },
+      },
+      ward_code: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.WARD_CODE_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: USER_MESSAGES.WARD_CODE_MUST_BE_NUMBER,
         },
       },
     },
@@ -576,6 +642,37 @@ export const roleValidator = validate(
     ['headers'],
   ),
 );
+
+export const getAllUsersValidator = validate(
+  checkSchema(
+    {
+      num_of_items_per_page: {
+        optional: true,
+        isNumeric: {
+          errorMessage: USER_MESSAGES.NUM_OF_ITEMS_PER_PAGE_MUST_BE_NUMBER,
+        },
+      },
+      page: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.PAGE_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: USER_MESSAGES.PAGE_MUST_BE_NUMBER,
+        },
+        custom: {
+          options: (value) => {
+            if (value <= 0) {
+              throw new Error(USER_MESSAGES.PAGE_MUST_BE_GREATER_THAN_0);
+            }
+            return true;
+          },
+        },
+      },
+    },
+    ['query'],
+  ),
+);
+
 export const updateUserValidator = validate(
   checkSchema(
     {

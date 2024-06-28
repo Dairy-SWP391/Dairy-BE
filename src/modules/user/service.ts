@@ -75,6 +75,25 @@ class UserService {
     ]);
   }
 
+  async getUserById(user_id: string) {
+    return await DatabaseInstance.getPrismaInstance().user.findUnique({
+      where: {
+        id: user_id,
+      },
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        phone_number: true,
+        email: true,
+        created_at: true,
+        updated_at: true,
+        role: true,
+        status: true,
+      },
+    });
+  }
+
   async getUserByEmail(email: string) {
     return await DatabaseInstance.getPrismaInstance().user.findUnique({
       select: {
@@ -302,21 +321,61 @@ class UserService {
     return { access_token };
   }
 
-  async getAllUsers(role: string) {
-    if (role === ROLE.ADMIN) {
-      return await DatabaseInstance.getPrismaInstance().user.findMany({
+  async getAllUsers(role: string, num_of_items_per_page: number, page: number) {
+    const count = await DatabaseInstance.getPrismaInstance().user.count({
+      where: {
+        role: role === ROLE.ADMIN ? { not: ROLE.ADMIN } : ROLE.MEMBER,
+      },
+    });
+
+    if (num_of_items_per_page) {
+      const users = await DatabaseInstance.getPrismaInstance().user.findMany({
         where: {
-          role: {
-            not: ROLE.ADMIN,
-          },
+          role: role === ROLE.ADMIN ? { not: ROLE.ADMIN } : ROLE.MEMBER,
         },
       });
+      const usersWithFullName = users.map((user) => ({
+        id: user.id,
+        name: `${user.first_name} ${user.last_name}`,
+        phone_number: user.phone_number,
+        email: user.email,
+        point: user.point,
+        role: user.role,
+        status: user.status,
+      }));
+
+      const totalPage = Math.ceil(users.length / num_of_items_per_page);
+
+      if (page > totalPage) {
+        return { total_page: totalPage, total_account: count, users: [] };
+      } else if (page === totalPage) {
+        const skip = (page - 1) * num_of_items_per_page;
+        const res = usersWithFullName.splice(skip, users.length - skip);
+        return { total_page: totalPage, total_account: count, users: res };
+      } else {
+        const skip = (page - 1) * num_of_items_per_page;
+        const res = usersWithFullName.splice(skip, num_of_items_per_page);
+        return { total_page: totalPage, total_account: count, users: res };
+      }
     } else {
-      return await DatabaseInstance.getPrismaInstance().user.findMany({
+      const users = await DatabaseInstance.getPrismaInstance().user.findMany({
         where: {
-          role: ROLE.MEMBER,
+          role: role === ROLE.ADMIN ? { not: ROLE.ADMIN } : ROLE.MEMBER,
         },
       });
+      const usersWithFullName = users.map((user) => ({
+        id: user.id,
+        name: `${user.first_name} ${user.last_name}`,
+        phone_number: user.phone_number,
+        email: user.email,
+        point: user.point,
+        role: user.role,
+        status: user.status,
+      }));
+      if (page > 1) {
+        return { total_page: 1, total_account: count, users: [] };
+      }
+      return { total_page: 1, total_account: count, users: usersWithFullName };
     }
   }
 
@@ -350,6 +409,17 @@ class UserService {
     return await DatabaseInstance.getPrismaInstance().user.delete({
       where: {
         id: user_id,
+      },
+    });
+  }
+
+  async getUserRole(user_id: string) {
+    return await DatabaseInstance.getPrismaInstance().user.findUnique({
+      where: {
+        id: user_id,
+      },
+      select: {
+        role: true,
       },
     });
   }
