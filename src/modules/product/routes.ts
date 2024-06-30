@@ -14,13 +14,13 @@ import {
 } from './middlewares';
 
 const productRouter = Router();
-productRouter.get(
+productRouter.post(
   '/add-product',
   roleValidator,
   addProductValidator,
   wrapAsync(addProductController),
 );
-productRouter.post(
+productRouter.get(
   '/get-product',
   getProductsByCategorySortAndPaginateValidator,
   wrapAsync(getProductsByCategorySortAndPaginateController),
