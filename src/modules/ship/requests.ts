@@ -17,6 +17,9 @@ export interface GetFeeReqBody {
   to_district_id: string;
   to_ward_code: string;
   cart_list: CartListItem[];
+  receiver_name: string;
+  phone_number: string;
+  address: string;
 }
 export interface PackageCreateOrderReqBody extends GetFeeReqBody {
   to_phone: string;

@@ -11,7 +11,6 @@ import {
   ProvinceType,
   WardType,
 } from './schema';
-import { GetFeeReqBody } from './requests';
 import { CartListType } from '../order/schema';
 import { DatabaseInstance } from '~/database/database.services';
 import { USER_MESSAGES } from '../user/messages';
@@ -125,7 +124,7 @@ class ShipServices {
   }
 
   async getFee(
-    feeReq: Omit<GetFeeReqBody, 'cart_list'>,
+    feeReq: { service_id: string; to_district_id: string; to_ward_code: string },
     cartList: CartListType,
   ): Promise<GetFeeType> {
     const { service_id, to_district_id, to_ward_code } = feeReq;

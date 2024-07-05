@@ -9,6 +9,7 @@ import { ErrorWithStatus } from '../error/entityError';
 import { ORDER_MESSAGES } from './messages';
 import HTTP_STATUS from '~/constants/httpsStatus';
 import { CartListType } from './schema';
+import { GetFeeType } from '../ship/schema';
 
 config();
 
@@ -69,14 +70,15 @@ class OrderService {
       const isDated = item.ending_timestamp && item.ending_timestamp < new Date();
       return !isDated;
     });
+
     // bỏ những đứa null nếu chúng đã có giảm giá(nếu đã có giảm giá thì chắc chắn còn 2 thằng)
-    productPriceList = productPriceList.filter((item) => {
-      const groupProduct = productPriceList.filter((_item) => _item.product_id == item.product_id);
-      if (groupProduct.length == 2 && item.ending_timestamp == null) {
-        return false;
-      }
-      return true;
-    });
+    // productPriceList = productPriceList.filter((item) => {
+    //   const groupProduct = productPriceList.filter((_item) => _item.product_id == item.product_id);
+    //   if (groupProduct.length == 2 && item.ending_timestamp == null) {
+    //     return false;
+    //   }
+    //   return true;
+    // });
 
     // check Quatity
     const result = [] as {
@@ -84,6 +86,7 @@ class OrderService {
       name: string;
       quantity: number;
       price: number;
+      sale_price: number;
       ship_category_id: string;
       volume: number | null;
       weight: number;
@@ -98,7 +101,16 @@ class OrderService {
         });
       }
       // lấy giá tiền, volume,  weight của từng sản phẩm
-      const price = Number(productPriceList.find((item) => item.product_id === product.id)?.price);
+      const price = Number(
+        productPriceList.find(
+          (item) => item.product_id === product.id && item.ending_timestamp === null,
+        )?.price,
+      );
+      const sale_price = Number(
+        productPriceList.find(
+          (item) => item.product_id === product.id && item.ending_timestamp !== null,
+        )?.price,
+      );
       const productInfor = productList.find((item) => item.id === product.id);
       const volume = productInfor?.volume ? Number(productInfor?.volume) : 10;
       const weight = productInfor?.weight ? Number(productInfor?.weight) : 10;
@@ -106,6 +118,7 @@ class OrderService {
       result.push({
         ...product,
         price,
+        sale_price,
         quantity: Number(prevProduct?.quantity),
         volume: volume,
         weight: weight,
@@ -115,13 +128,69 @@ class OrderService {
     // tính tổng tiền
     let totalMoney = 0;
     result.forEach((item) => {
-      totalMoney += item.price * item.quantity;
+      item.sale_price
+        ? (totalMoney += item.sale_price * item.quantity)
+        : (totalMoney += item.price * item.quantity);
     });
     return {
       cart_list: result,
       allQuality,
       totalMoney,
     };
+  }
+
+  async createOrder({
+    user_id,
+    receiver_name,
+    phone_number,
+    address,
+    cartList,
+    fee,
+  }: {
+    user_id: string;
+    receiver_name: string;
+    phone_number: string;
+    address: string;
+    cartList: CartListType;
+    fee: GetFeeType;
+  }) {
+    const order = await DatabaseInstance.getPrismaInstance().order.create({
+      data: {
+        user_id,
+        receiver_name,
+        phone_number,
+        address,
+        estimate_price: cartList.totalMoney,
+        end_price: cartList.totalMoney + fee.total - 0,
+        ship_fee: fee.total,
+        discount: 0,
+        status: 'PENDING',
+      },
+    });
+    await DatabaseInstance.getPrismaInstance().orderDetail.createMany({
+      data: cartList.cart_list.map((item) => {
+        console.log('item', item);
+        return {
+          order_id: order.id,
+          product_id: item.id,
+          quantity: item.quantity,
+          price: item.price,
+          sale_price: item.sale_price || item.price,
+        };
+      }),
+    });
+    return order.id;
+  }
+
+  async finishOrderPayment(order_id: string) {
+    await DatabaseInstance.getPrismaInstance().order.update({
+      where: {
+        id: Number(order_id),
+      },
+      data: {
+        status: 'SUCCESS',
+      },
+    });
   }
 }
 

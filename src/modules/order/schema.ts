@@ -4,6 +4,7 @@ export interface CartListType {
     name: string;
     quantity: number;
     price: number;
+    sale_price: number;
     ship_category_id: string;
     volume: number | null;
     weight: number;

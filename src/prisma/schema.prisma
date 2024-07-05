@@ -167,10 +167,14 @@ model Order {
   id             Int           @id @default(autoincrement())
   user_id        String
   estimate_price Float
+  ship_fee     Float
   end_price      Float
   status         String
   created_at     DateTime      @default(now())
   discount       Float?
+  receiver_name  String
+  phone_number   String
+  address        String
   OrderDetail    OrderDetail[]
   user           User          @relation(fields: [user_id], references: [id])
   Transaction    Transaction?
@@ -182,11 +186,13 @@ model Order {
 model Transaction {
   id                  Int      @id @default(autoincrement())
   order_id            Int      @unique
-  payment_method      String
-  receive_destination String
+  amount              Float
+  bank_code           String
+  bank_tran_no        String
+  card_type           String
+  transaction_no      Int
   description         String
-  status              String
-  time_stamp          DateTime @default(now())
+  time_stamp          String 
   order               Order    @relation(fields: [order_id], references: [id])
 
   @@map("transactions")

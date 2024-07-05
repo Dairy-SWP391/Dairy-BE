@@ -8,9 +8,12 @@ import { omit } from 'lodash';
 import { ErrorWithStatus } from '../error/entityError';
 import { PAY_MESSAGE } from './messages';
 import HTTP_STATUS from '~/constants/httpsStatus';
+import orderService from '../order/service';
+import transactionService from '../transaction/service';
+
 config();
 class PaymentServices {
-  async getVnpayUrl(totalMoneyNeedPay: number) {
+  async getVnpayUrl(totalMoneyNeedPay: number, order_id: number) {
     const ipAddr = '13.160.92.202';
 
     const tmnCode = process.env.VNP_TMNCODE as string;
@@ -21,7 +24,7 @@ class PaymentServices {
     const date = new Date();
     date.setHours(date.getHours() + 7);
     const createDate = format(date, 'yyyyMMddHHmmss');
-    const orderId = format(date, 'HHmmss');
+    const orderId = order_id.toString();
     const bankCode = `VNBANK`;
     const amount = totalMoneyNeedPay;
     const orderInfo = `MEVABESHOP PAYMENT ${orderId}`;
@@ -86,10 +89,15 @@ class PaymentServices {
     if (secureHash === signed) {
       if (vnpayResponseNew.vnp_TransactionStatus === '00') {
         // trong vnpayResponseNew có toàn bộ thông tin giao dịch
+        console.log(vnpayResponseNew);
         // xử lý logic ở đây
         // đặt đơn trên ghn
+        // await shipServices.createOrder({userId, receiver_name, address, content, to_phone })
         // tạo order trong db, lấy cái order_id
+        await orderService.finishOrderPayment(vnpayResponseNew.vnp_TxnRef as string);
         // lưu lại transaction
+        const transaction = await transactionService.createTransaction(vnpayResponseNew);
+        console.log(transaction);
         // return url để redirect về trang thông tin order của đơn hàng
         const urlOrderStatus = 'https://mevabeshop.com/order/order_id';
         return urlOrderStatus;

@@ -59,4 +59,6 @@ export interface CreateOrderParams extends Omit<GetFeeReqBody, 'cart_list'> {
   to_address: string;
   to_phone: string;
   content: string;
+  receiver_name: string;
+  address: string;
 }
