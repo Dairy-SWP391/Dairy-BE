@@ -7,6 +7,7 @@ import {
   CreateOrderParams,
   DistrictType,
   GetFeeType,
+  OrderResponse,
   PackageServiceType,
   ProvinceType,
   WardType,
@@ -193,7 +194,7 @@ class ShipServices {
     };
   }
 
-  async createOrder(createOrderParams: CreateOrderParams) {
+  async createOrder(createOrderParams: CreateOrderParams): Promise<OrderResponse> {
     const user = await DatabaseInstance.getPrismaInstance().user.findUnique({
       select: {
         id: true,
@@ -217,6 +218,7 @@ class ShipServices {
         status: HTTP_STATUS.BAD_REQUEST,
       });
     }
+
     const cartListToOrder = createOrderParams.cartList.cart_list.map((item) => {
       return {
         name: item.name,
@@ -253,9 +255,10 @@ class ShipServices {
       client_order_code: '',
       // thông tin khách hàng
       //    thông tin cá nhân khách hàng
-      to_name: user.first_name + ' ' + user.last_name, // username của khách hàng
-      to_phone: createOrderParams.to_phone, // số điện thoại của khách hàng
-      to_address: createOrderParams.to_address, // địa chỉ của khách hàng
+      // to_name: user.first_name + ' ' + user.last_name, // username của khách hàng
+      to_name: createOrderParams.receiver_name, // username của khách hàng
+      to_phone: createOrderParams.phone_number, // số điện thoại của khách hàng
+      to_address: createOrderParams.address, // địa chỉ của khách hàng
       to_ward_code: createOrderParams.to_ward_code,
       to_district_id: Number(createOrderParams.to_district_id),
       cod_amount: 0, // tiền mặt sẽ thu từ khách hàng, là 0 vì minh đã thanh toán trước

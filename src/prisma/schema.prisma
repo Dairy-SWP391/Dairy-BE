@@ -175,6 +175,9 @@ model Order {
   receiver_name  String
   phone_number   String
   address        String
+  service_id     Int
+  to_district_id Int
+  to_ward_code   Int
   OrderDetail    OrderDetail[]
   user           User          @relation(fields: [user_id], references: [id])
   Transaction    Transaction?

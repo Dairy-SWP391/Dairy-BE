@@ -33,8 +33,6 @@ export const createPaymentController = async (
   const totalMoneyNeedPay = cartList.totalMoney + fee.total;
   // vị trí ip mà khách hàng đang giao dịch
   // tạo order cho khách hàng với status là pending - chờ thanh toán
-  console.log('cartlist', cartList);
-  console.log('fee', fee);
   const order_id = await orderService.createOrder({
     user_id,
     receiver_name,
@@ -42,6 +40,7 @@ export const createPaymentController = async (
     address,
     cartList,
     fee,
+    ...feeReq,
   });
   const vnpayURL = await paymentServices.getVnpayUrl(totalMoneyNeedPay, order_id);
   res.send({ vnpayURL });

@@ -10,6 +10,10 @@ import { PAY_MESSAGE } from './messages';
 import HTTP_STATUS from '~/constants/httpsStatus';
 import orderService from '../order/service';
 import transactionService from '../transaction/service';
+import orderDetailService from '../orderDetail/service';
+import shipServices from '../ship/service';
+import { CartListType } from '../order/schema';
+import { CreateOrderParams } from '../ship/schema';
 
 config();
 class PaymentServices {
@@ -89,18 +93,42 @@ class PaymentServices {
     if (secureHash === signed) {
       if (vnpayResponseNew.vnp_TransactionStatus === '00') {
         // trong vnpayResponseNew có toàn bộ thông tin giao dịch
-        console.log(vnpayResponseNew);
         // xử lý logic ở đây
-        // đặt đơn trên ghn
-        // await shipServices.createOrder({userId, receiver_name, address, content, to_phone })
-        // tạo order trong db, lấy cái order_id
-        await orderService.finishOrderPayment(vnpayResponseNew.vnp_TxnRef as string);
+        // chuyển trạng thái order thành success
+        const order = await orderService.finishOrderPayment(vnpayResponseNew.vnp_TxnRef as string);
         // lưu lại transaction
-        const transaction = await transactionService.createTransaction(vnpayResponseNew);
-        console.log(transaction);
+        await transactionService.createTransaction(vnpayResponseNew);
+        // đặt đơn trên ghn
+        // lấy ra chi tiết từng sản phẩm trong order detail
+        const cart_list = await orderDetailService.getOrderDetail(order.id);
+        const cartList = await orderService.convertCartList(cart_list);
+        const fee = await shipServices.getFee(
+          {
+            service_id: order.service_id.toString(),
+            to_district_id: order.to_district_id.toString(),
+            to_ward_code: order.to_ward_code.toString(),
+          },
+          cartList,
+        );
+        const createOrderParam = {
+          userId: order.user_id,
+          fee,
+          cartList: cartList as CartListType,
+          service_id: order.service_id.toString(),
+          to_district_id: order.to_district_id.toString(),
+          to_ward_code: order.to_ward_code.toString(),
+          address: order.address,
+          phone_number: order.phone_number,
+          content: '',
+          receiver_name: order.receiver_name,
+        } as CreateOrderParams;
+        const orderGHN = await shipServices.createOrder(createOrderParam);
         // return url để redirect về trang thông tin order của đơn hàng
         const urlOrderStatus = 'https://mevabeshop.com/order/order_id';
-        return urlOrderStatus;
+        return {
+          urlOrderStatus,
+          order_code: orderGHN.data.order_code,
+        };
       }
     }
     throw new ErrorWithStatus({

@@ -10,6 +10,7 @@ import { ORDER_MESSAGES } from './messages';
 import HTTP_STATUS from '~/constants/httpsStatus';
 import { CartListType } from './schema';
 import { GetFeeType } from '../ship/schema';
+import orderDetailService from '../orderDetail/service';
 
 config();
 
@@ -146,6 +147,9 @@ class OrderService {
     address,
     cartList,
     fee,
+    service_id,
+    to_district_id,
+    to_ward_code,
   }: {
     user_id: string;
     receiver_name: string;
@@ -153,6 +157,9 @@ class OrderService {
     address: string;
     cartList: CartListType;
     fee: GetFeeType;
+    service_id: string;
+    to_district_id: string;
+    to_ward_code: string;
   }) {
     const order = await DatabaseInstance.getPrismaInstance().order.create({
       data: {
@@ -165,25 +172,17 @@ class OrderService {
         ship_fee: fee.total,
         discount: 0,
         status: 'PENDING',
+        service_id: Number(service_id),
+        to_district_id: Number(to_district_id),
+        to_ward_code: Number(to_ward_code),
       },
     });
-    await DatabaseInstance.getPrismaInstance().orderDetail.createMany({
-      data: cartList.cart_list.map((item) => {
-        console.log('item', item);
-        return {
-          order_id: order.id,
-          product_id: item.id,
-          quantity: item.quantity,
-          price: item.price,
-          sale_price: item.sale_price || item.price,
-        };
-      }),
-    });
+    await orderDetailService.createOrderDetail(cartList, order.id);
     return order.id;
   }
 
   async finishOrderPayment(order_id: string) {
-    await DatabaseInstance.getPrismaInstance().order.update({
+    const order = await DatabaseInstance.getPrismaInstance().order.update({
       where: {
         id: Number(order_id),
       },
@@ -191,6 +190,7 @@ class OrderService {
         status: 'SUCCESS',
       },
     });
+    return order;
   }
 }
 

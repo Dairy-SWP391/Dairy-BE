@@ -160,7 +160,6 @@ class UserService {
       },
     });
 
-    console.log('forgot_password_token: ', forgot_password_token);
     return forgot_password_token;
   }
 
