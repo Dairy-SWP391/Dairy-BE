@@ -17,4 +17,10 @@ export const SHIP_MESSAGES = {
   WARD_CODE_IS_INVALID: 'Ward code is invalid',
   FROM_DISTRICT_ID_IS_INVALID: 'From district id is invalid',
   TO_DISTRICT_ID_IS_INVALID: 'To district id is invalid',
+  RECEIVER_NAME_MUST_BE_STRING: 'Receiver name must be string',
+  RECEIVER_NAME_IS_REQUIRED: 'Receiver name is required',
+  PHONE_NUMBER_MUST_BE_STRING: 'Phone number must be string',
+  PHONE_NUMBER_IS_REQUIRED: 'Phone number is required',
+  ADDRESS_MUST_BE_STRING: 'Address must be string',
+  ADDRESS_IS_REQUIRED: 'Address is required',
 } as const;

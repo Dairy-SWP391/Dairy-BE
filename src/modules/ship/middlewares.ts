@@ -77,6 +77,30 @@ export const getFeeMiddleware = validate(
           errorMessage: SHIP_MESSAGES.WARD_CODE_IS_REQUIRED,
         },
       },
+      receiver_name: {
+        isString: {
+          errorMessage: SHIP_MESSAGES.RECEIVER_NAME_MUST_BE_STRING,
+        },
+        notEmpty: {
+          errorMessage: SHIP_MESSAGES.RECEIVER_NAME_IS_REQUIRED,
+        },
+      },
+      phone_number: {
+        isString: {
+          errorMessage: SHIP_MESSAGES.PHONE_NUMBER_MUST_BE_STRING,
+        },
+        notEmpty: {
+          errorMessage: SHIP_MESSAGES.PHONE_NUMBER_IS_REQUIRED,
+        },
+      },
+      address: {
+        isString: {
+          errorMessage: SHIP_MESSAGES.ADDRESS_MUST_BE_STRING,
+        },
+        notEmpty: {
+          errorMessage: SHIP_MESSAGES.ADDRESS_IS_REQUIRED,
+        },
+      },
     },
     ['body'],
   ),

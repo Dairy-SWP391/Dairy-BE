@@ -67,7 +67,15 @@ export const createOrderController = async (
 ) => {
   const userId = req.decoded_authorization.user_id as string;
   const cartList = await orderService.convertCartList(req.body.cart_list);
-  const { service_id, to_district_id, to_ward_code, to_address, to_phone, content } = req.body;
+  const {
+    service_id,
+    to_district_id,
+    to_ward_code,
+    address,
+    phone_number,
+    receiver_name,
+    content,
+  } = req.body;
   const getFreePackage = {
     service_id,
     to_district_id,
@@ -79,9 +87,10 @@ export const createOrderController = async (
     fee,
     cartList: cartList as CartListType,
     ...getFreePackage,
-    to_address,
-    to_phone,
+    address,
+    phone_number,
     content,
+    receiver_name,
   } as CreateOrderParams;
 
   const order = await shipServices.createOrder(createOrderParam);

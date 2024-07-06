@@ -8,6 +8,7 @@ import productRouter from './modules/product/routes';
 import shipRouter from './modules/ship/routes';
 import postRouter from './modules/post/routes';
 import imageRouter from './modules/image/routes';
+import payRouter from './modules/payment/routes';
 import cartRouter from './modules/cart/routes';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -108,6 +109,8 @@ app.use('/category', categoryRouter);
 app.use('/product', productRouter);
 
 app.use('/ship', shipRouter);
+
+app.use('/pay', payRouter);
 
 app.use('/image', imageRouter);
 
