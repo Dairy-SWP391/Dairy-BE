@@ -52,6 +52,9 @@ model Address {
   default_address Boolean @default(false)
   user_id         String
   user            User    @relation(fields: [user_id], references: [id])
+  province_id     Int
+  district_id     Int
+  ward_code       Int
 
   @@index([user_id], map: "addresses_user_id_fkey")
   @@map("addresses")

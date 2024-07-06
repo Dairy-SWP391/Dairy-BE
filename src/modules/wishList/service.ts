@@ -3,30 +3,40 @@ import productPricingsService from '../product_pricings/service';
 import { DatabaseInstance } from '~/database/database.services';
 
 class WishlistService {
-  async getWishList(user_id: string) {
+  async getWishList(user_id: string, num_of_items_per_page: number, page: number) {
     const wishList = await DatabaseInstance.getPrismaInstance().wishList.findMany({
       where: {
         user_id,
       },
       select: {
         product_id: true,
+        id: true,
+      },
+
+      orderBy: {
+        id: 'desc',
       },
     });
 
-    const products = await DatabaseInstance.getPrismaInstance().product.findMany({
-      where: {
-        id: {
-          in: wishList.map((product) => product.product_id),
-        },
-      },
-      include: {
-        category: {
-          select: {
-            parent_category_id: true,
+    const products: any[] = [];
+
+    await Promise.all(
+      wishList.map(async (item) => {
+        const product = await DatabaseInstance.getPrismaInstance().product.findUnique({
+          where: {
+            id: item.product_id,
           },
-        },
-      },
-    });
+          include: {
+            category: {
+              select: {
+                parent_category_id: true,
+              },
+            },
+          },
+        });
+        products.push(product);
+      }),
+    );
 
     const productsWithImages = await Promise.all(
       products.map(async (product) => {
@@ -65,8 +75,30 @@ class WishlistService {
         };
       }),
     );
+    let totalPage: number = 1;
+    // có phân trang
+    if (num_of_items_per_page) {
+      totalPage = Math.ceil(productsWithPriceDetails.length / num_of_items_per_page);
 
-    return productsWithPriceDetails;
+      if (page > totalPage) {
+        return { totalPage, products: [] };
+      } else if (page == totalPage) {
+        const skip = (page - 1) * num_of_items_per_page;
+        const products = productsWithPriceDetails.splice(
+          skip,
+          productsWithPriceDetails.length - skip,
+        );
+        return { totalPage, products: products };
+      } else {
+        const skip = (page - 1) * num_of_items_per_page;
+        const products = productsWithPriceDetails.splice(skip, num_of_items_per_page);
+        return { totalPage, products: products };
+      }
+    } else if (page > 1) {
+      return { totalPage, products: [] };
+    }
+
+    return { totalPage, products: productsWithPriceDetails };
   }
 
   async addProductToWishList(user_id: string, product_id: number) {

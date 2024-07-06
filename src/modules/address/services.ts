@@ -1,8 +1,16 @@
 import { DatabaseInstance } from '~/database/database.services';
-import { AddAddressReqBody, UpdateAddressReqBody } from './requests';
 
 class AddressService {
-  async addAddress(payload: AddAddressReqBody) {
+  async addAddress(payload: {
+    name: string;
+    phone_number: string;
+    address: string;
+    default_address: boolean;
+    user_id: string;
+    district_id: number;
+    province_id: number;
+    ward_code: number;
+  }) {
     const address = await DatabaseInstance.getPrismaInstance().address.create({
       data: {
         ...payload,
@@ -17,30 +25,85 @@ class AddressService {
         user_id: user_id,
       },
     });
-    return addresses.map((address) => {
+    return addresses.map((item) => {
+      const {
+        id,
+        name,
+        phone_number,
+        address,
+        default_address,
+        province_id,
+        district_id,
+        ward_code,
+      } = item;
       return {
-        id: address.id,
-        name: address.name,
-        phone: address.phone_number,
-        address: address.address,
-        default_address: address.default_address,
+        id,
+        name,
+        phone_number,
+        address,
+        default_address,
+        province_id,
+        district_id,
+        ward_code,
       };
     });
   }
 
-  async updateAddress(payload: UpdateAddressReqBody) {
-    const address = await DatabaseInstance.getPrismaInstance().address.update({
+  async getDefaultAddress(user_id: string) {
+    const address = await DatabaseInstance.getPrismaInstance().address.findFirst({
       where: {
-        id: payload.id,
+        user_id,
+        default_address: true,
       },
-      data: {
-        name: payload.name,
-        phone_number: payload.phone_number,
-        address: payload.address,
-        default_address: payload.default_address,
+      select: {
+        id: true,
+        name: true,
+        phone_number: true,
+        address: true,
+        default_address: true,
+        province_id: true,
+        district_id: true,
+        ward_code: true,
       },
     });
     return address;
+  }
+
+  async updateAddress(payload: {
+    id: number;
+    name: string;
+    phone_number: string;
+    address: string;
+    default_address: boolean;
+    district_id: number;
+    province_id: number;
+    ward_code: number;
+  }) {
+    const {
+      id,
+      name,
+      phone_number,
+      address,
+      default_address,
+      province_id,
+      district_id,
+      ward_code,
+    } = payload;
+    const item = await DatabaseInstance.getPrismaInstance().address.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        phone_number,
+        address,
+        default_address,
+        province_id,
+        district_id,
+        ward_code,
+      },
+    });
+    return item;
   }
 }
 const addressService = new AddressService();

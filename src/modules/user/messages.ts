@@ -140,8 +140,20 @@ export const USER_MESSAGES = {
 
   // get wishlist
   GET_WISHLIST_SUCCESS: 'Get wishlist success',
+  NUM_OF_ITEMS_PER_PAGE_MUST_BE_NUMBER: 'Num of items per page must be a number',
+  PAGE_IS_REQUIRED: 'Page is required',
+  PAGE_MUST_BE_NUMBER: 'Page must be a number',
+  PAGE_MUST_BE_GREATER_THAN_0: 'Page must be greater than 0',
 
   // delete product from wishlist
   PRODUCT_NOT_FOUND_IN_WISHLIST: 'Product not found in wishlist',
   DELETE_PRODUCT_FROM_WISHLIST_SUCCESS: 'Delete product from wishlist success',
+
+  // address
+  PROVINCE_ID_IS_REQUIRED: 'Province id is required',
+  PROVINCE_ID_MUST_BE_NUMBER: 'Province id must be a number',
+  DISTRICT_ID_IS_REQUIRED: 'District id is required',
+  DISTRICT_ID_MUST_BE_NUMBER: 'District id must be a number',
+  WARD_CODE_IS_REQUIRED: 'Ward code is required',
+  WARD_CODE_MUST_BE_NUMBER: 'Ward code must be a number',
 } as const;
