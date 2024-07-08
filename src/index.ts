@@ -17,6 +17,7 @@ import userService from './modules/user/service';
 import chatLineService from './modules/chat_line/service';
 import chatRoomRouter from './modules/chat_room/routes';
 import brandRouter from './modules/brand/routes';
+import feedbackRouter from './modules/feedback/routes';
 
 config();
 
@@ -123,6 +124,7 @@ app.use('/conversations', chatRoomRouter);
 
 app.use('/brand', brandRouter);
 
+app.use('/feedback', feedbackRouter);
 // error handler
 app.use(defaultErrorHandler);
 
