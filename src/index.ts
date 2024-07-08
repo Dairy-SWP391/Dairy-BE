@@ -16,6 +16,7 @@ import chatRoomService from './modules/chat_room/service';
 import userService from './modules/user/service';
 import chatLineService from './modules/chat_line/service';
 import chatRoomRouter from './modules/chat_room/routes';
+import brandRouter from './modules/brand/routes';
 
 config();
 
@@ -119,6 +120,8 @@ app.use('/post', postRouter);
 app.use('/cart', cartRouter);
 
 app.use('/conversations', chatRoomRouter);
+
+app.use('/brand', brandRouter);
 
 // error handler
 app.use(defaultErrorHandler);

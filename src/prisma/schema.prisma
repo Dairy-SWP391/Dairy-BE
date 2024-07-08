@@ -64,8 +64,8 @@ model Product {
   id              Int              @id @default(autoincrement())
   name            String
   quantity        Int
-  rating_number   Int
-  rating_point    Float
+  rating_number   Int?             @default(0)
+  rating_point    Float?
   brand_id        Int
   origin          String?
   producer        String?

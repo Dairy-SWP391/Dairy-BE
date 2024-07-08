@@ -18,6 +18,8 @@ export const PRODUCT_MESSAGES = {
   RATING_POINT_MUST_A_NUMBER: 'Rating point must be a number',
   BRAND_ID_IS_REQUIRED: 'Brand id is required',
   BRAND_ID_MUST_A_NUMBER: 'Brand id must be a number',
+  BRAND_NAME_IS_REQUIRED: 'Brand name is required',
+  BRAND_ID_MUST_BE_A_STRING: 'Brand id must be a string',
   ORIGIN_MUST_BE_STRING: 'Origin must be a string',
   ORIGIN_LENGTH_MUST_BE_FROM_1_TO_50: 'Origin length must be from 1 to 50',
   PRODUCER_MUST_BE_STRING: 'Producer must be a string',

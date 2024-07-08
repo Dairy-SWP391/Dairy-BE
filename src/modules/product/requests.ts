@@ -5,7 +5,7 @@ export interface AddProductBodyReq {
   quantity: number;
   rating_number: number;
   rating_point: number;
-  brand_id: number;
+  brand_name: string;
   origin?: string;
   producer?: string;
   manufactured_at?: string;
@@ -19,6 +19,7 @@ export interface AddProductBodyReq {
   instruction?: string;
   category_id: number;
   price: number;
+  status: 'ACTIVE' | 'INACTIVE';
   sale_price: number;
   starting_timestamp: Date;
   ending_timestamp?: Date;
@@ -37,8 +38,8 @@ export interface ProductWithOtherFields {
   id: number;
   name: string;
   quantity: number;
-  rating_number: number;
-  rating_point: number;
+  rating_number: number | null;
+  rating_point: number | null;
   brand_id: number;
   origin?: string | null;
   producer?: string | null;
