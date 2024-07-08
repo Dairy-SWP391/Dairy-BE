@@ -20,7 +20,7 @@ productRouter.post(
   addProductValidator,
   wrapAsync(addProductController),
 );
-productRouter.get(
+productRouter.post(
   '/get-product',
   getProductsByCategorySortAndPaginateValidator,
   wrapAsync(getProductsByCategorySortAndPaginateController),

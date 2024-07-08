@@ -22,7 +22,7 @@ class ProductService {
       quantity,
       rating_number,
       rating_point,
-      brand_id,
+      brand_name,
       origin,
       producer,
       manufactured_at,
@@ -35,27 +35,59 @@ class ProductService {
       instruction,
       category_id,
       ship_category_id,
+      status,
     } = payload;
+
+    let brand_id = await DatabaseInstance.getPrismaInstance().brand.findFirst({
+      where: {
+        name: brand_name,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!brand_id) {
+      brand_id = await DatabaseInstance.getPrismaInstance().brand.create({
+        data: {
+          name: brand_name,
+        },
+        select: {
+          id: true,
+        },
+      });
+    }
+
+    const category = await DatabaseInstance.getPrismaInstance().category.findUnique({
+      where: {
+        id: Number(category_id),
+      },
+    });
+
+    if (!category?.parent_category_id) {
+      throw new Error('Category id is invalid');
+    }
 
     const product = await DatabaseInstance.getPrismaInstance().product.create({
       data: {
         name,
-        quantity,
+        quantity: Number(quantity),
         rating_number,
         rating_point,
-        brand_id,
+        brand_id: brand_id.id,
         origin,
         producer,
         manufactured_at,
         target,
-        volume,
-        weight,
+        volume: Number(volume),
+        weight: Number(weight),
         caution,
         preservation,
         description,
         instruction,
-        category_id,
+        category_id: Number(category_id),
         ship_category_id,
+        status,
       },
     });
 
@@ -74,7 +106,7 @@ class ProductService {
     await DatabaseInstance.getPrismaInstance().productPricing.create({
       data: {
         product_id: product.id,
-        price: payload.ending_timestamp ? payload.sale_price : payload.price,
+        price: payload.ending_timestamp ? Number(payload.sale_price) : Number(payload.price),
         starting_timestamp: payload.starting_timestamp,
         ending_timestamp: payload.ending_timestamp,
       },
@@ -97,15 +129,15 @@ class ProductService {
     // nếu có items_per_page thì phân trang
     if (payload.num_of_items_per_page) {
       // lấy tổng số trang
-      totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
       // nếu không có category_id thì lấy tất cả category
       if (!payload.category_id) {
         // nếu sắp xếp theo giá thì join với bảng product_pricing
         if (payload.sort_by === 'price') {
           const products = await this.getProductByParentCategoryIdAndSortByPrice(payload);
-          if (products.length < payload.num_of_product) {
-            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
-          }
+          // if (products.length < payload.num_of_product) {
+          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          // }
+          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           if (payload.page === totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
@@ -123,9 +155,10 @@ class ProductService {
         } else if (payload.sort_by === 'discount') {
           // giảm giá
           const products = await this.getProductByParentCategoryIdAndSortByDiscount(payload);
-          if (products.length < payload.num_of_product) {
-            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
-          }
+          // if (products.length < payload.num_of_product) {
+          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          // }
+          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           if (payload.page == totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
@@ -145,9 +178,10 @@ class ProductService {
           // sắp xếp theo rating_point | sold | id
           const products =
             await this.getProductByParentCategoryIdAndSortByRatingPoint_Sold_ID(payload);
-          if (products.length < payload.num_of_product) {
-            totalPage = products.length / payload.num_of_items_per_page;
-          }
+          // if (products.length < payload.num_of_product) {
+          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          // }
+          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           if (payload.page == totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
@@ -168,9 +202,10 @@ class ProductService {
         if (payload.sort_by === 'price') {
           // nếu sắp xếp theo giá thì join với bảng product_pricing
           const products = await this.getProductByCategoryIDAndSortByPrice(payload);
-          if (products.length < payload.num_of_product) {
-            totalPage = products.length / payload.num_of_items_per_page;
-          }
+          // if (products.length < payload.num_of_product) {
+          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          // }
+          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           if (payload.page == totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
@@ -206,10 +241,10 @@ class ProductService {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
           // sắp xếp theo rating_point | sold | id
           const products = await this.getProductByCategoryIDAndSortByRatingPoint_Sold_ID(payload);
-
-          if (products.length < payload.num_of_product) {
-            totalPage = products.length / payload.num_of_items_per_page;
-          }
+          // if (products.length < payload.num_of_product) {
+          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          // }
+          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           if (payload.page == totalPage) {
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_product - skip);

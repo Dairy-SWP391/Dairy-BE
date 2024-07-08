@@ -33,23 +33,25 @@ const quantitySchema: ParamSchema = {
   },
 };
 const ratingNumberSchema: ParamSchema = {
-  notEmpty: {
-    errorMessage: PRODUCT_MESSAGES.RATING_NUMBER_IS_REQUIRED,
-  },
+  // notEmpty: {
+  //   errorMessage: PRODUCT_MESSAGES.RATING_NUMBER_IS_REQUIRED,
+  // },
+  optional: true,
   isNumeric: {
     errorMessage: PRODUCT_MESSAGES.RATING_NUMBER_MUST_A_NUMBER,
   },
 };
 const ratingPointSchema: ParamSchema = {
-  notEmpty: {
-    errorMessage: PRODUCT_MESSAGES.RATING_POINT_IS_REQUIRED,
-  },
+  // notEmpty: {
+  //   errorMessage: PRODUCT_MESSAGES.RATING_POINT_IS_REQUIRED,
+  // },
+  optional: true,
   isNumeric: {
     errorMessage: PRODUCT_MESSAGES.RATING_POINT_MUST_A_NUMBER,
   },
 };
 
-const brand_idSchema: ParamSchema = {
+export const brand_idSchema: ParamSchema = {
   notEmpty: {
     errorMessage: PRODUCT_MESSAGES.BRAND_ID_IS_REQUIRED,
   },
@@ -73,6 +75,15 @@ const brand_idSchema: ParamSchema = {
     },
   },
 };
+const brand_nameSchema: ParamSchema = {
+  notEmpty: {
+    errorMessage: PRODUCT_MESSAGES.BRAND_NAME_IS_REQUIRED,
+  },
+  isString: {
+    errorMessage: PRODUCT_MESSAGES.BRAND_ID_MUST_BE_A_STRING,
+  },
+};
+
 const originSchema: ParamSchema = {
   optional: true,
   trim: true,
@@ -333,7 +344,7 @@ export const roleValidator = validate(
                 });
               }
               // kiểm tra xem user có quyền là ADMIN hoặc STAFF không
-              if (user.role !== ROLE.STAFF) {
+              if (user.role !== ROLE.STAFF && user.role !== ROLE.ADMIN) {
                 throw new ErrorWithStatus({
                   message: PRODUCT_MESSAGES.USER_IS_NOT_AUTHORIZED,
                   status: HTTP_STATUS.UNAUTHORIZED,
@@ -361,7 +372,7 @@ export const addProductValidator = validate(
       quantity: quantitySchema,
       rating_number: ratingNumberSchema,
       rating_point: ratingPointSchema,
-      brand_id: brand_idSchema,
+      brand_name: brand_nameSchema,
       origin: originSchema,
       producer: producerSchema,
       manufactured_at: manufacturedAtSchema,
@@ -401,9 +412,10 @@ export const getProductsByCategorySortAndPaginateValidator = validate(
         optional: true,
       },
       num_of_product: {
-        notEmpty: {
-          errorMessage: PRODUCT_MESSAGES.NUM_OF_PRODUCT_IS_REQUIRED,
-        },
+        // notEmpty: {
+        //   errorMessage: PRODUCT_MESSAGES.NUM_OF_PRODUCT_IS_REQUIRED,
+        // },
+        optional: true,
         isNumeric: {
           errorMessage: PRODUCT_MESSAGES.NUM_OF_PRODUCT_MUST_BE_NUMBER,
         },

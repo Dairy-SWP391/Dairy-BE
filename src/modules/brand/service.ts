@@ -8,6 +8,10 @@ class BrandService {
       },
     });
   }
+
+  async getAllBrand() {
+    return await DatabaseInstance.getPrismaInstance().brand.findMany();
+  }
 }
 
 const brandService = new BrandService();
