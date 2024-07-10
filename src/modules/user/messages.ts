@@ -156,4 +156,6 @@ export const USER_MESSAGES = {
   DISTRICT_ID_MUST_BE_NUMBER: 'District id must be a number',
   WARD_CODE_IS_REQUIRED: 'Ward code is required',
   WARD_CODE_MUST_BE_NUMBER: 'Ward code must be a number',
+
+  GET_EXPENSE_SUCCESS: 'Get expense success',
 } as const;

@@ -422,6 +422,41 @@ class UserService {
       },
     });
   }
+
+  async getExpense(user_id: string) {
+    const user = await DatabaseInstance.getPrismaInstance().order.findMany({
+      where: {
+        user_id,
+      },
+      select: {
+        end_price: true,
+      },
+    });
+    const total_expense = user.reduce((acc, cur) => acc + cur.end_price, 0);
+    return total_expense;
+  }
+
+  async getExpensePerMonth(user_id: string) {
+    const user = await DatabaseInstance.getPrismaInstance().order.findMany({
+      where: {
+        user_id,
+      },
+      select: {
+        end_price: true,
+        created_at: true,
+      },
+    });
+
+    return user.reduce((acc: { [key: number]: number }, cur) => {
+      const month = cur.created_at.getMonth() + 1;
+      if (acc[month]) {
+        acc[month] += cur.end_price;
+      } else {
+        acc[month] = cur.end_price;
+      }
+      return acc;
+    }, {});
+  }
 }
 const userService = new UserService();
 export default userService;
