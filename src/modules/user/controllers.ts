@@ -253,3 +253,13 @@ export const deleteProductFromWishListController = async (
   const result = await wishlistService.deleteProductFromWishList(user_id, product_id);
   res.json({ message: USER_MESSAGES.DELETE_PRODUCT_FROM_WISHLIST_SUCCESS, result: result });
 };
+export const getExpenseController = async (req: Request, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload;
+  const result = await userService.getExpense(user_id);
+  res.json({ message: USER_MESSAGES.GET_EXPENSE_SUCCESS, result: result });
+};
+export const getExpensePerMonthController = async (req: Request, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload;
+  const result = await userService.getExpensePerMonth(user_id);
+  res.json({ message: USER_MESSAGES.GET_EXPENSE_SUCCESS, result: result });
+};

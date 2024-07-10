@@ -41,6 +41,8 @@ import {
   refreshTokenController,
   deleteProductFromWishListController,
   getDefaultAddressController,
+  getExpenseController,
+  getExpensePerMonthController,
 } from './controllers';
 
 const userRouter = Router();
@@ -113,4 +115,7 @@ userRouter.delete(
   deleteProductFromWishListValidator,
   wrapAsync(deleteProductFromWishListController),
 );
+userRouter.get('/total', accessTokenValidator, wrapAsync(getExpenseController));
+userRouter.get('/total-per-month', accessTokenValidator, wrapAsync(getExpensePerMonthController));
+
 export default userRouter;
