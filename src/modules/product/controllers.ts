@@ -9,6 +9,7 @@ import {
   AddProductBodyReq,
   deleteProductReqBody,
   getProductsByCategorySortAndPaginateBodyReq,
+  UpdateProductReqBody,
 } from './requests';
 
 export const getProductDetailController = async (req: Request, res: Response) => {
@@ -67,4 +68,11 @@ export const deleteProductController = async (
   const result = await productService.deleteProduct(id);
 
   return res.json({ message: PRODUCT_MESSAGES.DELETE_PRODUCT_SUCCESS, result: result });
+};
+export const updateProductController = async (
+  req: Request<ParamsDictionary, any, UpdateProductReqBody>,
+  res: Response,
+) => {
+  const result = await productService.updateProduct(req.body);
+  return res.json({ message: PRODUCT_MESSAGES.UPDATE_PRODUCT_SUCCESS, ...result });
 };

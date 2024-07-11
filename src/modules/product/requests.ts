@@ -63,3 +63,31 @@ export interface ProductWithOtherFields {
 export interface deleteProductReqBody {
   id: number;
 }
+export interface UpdateProductReqBody {
+  id: number;
+  name?: string;
+  quantity?: number;
+  rating_number?: number;
+  rating_point?: number;
+  brand_id?: number;
+  origin?: string;
+  producer?: string;
+  manufactured_at?: string;
+  target?: string;
+  volume?: number;
+  weight?: number;
+  sold?: number;
+  caution?: string;
+  instruction?: string;
+  preservation?: string;
+  description?: string;
+  status?: string;
+  category_id?: number;
+  num_of_packs?: number;
+  ship_category_id?: SHIP_CATEGORY_ID;
+  images?: string[];
+  price?: number;
+  sale_price?: number;
+  starting_timestamp?: Date;
+  ending_timestamp?: Date;
+}

@@ -75,6 +75,49 @@ export const brand_idSchema: ParamSchema = {
     },
   },
 };
+const soldSchema: ParamSchema = {
+  isNumeric: {
+    errorMessage: PRODUCT_MESSAGES.SOLD_MUST_BE_NUMBER,
+  },
+  custom: {
+    options: async (value) => {
+      if (value < 0) {
+        throw new Error(PRODUCT_MESSAGES.SOLD_MUST_BE_GREATER_THAN_OR_EQUAL_0);
+      }
+      return true;
+    },
+  },
+};
+const numOfPacksSchema: ParamSchema = {
+  optional: true,
+  isNumeric: {
+    errorMessage: PRODUCT_MESSAGES.NUM_OF_PACK_MUST_BE_NUMBER,
+  },
+  custom: {
+    options: (value) => {
+      if (value < 0) {
+        throw new Error(PRODUCT_MESSAGES.NUM_OF_PACK_MUST_BE_NUMBER);
+      }
+      return true;
+    },
+  },
+};
+const statusSchema: ParamSchema = {
+  optional: true,
+  trim: true,
+  isString: {
+    errorMessage: PRODUCT_MESSAGES.STATUS_MUST_BE_STRING,
+  },
+  custom: {
+    options: (value) => {
+      if (value !== 'ACTIVE' && value !== 'INACTIVE') {
+        throw new Error(PRODUCT_MESSAGES.STATUS_MUST_BE_ACTIVE_OR_INACTIVE);
+      }
+      return true;
+    },
+  },
+};
+
 const brand_nameSchema: ParamSchema = {
   notEmpty: {
     errorMessage: PRODUCT_MESSAGES.BRAND_NAME_IS_REQUIRED,
@@ -540,6 +583,127 @@ export const deleteProductValidator = validate(
               throw new Error(PRODUCT_MESSAGES.PRODUCT_ID_IS_INVALID);
             }
 
+            return true;
+          },
+        },
+      },
+    },
+    ['body'],
+  ),
+);
+export const updateProductValidator = validate(
+  checkSchema(
+    {
+      id: {
+        notEmpty: {
+          errorMessage: PRODUCT_MESSAGES.ID_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: PRODUCT_MESSAGES.ID_MUST_BE_NUMBER,
+        },
+        custom: {
+          options: async (value) => {
+            const product = await DatabaseInstance.getPrismaInstance().product.findUnique({
+              where: {
+                id: Number(value),
+              },
+            });
+            if (!product) {
+              throw new Error(PRODUCT_MESSAGES.PRODUCT_ID_IS_INVALID);
+            }
+
+            return true;
+          },
+        },
+      },
+      name: { ...nameSchema, optional: true, notEmpty: undefined },
+      quantity: { ...quantitySchema, optional: true, notEmpty: undefined },
+      rating_number: { ...ratingNumberSchema, optional: true, notEmpty: undefined },
+      rating_point: { ...ratingPointSchema, optional: true, notEmpty: undefined },
+      brand_id: { ...brand_idSchema, optional: true, notEmpty: undefined },
+      origin: { ...originSchema, optional: true, notEmpty: undefined },
+      producer: { ...producerSchema, optional: true, notEmpty: undefined },
+      manufactured_at: { ...manufacturedAtSchema, optional: true, notEmpty: undefined },
+      target: { ...targetSchema, optional: true, notEmpty: undefined },
+      volume: { ...volumeSchema, optional: true, notEmpty: undefined },
+      weight: { ...weightSchema, optional: true, notEmpty: undefined },
+      sold: { ...soldSchema, optional: true, notEmpty: undefined },
+      caution: { ...cautionSchema, optional: true, notEmpty: undefined },
+      instruction: { ...instructionSchema, optional: true, notEmpty: undefined },
+      preservation: { ...preservationSchema, optional: true, notEmpty: undefined },
+      description: { ...descriptionSchema, optional: true, notEmpty: undefined },
+      status: { ...statusSchema, optional: true, notEmpty: undefined },
+      category_id: { ...category_idSchema, optional: true, notEmpty: undefined },
+      ship_category_id: { ...shipCategoryIDSchema, optional: true, notEmpty: undefined },
+      num_of_packs: { ...numOfPacksSchema, optional: true, notEmpty: undefined },
+      images: { ...imageSchema, optional: true, notEmpty: undefined },
+    },
+    ['body'],
+  ),
+);
+export const priceValidator = validate(
+  checkSchema(
+    {
+      price: {
+        notEmpty: undefined,
+        optional: true,
+        isNumeric: {
+          errorMessage: PRODUCT_MESSAGES.PRICE_MUST_BE_NUMBER,
+        },
+        custom: {
+          options: (value, { req }) => {
+            if (value && !req.body.starting_timestamp) {
+              throw new Error(PRODUCT_MESSAGES.STARTING_TIMESTAMP_IS_REQUIRED);
+            }
+            return true;
+          },
+        },
+      },
+      sale_price: {
+        notEmpty: undefined,
+        optional: true,
+        isNumeric: {
+          errorMessage: PRODUCT_MESSAGES.SALE_PRICE_MUST_BE_NUMBER,
+        },
+      },
+      starting_timestamp: {
+        notEmpty: undefined,
+        isISO8601: {
+          errorMessage: PRODUCT_MESSAGES.STARTING_TIMESTAMP_MUST_BE_A_DATE,
+        },
+        optional: true,
+        custom: {
+          options: async (value, { req }) => {
+            if (value && !req.body.price && !req.body.ending_timestamp) {
+              throw new Error(PRODUCT_MESSAGES.PRICE_IS_REQUIRED);
+            }
+
+            if (!value && req.body.price && req.body.ending_timestamp) {
+              throw new Error(PRODUCT_MESSAGES.STARTING_TIMESTAMP_IS_REQUIRED);
+            }
+
+            return true;
+          },
+        },
+      },
+      ending_timestamp: {
+        notEmpty: undefined,
+        optional: true,
+        isISO8601: {
+          errorMessage: PRODUCT_MESSAGES.STARTING_TIMESTAMP_MUST_BE_A_DATE,
+        },
+        custom: {
+          options: async (value, { req }) => {
+            if (value) {
+              if (new Date(value) <= new Date(req.body.starting_timestamp)) {
+                throw new Error(
+                  PRODUCT_MESSAGES.ENDING_TIMESTAMP_MUST_BE_GREATER_THAN_STARTING_TIMESTAMP,
+                );
+              }
+              if (!req.body.sale_price) {
+                throw new Error(PRODUCT_MESSAGES.SALE_PRICE_IS_REQUIRED);
+              }
+            }
             return true;
           },
         },

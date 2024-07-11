@@ -89,4 +89,19 @@ export const PRODUCT_MESSAGES = {
   ID_MUST_BE_NUMBER: 'Id must be a number',
   PRODUCT_ID_IS_INVALID: 'Product id is invalid',
   DELETE_PRODUCT_SUCCESS: 'Delete product success',
+
+  // update product
+  SOLD_MUST_BE_NUMBER: 'Sold must be a number',
+  SOLD_MUST_BE_GREATER_THAN_OR_EQUAL_0: 'Sold must be greater than or equal 0',
+  STATUS_MUST_BE_STRING: 'Status must be a string',
+  STATUS_MUST_BE_ACTIVE_OR_INACTIVE: 'Status must be ACTIVE or INACTIVE',
+  NUM_OF_PACK_MUST_BE_NUMBER: 'Num of pack must be a number',
+  UPDATE_PRODUCT_SUCCESS: 'Update product success',
+  PRODUCT_PRICE_WITH_STARTING_TIMESTAMP_ALREADY_EXISTS:
+    'Product price with starting timestamp already exists',
+  ENDING_TIMESTAMP_MUST_BE_GREATER_THAN_STARTING_TIMESTAMP:
+    'Ending timestamp must be greater than starting timestamp',
+  PRICE_OR_SALE_PRICE_ARE_REQUIRED: 'Price or sale price are required',
+  STARTING_TIMESTAMP_IS_EXISTED: 'Starting timestamp is existed',
+  ENDING_TIMESTAMP_IS_REQUIRED: 'Ending timestamp is required',
 } as const;
