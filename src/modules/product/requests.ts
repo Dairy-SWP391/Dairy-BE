@@ -60,3 +60,6 @@ export interface ProductWithOtherFields {
     price: number;
   }[];
 }
+export interface deleteProductReqBody {
+  id: number;
+}

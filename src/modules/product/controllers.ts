@@ -5,7 +5,11 @@ import productPricingsService from '../product_pricings/service';
 import brandService from '../brand/service';
 import imageService from '../image/service';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { AddProductBodyReq, getProductsByCategorySortAndPaginateBodyReq } from './requests';
+import {
+  AddProductBodyReq,
+  deleteProductReqBody,
+  getProductsByCategorySortAndPaginateBodyReq,
+} from './requests';
 
 export const getProductDetailController = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -53,4 +57,14 @@ export const searchProductController = async (req: Request, res: Response) => {
   );
 
   res.json({ message: PRODUCT_MESSAGES.SEARCH_PRODUCT_SUCCESS, data: result });
+};
+export const deleteProductController = async (
+  req: Request<ParamsDictionary, any, deleteProductReqBody>,
+  res: Response,
+) => {
+  const { id } = req.body;
+
+  const result = await productService.deleteProduct(id);
+
+  return res.json({ message: PRODUCT_MESSAGES.DELETE_PRODUCT_SUCCESS, result: result });
 };

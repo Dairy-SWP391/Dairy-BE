@@ -841,6 +841,27 @@ class ProductService {
 
     return { totalPage, products: productsWithParentCategoryId };
   }
+
+  async deleteProduct(id: number) {
+    await DatabaseInstance.getPrismaInstance().productPricing.deleteMany({
+      where: {
+        product_id: id,
+      },
+    });
+    await DatabaseInstance.getPrismaInstance().image.deleteMany({
+      where: {
+        parent_id: id,
+        parent_type: IMAGE_PARENT_TYPE.PRODUCT,
+      },
+    });
+    const product = await DatabaseInstance.getPrismaInstance().product.delete({
+      where: {
+        id,
+      },
+    });
+
+    return product;
+  }
 }
 
 const productService = new ProductService();

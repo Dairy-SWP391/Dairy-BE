@@ -83,4 +83,10 @@ export const PRODUCT_MESSAGES = {
   NUM_OF_ITEMS_PER_PAGE_IS_REQUIRED: 'Num of items per page is required',
   NUM_OF_ITEMS_PER_PAGE_MUST_BE_A_NUMBER: 'Num of items per page must be a number',
   SEARCH_PRODUCT_SUCCESS: 'search products successfully',
+
+  // delete product
+  ID_IS_REQUIRED: 'Id is required',
+  ID_MUST_BE_NUMBER: 'Id must be a number',
+  PRODUCT_ID_IS_INVALID: 'Product id is invalid',
+  DELETE_PRODUCT_SUCCESS: 'Delete product success',
 } as const;
