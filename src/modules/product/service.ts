@@ -2,9 +2,10 @@ import { DatabaseInstance } from '~/database/database.services';
 import {
   AddProductBodyReq,
   ProductWithOtherFields,
+  UpdateProductReqBody,
   getProductsByCategorySortAndPaginateBodyReq,
 } from './requests';
-import { IMAGE_PARENT_TYPE } from '@prisma/client';
+import { IMAGE_PARENT_TYPE, products_status } from '@prisma/client';
 import productPricingsService from '../product_pricings/service';
 
 class ProductService {
@@ -102,7 +103,6 @@ class ProductService {
         });
       }),
     );
-
     await DatabaseInstance.getPrismaInstance().productPricing.create({
       data: {
         product_id: product.id,
@@ -111,6 +111,7 @@ class ProductService {
         ending_timestamp: payload.ending_timestamp,
       },
     });
+
     return product;
   }
 
@@ -861,6 +862,177 @@ class ProductService {
     });
 
     return product;
+  }
+
+  async updateProduct(payload: UpdateProductReqBody) {
+    const product = await DatabaseInstance.getPrismaInstance().product.update({
+      where: {
+        id: payload.id,
+      },
+      data: {
+        name: payload.name,
+        quantity: payload.quantity,
+        rating_number: payload.rating_number,
+        rating_point: payload.rating_point,
+        brand_id: payload.brand_id,
+        origin: payload.origin,
+        producer: payload.producer,
+        manufactured_at: payload.manufactured_at,
+        target: payload.target,
+        volume: payload.volume,
+        weight: payload.weight,
+        sold: payload.sold,
+        caution: payload.caution,
+        instruction: payload.instruction,
+        preservation: payload.preservation,
+        description: payload.description,
+        status: payload.status === 'ACTIVE' ? products_status.ACTIVE : products_status.INACTIVE,
+        category_id: payload.category_id,
+        num_of_packs: payload.num_of_packs,
+        ship_category_id: payload.ship_category_id,
+      },
+    });
+
+    interface image_type {
+      id: number;
+      parent_type: string;
+      image_url: string;
+    }
+    let image_urls: image_type[] = [];
+    if (payload.images && payload.images?.length > 0) {
+      await DatabaseInstance.getPrismaInstance().image.deleteMany({
+        where: {
+          parent_id: payload.id,
+          parent_type: IMAGE_PARENT_TYPE.PRODUCT,
+        },
+      });
+      image_urls = await Promise.all(
+        payload.images.map((image) => {
+          return DatabaseInstance.getPrismaInstance().image.create({
+            data: {
+              parent_id: payload.id,
+              parent_type: IMAGE_PARENT_TYPE.PRODUCT,
+              image_url: image,
+            },
+            select: {
+              id: true,
+              parent_type: true,
+              image_url: true,
+            },
+          });
+        }),
+      );
+    }
+
+    interface PricingType {
+      price: number;
+      starting_timestamp: Date;
+      ending_timestamp: Date | null;
+    }
+    let product_pricing: PricingType | {} = {};
+
+    // giá không sale
+    if (payload.starting_timestamp && !payload.ending_timestamp) {
+      // tìm ra giá không sale với starting_timestamp gốc để update
+      const p = await DatabaseInstance.getPrismaInstance().productPricing.findFirst({
+        where: {
+          product_id: payload.id,
+          ending_timestamp: null,
+        },
+        orderBy: {
+          starting_timestamp: 'desc',
+        },
+      });
+
+      if (p) {
+        // nếu tìm thấy
+        // tìm xem sản phẩm có giá sale cùng ngày không
+        const sale_price = await DatabaseInstance.getPrismaInstance().productPricing.findFirst({
+          where: {
+            product_id: payload.id,
+            NOT: {
+              ending_timestamp: null,
+            },
+          },
+          orderBy: {
+            starting_timestamp: 'desc',
+          },
+        });
+
+        if (sale_price) {
+          if (
+            sale_price.starting_timestamp.getTime() ===
+            new Date(payload.starting_timestamp).getTime()
+          ) {
+            throw new Error('Starting timestamp is duplicated');
+          }
+        }
+
+        product_pricing = await DatabaseInstance.getPrismaInstance().productPricing.update({
+          where: {
+            product_id_starting_timestamp: {
+              product_id: payload.id,
+              starting_timestamp: p.starting_timestamp,
+            },
+          },
+          data: {
+            price: payload.price,
+            starting_timestamp: payload.starting_timestamp,
+          },
+        });
+      }
+    } else if (payload.starting_timestamp && payload.ending_timestamp) {
+      // cập nhật giá sale mới
+      const p = await DatabaseInstance.getPrismaInstance().productPricing.findFirst({
+        where: {
+          product_id: payload.id,
+          NOT: {
+            ending_timestamp: null,
+          },
+        },
+        orderBy: {
+          starting_timestamp: 'desc',
+        },
+      });
+
+      const no_sale = await DatabaseInstance.getPrismaInstance().productPricing.findFirst({
+        where: {
+          product_id: payload.id,
+          ending_timestamp: null,
+        },
+        orderBy: {
+          starting_timestamp: 'desc',
+        },
+      });
+
+      if (p) {
+        if (payload.starting_timestamp) {
+          const payloadStartingTimestamp = new Date(payload.starting_timestamp);
+
+          if (no_sale?.starting_timestamp.getTime() === payloadStartingTimestamp.getTime()) {
+            throw new Error('Starting timestamp is duplicated');
+          }
+        }
+
+        product_pricing = await DatabaseInstance.getPrismaInstance().productPricing.update({
+          where: {
+            product_id_starting_timestamp: {
+              product_id: p.product_id,
+              starting_timestamp: p.starting_timestamp,
+            },
+          },
+          data: {
+            price: payload.sale_price,
+            starting_timestamp: payload.starting_timestamp,
+            ending_timestamp: payload.ending_timestamp,
+          },
+        });
+      }
+    } else {
+      product_pricing = {};
+    }
+
+    return { ...product, ...product_pricing, images: image_urls };
   }
 }
 

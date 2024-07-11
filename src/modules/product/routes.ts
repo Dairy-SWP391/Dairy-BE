@@ -6,6 +6,7 @@ import {
   getProductDetailController,
   searchProductController,
   deleteProductController,
+  updateProductController,
 } from './controllers';
 import {
   roleValidator,
@@ -13,6 +14,8 @@ import {
   getProductsByCategorySortAndPaginateValidator,
   searchProductValidator,
   deleteProductValidator,
+  updateProductValidator,
+  priceValidator,
 } from './middlewares';
 
 const productRouter = Router();
@@ -34,6 +37,14 @@ productRouter.delete(
   roleValidator,
   deleteProductValidator,
   wrapAsync(deleteProductController),
+);
+
+productRouter.patch(
+  '/me',
+  roleValidator,
+  updateProductValidator,
+  priceValidator,
+  wrapAsync(updateProductController),
 );
 
 productRouter.get('/:id', wrapAsync(getProductDetailController));
