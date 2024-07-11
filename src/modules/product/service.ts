@@ -929,7 +929,7 @@ class ProductService {
       starting_timestamp: Date;
       ending_timestamp: Date | null;
     }
-    let product_pricing: PricingType | {} = {};
+    let product_pricing: PricingType | object = {};
 
     // giá không sale
     if (payload.starting_timestamp && !payload.ending_timestamp) {
