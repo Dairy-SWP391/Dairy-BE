@@ -519,3 +519,32 @@ export const searchProductValidator = validate(
     ['query'],
   ),
 );
+export const deleteProductValidator = validate(
+  checkSchema(
+    {
+      id: {
+        notEmpty: {
+          errorMessage: PRODUCT_MESSAGES.ID_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: PRODUCT_MESSAGES.ID_MUST_BE_NUMBER,
+        },
+        custom: {
+          options: async (value) => {
+            const product = await DatabaseInstance.getPrismaInstance().product.findUnique({
+              where: {
+                id: Number(value),
+              },
+            });
+            if (!product) {
+              throw new Error(PRODUCT_MESSAGES.PRODUCT_ID_IS_INVALID);
+            }
+
+            return true;
+          },
+        },
+      },
+    },
+    ['body'],
+  ),
+);
