@@ -120,9 +120,11 @@ export const refreshTokenController = async (
 export const accessTokenController = async (req: Request, res: Response) => {
   const { user_id, verify } = req.decoded_refresh_token as TokenPayload;
   const result = await userService.getAccessToken(user_id, verify);
+  const role = await userService.getRole(user_id);
   return res.json({
     message: USER_MESSAGES.GET_ACCESS_TOKEN_SUCCESS,
-    result,
+    ...result,
+    ...role,
   });
 };
 export const addAddressController = async (

@@ -457,6 +457,17 @@ class UserService {
       return acc;
     }, {});
   }
+
+  async getRole(user_id: string) {
+    return await DatabaseInstance.getPrismaInstance().user.findUnique({
+      where: {
+        id: user_id,
+      },
+      select: {
+        role: true,
+      },
+    });
+  }
 }
 const userService = new UserService();
 export default userService;
