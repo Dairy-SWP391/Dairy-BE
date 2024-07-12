@@ -11,6 +11,7 @@ import {
   getProductsByCategorySortAndPaginateBodyReq,
   UpdateProductReqBody,
 } from './requests';
+import feedbackService from '../feedback/services';
 
 export const getProductDetailController = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -21,9 +22,9 @@ export const getProductDetailController = async (req: Request, res: Response) =>
   const prices = await productPricingsService.getProductPrice(Number(id));
   const brand = await brandService.getBrandName(product.brand_id);
   const images = await imageService.getProductImages(Number(id));
-
+  const feedback = await feedbackService.getFeedbackByProductId(Number(id));
   res.status(200).json({
-    data: { ...product, ...prices, brand: brand?.name, images: images },
+    data: { ...product, ...prices, brand: brand?.name, images: images, feedback: feedback },
     message: PRODUCT_MESSAGES.GET_PRODUCT_DETAIL_SUCCESS,
   });
 };
