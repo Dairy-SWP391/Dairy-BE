@@ -7,6 +7,9 @@ import HTTP_STATUS from '~/constants/httpsStatus';
 import { ErrorWithStatus } from '../error/entityError';
 import { ORDER_MESSAGES } from './messages';
 import { GetFeeReqBody } from '../ship/requests';
+import { validate } from '~/utils/validation';
+import { checkSchema } from 'express-validator';
+import { DatabaseInstance } from '~/database/database.services';
 
 export const checkCartValidMiddleware = async (
   req: Request<ParamsDictionary, any, GetFeeReqBody>,
@@ -33,3 +36,29 @@ export const checkCartValidMiddleware = async (
   }
   next();
 };
+
+export const getOrderDetailValidator = validate(
+  checkSchema({
+    order_id: {
+      notEmpty: {
+        errorMessage: ORDER_MESSAGES.ORDER_ID_IS_REQUIRED,
+      },
+      isNumeric: {
+        errorMessage: ORDER_MESSAGES.ORDER_ID_MUST_BE_NUMBER,
+      },
+      custom: {
+        options: async (value) => {
+          const order = await DatabaseInstance.getPrismaInstance().order.findUnique({
+            where: {
+              id: Number(value),
+            },
+          });
+          if (!order) {
+            throw new Error(ORDER_MESSAGES.ORDER_ID_IS_INVALID);
+          }
+          return true;
+        },
+      },
+    },
+  }),
+);

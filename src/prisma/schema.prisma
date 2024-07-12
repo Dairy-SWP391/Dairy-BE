@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum SHIP_CATEGORY_ID {
+  BABY
+  MOMY
+}
+
 model User {
   id                    String         @id
   first_name            String
@@ -46,42 +51,42 @@ model Address {
   address         String
   default_address Boolean @default(false)
   user_id         String
+  user            User    @relation(fields: [user_id], references: [id])
   province_id     Int
   district_id     Int
   ward_code       Int
-  user            User    @relation(fields: [user_id], references: [id])
 
   @@index([user_id], map: "addresses_user_id_fkey")
   @@map("addresses")
 }
 
 model Product {
-  id               Int              @id @default(autoincrement())
-  name             String
-  quantity         Int
-  rating_number    Int?             @default(0)
-  rating_point     Float?           @default(0)
-  brand_id         Int
-  origin           String?
-  producer         String?
-  manufactured_at  String?
-  target           String?
-  volume           Int?
-  weight           Int?
-  sold             Int              @default(0)
-  caution          String?          @db.LongText
-  instruction      String?          @db.LongText
-  preservation     String?          @db.LongText
-  description      String?          @db.LongText
-  status           products_status  @default(ACTIVE)
-  category_id      Int
-  ship_category_id SHIP_CATEGORY_ID
+  id              Int              @id @default(autoincrement())
+  name            String
+  quantity        Int
+  rating_number   Int?             @default(0)
+  rating_point    Float?
+  brand_id        Int
+  origin          String?
+  producer        String?
+  manufactured_at String?
+  target          String?
+  volume          Int?
+  weight          Int?
+  sold            Int              @default(0)
+  caution         String?          @db.LongText
+  instruction     String?          @db.LongText
+  preservation    String?          @db.LongText
+  description     String?          @db.LongText
+  status          products_status  @default(ACTIVE)
+  category_id     Int
   num_of_packs     Int?
-  OrderDetail      OrderDetail[]
-  ProductPricing   ProductPricing[]
-  brand            Brand            @relation(fields: [brand_id], references: [id])
-  category         Category         @relation(fields: [category_id], references: [id])
-  WishList         WishList[]
+  OrderDetail     OrderDetail[]
+  ProductPricing  ProductPricing[]
+  brand           Brand            @relation(fields: [brand_id], references: [id])
+  category        Category         @relation(fields: [category_id], references: [id])
+  WishList        WishList[]
+  ship_category_id SHIP_CATEGORY_ID
 
   @@index([brand_id], map: "products_brand_id_fkey")
   @@index([category_id], map: "products_category_id_fkey")
@@ -163,41 +168,41 @@ model Image {
 }
 
 model Order {
-  id                     Int           @id @default(autoincrement())
-  user_id                String
-  estimate_price         Float
-  end_price              Float
-  status                 orders_status @default(PENDING)
-  created_at             DateTime      @default(now())
-  discount               Float?
-  receiver_name          String        @db.VarChar(45)
-  phone_number           String        @db.VarChar(10)
-  address                String
-  ship_fee               Float
-  service_id             Int
-  to_district_id         Int
-  to_ward_code           Int
-  order_ghn_code         String?       @db.VarChar(45)
-  expected_delivery_time String?       @db.VarChar(45)
-  OrderDetail            OrderDetail[]
-  user                   User          @relation(fields: [user_id], references: [id])
-  Transaction            Transaction?
+  id             Int           @id @default(autoincrement())
+  user_id        String
+  estimate_price Float
+  ship_fee     Float
+  end_price      Float
+  status         orders_status @default(PENDING)
+  created_at     DateTime      @default(now())
+  discount       Float?
+  receiver_name  String
+  phone_number   String
+  address        String
+  service_id     Int
+  to_district_id Int
+  to_ward_code   Int
+  order_ghn_code String?
+  expected_delivery_time String?
+  OrderDetail    OrderDetail[]
+  user           User          @relation(fields: [user_id], references: [id])
+  Transaction    Transaction?
 
   @@index([user_id], map: "orders_user_id_fkey")
   @@map("orders")
 }
 
 model Transaction {
-  id             Int    @id @default(autoincrement())
-  order_id       Int    @unique
-  amount         Float
-  bank_code      String @db.VarChar(45)
-  bank_tran_no   String @db.VarChar(45)
-  card_type      String @db.VarChar(45)
-  transaction_no Int    @unique(map: "transaction_no_UNIQUE")
-  description    String
-  time_stamp     String @db.VarChar(45)
-  order          Order  @relation(fields: [order_id], references: [id])
+  id                  Int      @id @default(autoincrement())
+  order_id            Int      @unique
+  amount              Float
+  bank_code           String   @db.VarChar(45)
+  bank_tran_no        String   @db.VarChar(45)
+  card_type           String   @db.VarChar(45)
+  transaction_no      Int    @unique(map: "transaction_no_UNIQUE")
+  description         String
+  time_stamp          String   @db.VarChar(45) 
+  order               Order    @relation(fields: [order_id], references: [id])
 
   @@map("transactions")
 }
@@ -336,11 +341,6 @@ model otps {
   @@index([user_id], map: "otps_user_id_fkey")
 }
 
-enum SHIP_CATEGORY_ID {
-  BABY
-  MOMY
-}
-
 enum USER_STATUS {
   UNVERIFIED
   VERIFIED
@@ -375,8 +375,14 @@ enum products_status {
   INACTIVE
 }
 
+enum products_ship_category_id {
+  BABY
+  MOMY
+}
+
 enum orders_status {
   PENDING
   SUCCESS
   FAIL
 }
+

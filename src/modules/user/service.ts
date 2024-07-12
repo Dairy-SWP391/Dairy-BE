@@ -424,30 +424,51 @@ class UserService {
   }
 
   async getExpense(user_id: string) {
-    const user = await DatabaseInstance.getPrismaInstance().order.findMany({
-      where: {
-        user_id,
-      },
-      select: {
-        end_price: true,
-      },
-    });
-    const total_expense = user.reduce((acc, cur) => acc + cur.end_price, 0);
+    const role = (await this.getRole(user_id))?.role;
+    let orders;
+    if (role === 'ADMIN' || role === 'STAFF') {
+      orders = await DatabaseInstance.getPrismaInstance().order.findMany({
+        select: {
+          end_price: true,
+        },
+      });
+    } else {
+      orders = await DatabaseInstance.getPrismaInstance().order.findMany({
+        where: {
+          user_id,
+        },
+        select: {
+          end_price: true,
+        },
+      });
+    }
+    const total_expense = orders.reduce((acc, cur) => acc + cur.end_price, 0);
     return total_expense;
   }
 
   async getExpensePerMonth(user_id: string) {
-    const user = await DatabaseInstance.getPrismaInstance().order.findMany({
-      where: {
-        user_id,
-      },
-      select: {
-        end_price: true,
-        created_at: true,
-      },
-    });
+    const role = (await this.getRole(user_id))?.role;
+    let orders;
+    if (role === 'ADMIN' || role === 'STAFF') {
+      orders = await DatabaseInstance.getPrismaInstance().order.findMany({
+        select: {
+          end_price: true,
+          created_at: true,
+        },
+      });
+    } else {
+      orders = await DatabaseInstance.getPrismaInstance().order.findMany({
+        where: {
+          user_id,
+        },
+        select: {
+          end_price: true,
+          created_at: true,
+        },
+      });
+    }
 
-    return user.reduce((acc: { [key: number]: number }, cur) => {
+    return orders.reduce((acc: { [key: number]: number }, cur) => {
       const month = cur.created_at.getMonth() + 1;
       if (acc[month]) {
         acc[month] += cur.end_price;

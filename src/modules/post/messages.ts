@@ -18,4 +18,8 @@ export const POST_MESSAGES = {
   IMAGES_MUST_BE_ARRAY: 'Images must be an array',
   IMAGES_MUST_BE_NOT_EMPTY: 'Images must be not empty',
   IMAGES_MUST_BE_URL: 'Images must be URL',
+  POST_CATOGERY_IS_REQUIRED: 'Post category is required',
+  POST_CATOGORY_MUST_BE_STRING: 'Post category must be a string',
+  POST_NOT_FOUND: 'Post not found',
+  GET_POST_DETAIL_SUCCESS: 'Get post detail success',
 };

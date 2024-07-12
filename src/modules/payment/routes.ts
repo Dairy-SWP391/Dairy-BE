@@ -29,7 +29,7 @@ vnpCreateInfoReqBody {
   order_description: string; //mô tả thông tin chuyển khoảng, không bỏ trống
 }
 */
-payRouter.get(
+payRouter.post(
   '/',
   accessTokenValidator,
   getFeeMiddleware,

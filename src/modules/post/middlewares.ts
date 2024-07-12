@@ -29,12 +29,12 @@ const contentSchema: ParamSchema = {
   isLength: {
     options: {
       min: 1,
-      max: 191,
+      max: 100000,
     },
     errorMessage: POST_MESSAGES.CONTENT_MUST_BE_BETWEEN_1_AND_191_CHARS,
   },
 };
-const creatorIdSchema: ParamSchema = {
+export const creatorIdSchema: ParamSchema = {
   notEmpty: {
     errorMessage: POST_MESSAGES.CREATOR_ID_IS_REQUIRED,
   },
@@ -78,7 +78,8 @@ const imageSchema: ParamSchema = {
     },
   },
 };
-const postCategoryIdSchema: ParamSchema = {
+
+export const postCategoryIdSchema: ParamSchema = {
   notEmpty: {
     errorMessage: POST_MESSAGES.POST_CATOGERY_ID_IS_REQUIRED,
   },
@@ -103,15 +104,59 @@ const postCategoryIdSchema: ParamSchema = {
     },
   },
 };
+
+const postCategorySchema: ParamSchema = {
+  notEmpty: {
+    errorMessage: POST_MESSAGES.POST_CATOGERY_IS_REQUIRED,
+  },
+  isString: {
+    errorMessage: POST_MESSAGES.POST_CATOGORY_MUST_BE_STRING,
+  },
+};
+
 export const addPostValidator = validate(
   checkSchema(
     {
       title: titleSchema,
       content: contentSchema,
-      creator_id: creatorIdSchema,
-      post_category_id: postCategoryIdSchema,
+      // post_category_id: postCategoryIdSchema,
+      post_category: postCategorySchema,
       images: imageSchema,
     },
     ['body'],
+  ),
+);
+
+export const getPostDetailValidator = validate(
+  checkSchema(
+    {
+      id: {
+        notEmpty: {
+          errorMessage: POST_MESSAGES.POST_CATOGERY_ID_IS_REQUIRED,
+        },
+        isNumeric: {
+          errorMessage: POST_MESSAGES.POST_CATOGORY_ID_MUST_BE_A_NUMBER,
+        },
+        custom: {
+          options: async (value) => {
+            if (value < 1) {
+              throw new Error(POST_MESSAGES.INVALID_CATEGORY_ID);
+            }
+
+            const post_category_id =
+              await DatabaseInstance.getPrismaInstance().postCategory.findUnique({
+                where: {
+                  id: Number(value),
+                },
+              });
+            if (!post_category_id) {
+              throw new Error(POST_MESSAGES.POST_CATOGORY_ID_NOT_FOUND);
+            }
+            return true;
+          },
+        },
+      },
+    },
+    ['params'],
   ),
 );

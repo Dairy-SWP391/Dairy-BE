@@ -42,3 +42,11 @@ export const getUserConversationController = async (req: Request, res: Response)
     },
   });
 };
+
+export const getAllConversationController = async (req: Request, res: Response) => {
+  const result = await chatRoomService.getAllChatRooms();
+  return res.json({
+    message: 'Get all conversations successfully',
+    result,
+  });
+};

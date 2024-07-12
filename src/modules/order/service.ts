@@ -192,6 +192,118 @@ class OrderService {
     });
     return order;
   }
+
+  async getOrderDetailById(order_id: string) {
+    const order = await DatabaseInstance.getPrismaInstance().order.findUnique({
+      where: {
+        id: Number(order_id),
+      },
+    });
+
+    if (!order) {
+      throw new ErrorWithStatus({
+        message: ORDER_MESSAGES.ORDER_NOT_FOUND,
+        status: HTTP_STATUS.BAD_REQUEST,
+      });
+    }
+
+    const order_detail = await DatabaseInstance.getPrismaInstance().orderDetail.findMany({
+      where: {
+        order_id: Number(order_id),
+      },
+      select: {
+        product_id: true,
+        quantity: true,
+        price: true,
+        sale_price: true,
+      },
+    });
+    if (!order_detail) {
+      throw new ErrorWithStatus({
+        message: ORDER_MESSAGES.ORDER_DETAIL_NOT_FOUND,
+        status: HTTP_STATUS.BAD_REQUEST,
+      });
+    }
+
+    const transaction = await DatabaseInstance.getPrismaInstance().transaction.findFirst({
+      where: {
+        order_id: Number(order_id),
+      },
+      select: {
+        transaction_no: true,
+        bank_code: true,
+        amount: true,
+        card_type: true,
+        bank_tran_no: true,
+        description: true,
+        time_stamp: true,
+      },
+    });
+
+    // Define the type for the items in your new_order_detail array
+    type OrderDetailItem = {
+      quantity: number;
+      price: number;
+      sale_price: number;
+      product_id: number;
+      product_name: string;
+    };
+
+    // Initialize an empty array for the new order details
+    const new_order_detail: OrderDetailItem[] = [];
+
+    // Loop through each item in the order_detail array
+    for (const item of order_detail) {
+      // Fetch the product name using the product_id
+      const product = await DatabaseInstance.getPrismaInstance().product.findUnique({
+        where: {
+          id: item.product_id,
+        },
+        select: {
+          name: true,
+        },
+      });
+
+      // Check if the product was found
+      if (product) {
+        // Add the item to the new_order_detail array, including the product_name
+        new_order_detail.push({
+          quantity: item.quantity,
+          price: item.price,
+          sale_price: item.sale_price,
+          product_id: item.product_id,
+          product_name: product.name, // Assuming product.name is the correct field
+        });
+      }
+    }
+
+    return {
+      ...order,
+      ...transaction,
+      order_detail: new_order_detail,
+    };
+  }
+
+  async getAllOrders(user_id: string) {
+    const user = await DatabaseInstance.getPrismaInstance().user.findUnique({
+      where: {
+        id: user_id,
+      },
+    });
+
+    if (user?.role === 'ADMIN' || user?.role === 'STAFF') {
+      const orders = await DatabaseInstance.getPrismaInstance().order.findMany();
+      return orders;
+    }
+
+    const orders = await DatabaseInstance.getPrismaInstance().order.findMany({
+      where: {
+        user_id,
+      },
+    });
+
+    return orders;
+  }
 }
 
 const orderService = new OrderService();

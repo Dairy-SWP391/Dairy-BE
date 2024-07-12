@@ -52,6 +52,5 @@ export const checkPaymentResultMiddleware = async (
 ) => {
   const vnpayResponse = req.query as PaymentResultReqQuery;
   const result = await paymentServices.checkPaymentResult(vnpayResponse);
-
-  res.send(result);
+  res.redirect(result);
 };

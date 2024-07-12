@@ -23,6 +23,16 @@ class ChatLineService {
         created_at: true,
       },
     });
+
+    await DatabaseInstance.getPrismaInstance().chatRoom.update({
+      where: {
+        id: chat_room_id,
+      },
+      data: {
+        updated_at: chatLine.created_at,
+      },
+    });
+
     return chatLine;
   }
 
@@ -40,7 +50,7 @@ class ChatLineService {
         chat_room_id,
       },
       orderBy: {
-        created_at: 'desc',
+        created_at: 'asc',
       },
       skip: (page - 1) * limit,
       take: limit,

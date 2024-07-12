@@ -14,6 +14,7 @@ import orderDetailService from '../orderDetail/service';
 import shipServices from '../ship/service';
 import { CartListType } from '../order/schema';
 import { CreateOrderParams } from '../ship/schema';
+import { DatabaseInstance } from '~/database/database.services';
 
 config();
 class PaymentServices {
@@ -123,12 +124,19 @@ class PaymentServices {
           receiver_name: order.receiver_name,
         } as CreateOrderParams;
         const orderGHN = await shipServices.createOrder(createOrderParam);
+        await DatabaseInstance.getPrismaInstance().order.update({
+          where: {
+            id: order.id,
+          },
+          data: {
+            order_ghn_code: orderGHN.data.order_code as string,
+            expected_delivery_time: orderGHN.data.expected_delivery_time.toString(),
+          },
+        });
         // return url để redirect về trang thông tin order của đơn hàng
-        const urlOrderStatus = 'https://mevabeshop.com/order/order_id';
-        return {
-          urlOrderStatus,
-          order_code: orderGHN.data.order_code,
-        };
+        const checkout_return_url = process.env.CHECKOUT_RETURN_URL;
+        const urlOrderStatus = `${checkout_return_url}?&order_id=${order.id}`;
+        return urlOrderStatus;
       }
     }
     throw new ErrorWithStatus({

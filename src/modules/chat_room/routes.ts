@@ -1,6 +1,10 @@
 import { Router } from 'express';
 import { accessTokenValidator, roleValidator } from '../user/middlewares';
-import { getMyConversationController, getUserConversationController } from './controllers';
+import {
+  getAllConversationController,
+  getMyConversationController,
+  getUserConversationController,
+} from './controllers';
 import { wrapAsync } from '~/utils/handler';
 import { getConversationValidator, paginationValidator } from './middlewares';
 
@@ -27,6 +31,13 @@ chatRoomRouter.get(
   getConversationValidator,
   paginationValidator,
   wrapAsync(getUserConversationController),
+);
+
+chatRoomRouter.get(
+  '/all',
+  accessTokenValidator,
+  roleValidator,
+  wrapAsync(getAllConversationController),
 );
 
 export default chatRoomRouter;
