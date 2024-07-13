@@ -135,10 +135,12 @@ class ProductService {
         // nếu sắp xếp theo giá thì join với bảng product_pricing
         if (payload.sort_by === 'price') {
           const products = await this.getProductByParentCategoryIdAndSortByPrice(payload);
-          // if (products.length < payload.num_of_product) {
-          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
-          // }
-          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          if (products.length < payload.num_of_product) {
+            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          } else {
+            totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
+          }
+
           if (payload.page === totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
@@ -159,7 +161,11 @@ class ProductService {
           // if (products.length < payload.num_of_product) {
           //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           // }
-          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          if (products.length < payload.num_of_product) {
+            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          } else {
+            totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
+          }
           if (payload.page == totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
@@ -182,7 +188,11 @@ class ProductService {
           // if (products.length < payload.num_of_product) {
           //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           // }
-          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          if (products.length < payload.num_of_product) {
+            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          } else {
+            totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
+          }
           if (payload.page == totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
@@ -203,10 +213,13 @@ class ProductService {
         if (payload.sort_by === 'price') {
           // nếu sắp xếp theo giá thì join với bảng product_pricing
           const products = await this.getProductByCategoryIDAndSortByPrice(payload);
-          // if (products.length < payload.num_of_product) {
-          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
-          // }
-          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+
+          if (products.length < payload.num_of_product) {
+            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          } else {
+            totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
+          }
+
           if (payload.page == totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
@@ -225,7 +238,9 @@ class ProductService {
           // giảm giá
           const products = await this.getProductByCategoryIDAndSortByDiscount(payload);
           if (products.length < payload.num_of_product) {
-            totalPage = products.length / payload.num_of_items_per_page;
+            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          } else {
+            totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
           }
           if (payload.page == totalPage) {
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
@@ -242,10 +257,13 @@ class ProductService {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
           // sắp xếp theo rating_point | sold | id
           const products = await this.getProductByCategoryIDAndSortByRatingPoint_Sold_ID(payload);
-          // if (products.length < payload.num_of_product) {
-          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
-          // }
-          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+
+          if (products.length < payload.num_of_product) {
+            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          } else {
+            totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
+          }
+
           if (payload.page == totalPage) {
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
             const res = products.splice(skip, payload.num_of_product - skip);
@@ -356,10 +374,19 @@ class ProductService {
         },
       },
     });
+
     if (payload.order_by === 'ASC' || !payload.order_by) {
-      products.sort((a, b) => a.ProductPricing[0].price - b.ProductPricing[0].price);
+      products.sort((a, b) => {
+        const priceA = a.ProductPricing[0] ? Number(a.ProductPricing[0].price) : 0;
+        const priceB = b.ProductPricing[0] ? Number(b.ProductPricing[0].price) : 0;
+        return priceA - priceB;
+      });
     } else {
-      products.sort((a, b) => b.ProductPricing[0].price - a.ProductPricing[0].price);
+      products.sort((a, b) => {
+        const priceA = a.ProductPricing[0] ? Number(a.ProductPricing[0].price) : 0;
+        const priceB = b.ProductPricing[0] ? Number(b.ProductPricing[0].price) : 0;
+        return priceB - priceA;
+      });
     }
 
     const productsWithPriceDetails = await Promise.all(
@@ -477,9 +504,17 @@ class ProductService {
       },
     });
     if (payload.order_by === 'ASC' || !payload.order_by) {
-      products.sort((a, b) => a.ProductPricing[0].price - b.ProductPricing[0].price);
+      products.sort((a, b) => {
+        const priceA = a.ProductPricing[0] ? Number(a.ProductPricing[0].price) : 0;
+        const priceB = b.ProductPricing[0] ? Number(b.ProductPricing[0].price) : 0;
+        return priceA - priceB;
+      });
     } else {
-      products.sort((a, b) => b.ProductPricing[0].price - a.ProductPricing[0].price);
+      products.sort((a, b) => {
+        const priceA = a.ProductPricing[0] ? Number(a.ProductPricing[0].price) : 0;
+        const priceB = b.ProductPricing[0] ? Number(b.ProductPricing[0].price) : 0;
+        return priceB - priceA;
+      });
     }
 
     const productsWithPriceDetails = await Promise.all(
