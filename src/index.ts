@@ -19,6 +19,7 @@ import chatRoomRouter from './modules/chat_room/routes';
 import brandRouter from './modules/brand/routes';
 import feedbackRouter from './modules/feedback/routes';
 import orderRouter from './modules/order/routes';
+import voucherRouter from './modules/voucher/routes';
 
 config();
 
@@ -26,7 +27,7 @@ config();
 // const isProduction = process.env.NODE_ENV === 'production';
 
 const corsOptions = {
-  origin: 'https://oyster-app-kl49u.ondigitalocean.app',
+  origin: 'http://localhost:3000',
   credentials: true, // access-control-allow-credentials:true
   allowedHeaders: ['Content-Type', 'Authorization'], // access-control-allow-headers
   optionSuccessStatus: 200,
@@ -41,7 +42,7 @@ app.use(json());
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: 'https://oyster-app-kl49u.ondigitalocean.app',
+    origin: 'http://localhost:3000',
   },
 });
 
@@ -126,6 +127,8 @@ app.use('/conversations', chatRoomRouter);
 app.use('/brand', brandRouter);
 
 app.use('/order', orderRouter);
+
+app.use('/voucher', voucherRouter);
 
 app.use('/feedback', feedbackRouter);
 // error handler

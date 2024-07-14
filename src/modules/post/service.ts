@@ -103,6 +103,51 @@ class PostService {
       category_id: category?.id,
     };
   }
+
+  async getAllPost({ limit, page }: { limit: number; page: number }) {
+    const postList = await DatabaseInstance.getPrismaInstance().post.findMany({
+      orderBy: {
+        created_at: 'desc',
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    const images = await DatabaseInstance.getPrismaInstance().image.findMany({
+      where: {
+        parent_id: {
+          in: postList.map((post) => post.id),
+        },
+        parent_type: IMAGE_PARENT_TYPE.POST,
+      },
+    });
+    console.log(images);
+    const posts = postList.reduce(
+      (
+        acc: {
+          id: number;
+          title: string;
+          content: string;
+          creator_id: string;
+          created_at: Date;
+          image: string;
+        }[],
+        post,
+      ) => {
+        const postImages = images.filter((image) => image.parent_id === post.id);
+        acc.push({
+          ...post,
+          image: postImages[0] ? postImages[0].image_url : '',
+        });
+        return acc;
+      },
+      [],
+    );
+    const total = await DatabaseInstance.getPrismaInstance().post.count();
+    return {
+      posts,
+      total,
+    };
+  }
 }
 const postService = new PostService();
 export default postService;

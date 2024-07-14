@@ -25,3 +25,20 @@ export const getPostDetailController = async (req: Request, res: Response) => {
     result,
   });
 };
+
+export const getAllPostController = async (req: Request, res: Response) => {
+  const { limit, page } = req.query;
+  const result = await postService.getAllPost({
+    limit: Number.parseInt(limit as string),
+    page: Number.parseInt(page as string),
+  });
+  res.json({
+    message: POST_MESSAGES.GET_ALL_POST_SUCCESS,
+    result: {
+      ...result,
+      limit: Number(limit),
+      page: Number(page),
+      total_page: Math.ceil(result.total / Number(limit)),
+    },
+  });
+};
