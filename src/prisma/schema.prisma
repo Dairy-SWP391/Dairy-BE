@@ -38,7 +38,6 @@ model User {
   RefreshToken          RefreshToken[]
   HandlerReports        Report[]       @relation("Handler")
   ReporterReports       Report[]       @relation("Reporter")
-  Voucher               Voucher[]
   WishList              WishList[]
 
   @@map("users")
@@ -256,12 +255,15 @@ model Voucher {
   trading_point Int
   created_at    DateTime @default(now())
   expired_at    DateTime
-  status        Boolean
-  user_id       String?
-  user          User?    @relation(fields: [user_id], references: [id])
+  status        VOUCHER_STATUS
+  quantity      Int
 
-  @@index([user_id], map: "vouchers_user_id_fkey")
   @@map("vouchers")
+}
+
+enum VOUCHER_STATUS {
+  ACTIVE
+  INACTIVE
 }
 
 model Report {

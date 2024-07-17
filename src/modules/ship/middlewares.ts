@@ -1,6 +1,7 @@
 import { checkSchema } from 'express-validator';
 import { validate } from '~/utils/validation';
 import { SHIP_MESSAGES } from './messages';
+import voucherService from '../voucher/service';
 
 export const getDistrictsMiddleware = validate(
   checkSchema(
@@ -99,6 +100,32 @@ export const getFeeMiddleware = validate(
         },
         notEmpty: {
           errorMessage: SHIP_MESSAGES.ADDRESS_IS_REQUIRED,
+        },
+      },
+      voucher_code: {
+        isString: {
+          errorMessage: SHIP_MESSAGES.VOUCHER_CODE_MUST_BE_STRING,
+        },
+        optional: true,
+        custom: {
+          options: async (value) => {
+            if (value) {
+              const voucher = await voucherService.getVoucherByCode(value);
+              // kiểm tra voucher code có tồn tại không
+              if (!voucher) {
+                throw new Error(SHIP_MESSAGES.VOUCHER_CODE_IS_INVALID);
+              }
+              // kiểm tra voucher code đã hết hạn chưa
+              if (voucher.expired_at < new Date()) {
+                throw new Error(SHIP_MESSAGES.VOUCHER_CODE_IS_EXPIRED);
+              }
+              // kiểm tra voucher code đã được sử dụng chưa
+              if (voucher.quantity === 0) {
+                throw new Error(SHIP_MESSAGES.VOUCHER_CODE_IS_OUT_OF_STOCK);
+              }
+            }
+            return true;
+          },
         },
       },
     },

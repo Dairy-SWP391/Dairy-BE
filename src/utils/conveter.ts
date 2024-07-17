@@ -40,3 +40,11 @@ export const stringToNomalCase = (str: string) => {
 
   return str;
 };
+
+// const generateCode = (index: number) => {
+//   const uppercaseCharacter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+//   const maChuCai = uppercaseCharacter.substr(Math.floor(Math.random() * uppercaseCharacter.length), 4);
+//   // const soChuoi = (soTruyenVao < 10) ? "0" + String(soTruyenVao) : String(soTruyenVao);
+//   const maCode = maChuCai + index;
+//   return maCode;
+// };

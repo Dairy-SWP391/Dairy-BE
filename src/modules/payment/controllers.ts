@@ -7,6 +7,7 @@ import shipServices from '../ship/service';
 import paymentServices from './service';
 import { PaymentResultReqQuery } from './requests';
 import { TokenPayload } from '../user/requests';
+import { DatabaseInstance } from '~/database/database.services';
 
 export const createPaymentController = async (
   req: Request<ParamsDictionary, any, GetFeeReqBody>,
@@ -21,6 +22,7 @@ export const createPaymentController = async (
     service_id,
     to_district_id,
     to_ward_code,
+    voucher_code,
   } = req.body;
   const feeReq = {
     service_id,
@@ -28,8 +30,31 @@ export const createPaymentController = async (
     to_ward_code,
   };
   const { user_id } = req.decoded_authorization as TokenPayload;
-  const cartList = await orderService.convertCartList(cart_list);
+  const cartList = await orderService.convertCartList({ cart_list, voucher_code });
   const fee = await shipServices.getFee(feeReq, cartList);
+  if (voucher_code) {
+    const voucher = await DatabaseInstance.getPrismaInstance().voucher.update({
+      where: {
+        code: voucher_code,
+      },
+      data: {
+        quantity: {
+          decrement: 1,
+        },
+      },
+    });
+    await DatabaseInstance.getPrismaInstance().user.update({
+      where: {
+        id: user_id,
+      },
+      data: {
+        point: {
+          decrement: voucher?.value,
+        },
+      },
+    });
+  }
+
   const totalMoneyNeedPay = cartList.totalMoney + fee.total;
   // vị trí ip mà khách hàng đang giao dịch
   // tạo order cho khách hàng với status là pending - chờ thanh toán

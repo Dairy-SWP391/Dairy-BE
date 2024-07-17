@@ -198,6 +198,7 @@ class UserService {
         avatar_url: true,
         role: true,
         status: true,
+        point: true,
       },
     });
   }

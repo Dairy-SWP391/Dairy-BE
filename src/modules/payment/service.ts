@@ -102,7 +102,7 @@ class PaymentServices {
         // đặt đơn trên ghn
         // lấy ra chi tiết từng sản phẩm trong order detail
         const cart_list = await orderDetailService.getOrderDetail(order.id);
-        const cartList = await orderService.convertCartList(cart_list);
+        const cartList = await orderService.convertCartList({ cart_list });
         const fee = await shipServices.getFee(
           {
             service_id: order.service_id.toString(),
@@ -131,6 +131,15 @@ class PaymentServices {
           data: {
             order_ghn_code: orderGHN.data.order_code as string,
             expected_delivery_time: orderGHN.data.expected_delivery_time.toString(),
+          },
+        });
+
+        await DatabaseInstance.getPrismaInstance().user.update({
+          where: {
+            id: order.user_id,
+          },
+          data: {
+            point: Number.parseInt((order.end_price * 0.01).toString()),
           },
         });
         // return url để redirect về trang thông tin order của đơn hàng

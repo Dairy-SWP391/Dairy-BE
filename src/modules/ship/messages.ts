@@ -23,4 +23,8 @@ export const SHIP_MESSAGES = {
   PHONE_NUMBER_IS_REQUIRED: 'Phone number is required',
   ADDRESS_MUST_BE_STRING: 'Address must be string',
   ADDRESS_IS_REQUIRED: 'Address is required',
+  VOUCHER_CODE_MUST_BE_STRING: 'Voucher code must be string',
+  VOUCHER_CODE_IS_INVALID: 'Voucher code is invalid',
+  VOUCHER_CODE_IS_EXPIRED: 'Voucher code is expired',
+  VOUCHER_CODE_IS_OUT_OF_STOCK: 'Voucher code is out of stock',
 } as const;

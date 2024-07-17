@@ -1,11 +1,25 @@
 import { Router } from 'express';
-import { roleValidator } from '../user/middlewares';
+import { accessTokenValidator, roleValidator } from '../user/middlewares';
 import { wrapAsync } from '~/utils/handler';
-import { addVoucherValidator } from './middlewares';
-import { addVoucherController } from './controllers';
+import { addVoucherValidator, editVoucherValidator } from './middlewares';
+import {
+  addVoucherController,
+  getAllVoucherController,
+  updateVoucherController,
+} from './controllers';
+import { paginationValidator } from '../chat_room/middlewares';
 
 const voucherRouter = Router();
 
-voucherRouter.post('/voucher', roleValidator, addVoucherValidator, wrapAsync(addVoucherController));
+voucherRouter.post('/', roleValidator, addVoucherValidator, wrapAsync(addVoucherController));
+
+voucherRouter.get(
+  '/all',
+  accessTokenValidator,
+  paginationValidator,
+  wrapAsync(getAllVoucherController),
+);
+
+voucherRouter.patch('/', roleValidator, editVoucherValidator, wrapAsync(updateVoucherController));
 
 export default voucherRouter;

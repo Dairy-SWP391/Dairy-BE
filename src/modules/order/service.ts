@@ -11,11 +11,18 @@ import HTTP_STATUS from '~/constants/httpsStatus';
 import { CartListType } from './schema';
 import { GetFeeType } from '../ship/schema';
 import orderDetailService from '../orderDetail/service';
+import voucherService from '../voucher/service';
 
 config();
 
 class OrderService {
-  async convertCartList(cart_list: CartListItem[]): Promise<CartListType> {
+  async convertCartList({
+    cart_list,
+    voucher_code,
+  }: {
+    cart_list: CartListItem[];
+    voucher_code?: string;
+  }): Promise<CartListType> {
     // danh sách các product_id mà người dùng đã truyền lên trong cart_list
     const productCartIdListPrev = cart_list.reduce((result: number[], item) => {
       result.push(Number(item.product_id));
@@ -133,6 +140,10 @@ class OrderService {
         ? (totalMoney += item.sale_price * item.quantity)
         : (totalMoney += item.price * item.quantity);
     });
+    if (voucher_code) {
+      const voucher = await voucherService.getVoucherByCode(voucher_code);
+      totalMoney -= voucher?.value || 0;
+    }
     return {
       cart_list: result,
       allQuality,

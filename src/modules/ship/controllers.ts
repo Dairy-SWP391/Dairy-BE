@@ -51,12 +51,13 @@ export const getFeeController = async (
   res: Response,
 ) => {
   const feeReq = omit(req.body, ['cart_list']);
+  const { voucher_code } = req.body;
   // tính tiền hàng trong cart
   // danh sách sản phẩm trong cart
   // hiển thị tiền của hàng hóa
   // hiển thị kích thước packege gói hàng
   const cart_list = req.body.cart_list;
-  const cartList = await orderService.convertCartList(cart_list);
+  const cartList = await orderService.convertCartList({ cart_list, voucher_code });
   const fee = await shipServices.getFee(feeReq, cartList);
   return res.json({ ...cartList, fee });
 };
@@ -66,7 +67,6 @@ export const createOrderController = async (
   res: Response,
 ) => {
   const userId = req.decoded_authorization.user_id as string;
-  const cartList = await orderService.convertCartList(req.body.cart_list);
   const {
     service_id,
     to_district_id,
@@ -75,7 +75,14 @@ export const createOrderController = async (
     phone_number,
     receiver_name,
     content,
+    cart_list,
+    voucher_code,
   } = req.body;
+  const cartList = await orderService.convertCartList({
+    cart_list,
+    voucher_code,
+  });
+
   const getFreePackage = {
     service_id,
     to_district_id,
