@@ -82,6 +82,7 @@ model Product {
   num_of_packs     Int?
   OrderDetail     OrderDetail[]
   ProductPricing  ProductPricing[]
+  Feedback        Feedback[]
   brand           Brand            @relation(fields: [brand_id], references: [id])
   category        Category         @relation(fields: [category_id], references: [id])
   WishList        WishList[]
@@ -183,6 +184,7 @@ model Order {
   to_ward_code   Int
   order_ghn_code String?
   expected_delivery_time String?
+  cancel_reason  String?
   OrderDetail    OrderDetail[]
   user           User          @relation(fields: [user_id], references: [id])
   Transaction    Transaction?
@@ -229,6 +231,8 @@ model Feedback {
   created_at      DateTime    @default(now())
   rating_point    Float
   order_detail_id Int         @unique
+  product_id      Int
+  product         Product     @relation(fields: [product_id], references: [id])
   order_detail    OrderDetail @relation(fields: [order_detail_id], references: [id])
   user            User        @relation(fields: [user_id], references: [id])
 
@@ -385,6 +389,7 @@ enum products_ship_category_id {
 enum orders_status {
   PENDING
   SUCCESS
-  FAIL
+  CANCELLED
+  DELIVERING
 }
 

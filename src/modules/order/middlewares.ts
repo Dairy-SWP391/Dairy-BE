@@ -8,8 +8,30 @@ import { ErrorWithStatus } from '../error/entityError';
 import { ORDER_MESSAGES } from './messages';
 import { GetFeeReqBody } from '../ship/requests';
 import { validate } from '~/utils/validation';
-import { checkSchema } from 'express-validator';
+import { checkSchema, ParamSchema } from 'express-validator';
 import { DatabaseInstance } from '~/database/database.services';
+
+const OrderIdSchema: ParamSchema = {
+  notEmpty: {
+    errorMessage: ORDER_MESSAGES.ORDER_ID_IS_REQUIRED,
+  },
+  isNumeric: {
+    errorMessage: ORDER_MESSAGES.ORDER_ID_MUST_BE_NUMBER,
+  },
+  custom: {
+    options: async (value) => {
+      const order = await DatabaseInstance.getPrismaInstance().order.findUnique({
+        where: {
+          id: Number(value),
+        },
+      });
+      if (!order) {
+        throw new Error(ORDER_MESSAGES.ORDER_ID_IS_INVALID);
+      }
+      return true;
+    },
+  },
+};
 
 export const checkCartValidMiddleware = async (
   req: Request<ParamsDictionary, any, GetFeeReqBody>,
@@ -39,25 +61,19 @@ export const checkCartValidMiddleware = async (
 
 export const getOrderDetailValidator = validate(
   checkSchema({
-    order_id: {
+    order_id: OrderIdSchema,
+  }),
+);
+
+export const cancelOrderValidator = validate(
+  checkSchema({
+    order_id: OrderIdSchema,
+    cancel_reason: {
       notEmpty: {
-        errorMessage: ORDER_MESSAGES.ORDER_ID_IS_REQUIRED,
+        errorMessage: ORDER_MESSAGES.CANCEL_REASON_IS_REQUIRED,
       },
-      isNumeric: {
-        errorMessage: ORDER_MESSAGES.ORDER_ID_MUST_BE_NUMBER,
-      },
-      custom: {
-        options: async (value) => {
-          const order = await DatabaseInstance.getPrismaInstance().order.findUnique({
-            where: {
-              id: Number(value),
-            },
-          });
-          if (!order) {
-            throw new Error(ORDER_MESSAGES.ORDER_ID_IS_INVALID);
-          }
-          return true;
-        },
+      isString: {
+        errorMessage: ORDER_MESSAGES.CANCEL_REASON_MUST_BE_STRING,
       },
     },
   }),

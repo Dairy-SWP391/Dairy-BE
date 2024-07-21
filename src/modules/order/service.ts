@@ -182,7 +182,7 @@ class OrderService {
         end_price: cartList.totalMoney + fee.total - 0,
         ship_fee: fee.total,
         discount: 0,
-        status: 'PENDING',
+        status: 'DELIVERING',
         service_id: Number(service_id),
         to_district_id: Number(to_district_id),
         to_ward_code: Number(to_ward_code),
@@ -314,6 +314,41 @@ class OrderService {
     });
 
     return orders;
+  }
+
+  async getOrderReport() {
+    const total_orders = await DatabaseInstance.getPrismaInstance().order.count();
+    const successful_orders = await DatabaseInstance.getPrismaInstance().order.count({
+      where: {
+        status: 'SUCCESS',
+      },
+    });
+    const total_expense = await DatabaseInstance.getPrismaInstance().order.aggregate({
+      _sum: {
+        end_price: true,
+      },
+      where: {
+        status: 'SUCCESS',
+      },
+    });
+
+    return {
+      total_orders,
+      successful_orders,
+      total_expense: total_expense._sum.end_price,
+    };
+  }
+
+  async cancelOrder({ order_id, cancel_reason }: { order_id: number; cancel_reason: string }) {
+    await DatabaseInstance.getPrismaInstance().order.update({
+      where: {
+        id: Number(order_id),
+      },
+      data: {
+        status: 'CANCELLED',
+        cancel_reason,
+      },
+    });
   }
 }
 

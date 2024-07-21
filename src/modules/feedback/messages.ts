@@ -9,4 +9,8 @@ export const FEEDBACK_MESSAGES = {
   RATING_POINT_MUST_BE_A_NUMBER: 'Rating point must be a number',
   RATING_POINT_MUST_BE_BEWTEEN_1_AND_5: 'Rating point must be between 1 and 5',
   FEEDBACK_CREATED_SUCCESSFULLY: 'Feedback created successfully',
+  PRODUCT_ID_REQUIRED: 'Product id is required',
+  PRODUCT_ID_MUST_BE_A_NUMBER: 'Product id must be a number',
+  PRODUCT_NOT_FOUND: 'Product not found',
+  GET_FEEDBACK_SUCCESSFULLy: 'Get feedback successfully',
 };

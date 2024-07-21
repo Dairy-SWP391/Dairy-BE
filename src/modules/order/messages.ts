@@ -10,4 +10,8 @@ export const ORDER_MESSAGES = {
   ORDER_ID_MUST_BE_NUMBER: 'Order_id must be number',
   ORDER_ID_IS_INVALID: 'Order_id is invalid',
   GET_ALL_ORDERS_SUCCESS: 'Get all orders success',
+  GET_ORDER_REPORT_SUCCESS: 'Get order report success',
+  CANCEL_REASON_IS_REQUIRED: 'Cancel reason is required',
+  CANCEL_REASON_MUST_BE_STRING: 'Cancel reason must be string',
+  CANCEL_ORDER_SUCCESS: 'Cancel order success',
 } as const;

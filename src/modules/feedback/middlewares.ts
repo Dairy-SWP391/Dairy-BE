@@ -2,6 +2,8 @@ import { checkSchema } from 'express-validator';
 import { DatabaseInstance } from '~/database/database.services';
 import { validate } from '~/utils/validation';
 import { FEEDBACK_MESSAGES } from './messages';
+import productService from '../product/service';
+
 export const feedbackValidator = validate(
   checkSchema(
     {
@@ -63,5 +65,25 @@ export const feedbackValidator = validate(
       },
     },
     ['body'],
+  ),
+);
+
+export const getFeedbackValidator = validate(
+  checkSchema(
+    {
+      product_id: {
+        notEmpty: { errorMessage: FEEDBACK_MESSAGES.PRODUCT_ID_REQUIRED },
+        isNumeric: { errorMessage: FEEDBACK_MESSAGES.PRODUCT_ID_MUST_BE_A_NUMBER },
+        custom: {
+          options: async (value) => {
+            const product = await productService.getProductById(value);
+            if (!product) {
+              throw new Error(FEEDBACK_MESSAGES.PRODUCT_NOT_FOUND);
+            }
+          },
+        },
+      },
+    },
+    ['query'],
   ),
 );

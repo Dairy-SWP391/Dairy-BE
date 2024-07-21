@@ -30,6 +30,8 @@ class VoucherService {
         ...voucher,
         code: voucher.code ? voucher.code : code,
         quantity: Number(voucher.quantity),
+        trading_point: Number(voucher.trading_point),
+        value: Number(voucher.value),
       },
     });
 
@@ -109,10 +111,10 @@ class VoucherService {
       },
       data: {
         expired_at,
-        quantity,
+        quantity: Number(quantity),
         status,
-        trading_point,
-        value,
+        trading_point: Number(trading_point),
+        value: Number(value),
       },
     });
 
