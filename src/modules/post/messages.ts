@@ -23,4 +23,8 @@ export const POST_MESSAGES = {
   POST_NOT_FOUND: 'Post not found',
   GET_POST_DETAIL_SUCCESS: 'Get post detail success',
   GET_ALL_POST_SUCCESS: 'Get all post success',
+  POST_ID_IS_REQUIRED: 'Post id is required',
+  POST_ID_MUST_BE_A_NUMBER: 'Post id must be a number',
+  INVALID_POST_ID: 'Invalid post id',
+  POST_ID_NOT_FOUND: 'Post id not found',
 } as const;
