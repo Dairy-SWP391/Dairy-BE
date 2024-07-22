@@ -14,7 +14,6 @@ import {
   roleValidator,
   updateUserValidator,
   deleteUserValidator,
-  memberValidator,
   addProductToWishListValidator,
   deleteProductFromWishListValidator,
   getWishListValidator,
@@ -98,20 +97,20 @@ userRouter.delete(
 
 userRouter.post(
   '/add-wishlist',
-  memberValidator,
+  accessTokenValidator,
   addProductToWishListValidator,
   wrapAsync(addProductToWishListController),
 );
 
 userRouter.get(
   '/wishlist',
-  memberValidator,
+  accessTokenValidator,
   getWishListValidator,
   wrapAsync(getWishListController),
 );
 userRouter.delete(
   '/delete-wishlist',
-  memberValidator,
+  accessTokenValidator,
   deleteProductFromWishListValidator,
   wrapAsync(deleteProductFromWishListController),
 );
