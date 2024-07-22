@@ -22,4 +22,5 @@ export const POST_MESSAGES = {
   POST_CATOGORY_MUST_BE_STRING: 'Post category must be a string',
   POST_NOT_FOUND: 'Post not found',
   GET_POST_DETAIL_SUCCESS: 'Get post detail success',
-};
+  GET_ALL_POST_SUCCESS: 'Get all post success',
+} as const;

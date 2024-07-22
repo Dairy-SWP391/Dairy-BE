@@ -49,6 +49,7 @@ export const getProductsByCategorySortAndPaginateController = async (
     message: PRODUCT_MESSAGES.GET_PRODUCT_BASED_ON_CATEGORY_SORT_PAGINATION_SUCCESS,
   });
 };
+
 export const searchProductController = async (req: Request, res: Response) => {
   const { search, num_of_items_per_page, page } = req.query;
 

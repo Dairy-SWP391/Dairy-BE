@@ -20,6 +20,7 @@ export interface GetFeeReqBody {
   receiver_name: string;
   phone_number: string;
   address: string;
+  voucher_code?: string;
 }
 export interface PackageCreateOrderReqBody extends GetFeeReqBody {
   to_phone: string;

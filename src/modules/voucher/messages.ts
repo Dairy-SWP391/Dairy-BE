@@ -1,0 +1,21 @@
+export const VOUCHER_MESSAGES = {
+  // ADD VOUCHER
+  VALUE_IS_REQUIRED: 'Value is required',
+  VALUE_MUST_BE_NUMERIC: 'Value must be numeric',
+  TRADING_POINT_IS_REQUIRED: 'Trading point is required',
+  TRADING_POINT_MUST_BE_NUMERIC: 'Trading point must be numeric',
+  EXPIRED_AT_IS_REQUIRED: 'Expired at is required',
+  EXPIRED_AT_MUST_BE_ISO8601: 'Expired at must be ISO8601',
+  QUANTITY_IS_REQUIRED: 'Quantity is required',
+  QUANTITY_MUST_BE_NUMERIC: 'Quantity must be numeric',
+  ADD_VOUCHER_SUCCESSFULLY: 'Add voucher successfully',
+  STATUS_MUST_BE_ACTIVE_OR_INACTIVE: 'Status must be ACTIVE or INACTIVE',
+  STATUS_MUST_BE_STRING: 'Status must be string',
+  CODE_MUST_BE_STRING: 'Code must be string',
+  CODE_MUST_BE_LESS_THAN_8_CHARACTERS: 'Code must be less than 8 characters',
+  GET_ALL_VOUCHER_SUCCESSFULLY: 'Get all voucher successfully',
+  ID_IS_NOT_EXIST: 'Id is not exist',
+  ID_IS_REQUIRED: 'Id is required',
+  ID_MUST_BE_NUMERIC: 'Id must be numeric',
+  UPDATE_VOUCHER_SUCCESSFULLY: 'Update voucher successfully',
+} as const;

@@ -188,15 +188,17 @@ class ProductService {
           // if (products.length < payload.num_of_product) {
           //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           // }
-          if (products.length < payload.num_of_product) {
-            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
-          } else {
-            totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
-          }
+          // console.log(products.length);
+          // if (products.length < payload.num_of_product) {
+          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          // } else {
+          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          // }
+          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           if (payload.page == totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
-            const res = products.splice(skip, payload.num_of_product - skip);
+            const res = products.splice(skip, products.length - skip);
             return { totalPage, products: res };
           } else if (payload.page < totalPage) {
             // nếu không phải trang cuối cùng thì lấy số sản phẩm theo số sản phẩm trên 1 trang
@@ -1068,6 +1070,14 @@ class ProductService {
     }
 
     return { ...product, ...product_pricing, images: image_urls };
+  }
+
+  async getProductById(id: number) {
+    return await DatabaseInstance.getPrismaInstance().product.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
   }
 }
 

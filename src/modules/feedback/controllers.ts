@@ -19,3 +19,12 @@ export const giveFeedbackController = async (
   });
   res.json({ message: FEEDBACK_MESSAGES.FEEDBACK_CREATED_SUCCESSFULLY, result: feedback });
 };
+
+export const getFeedbackController = async (
+  req: Request<ParamsDictionary, any, any>,
+  res: Response,
+) => {
+  const { product_id } = req.query;
+  const feedbacks = await feedbackService.getFeedbackByProductId(Number(product_id));
+  return res.json({ message: FEEDBACK_MESSAGES.GET_FEEDBACK_SUCCESSFULLy, result: feedbacks });
+};

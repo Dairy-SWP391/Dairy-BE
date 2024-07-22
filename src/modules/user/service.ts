@@ -198,6 +198,7 @@ class UserService {
         avatar_url: true,
         role: true,
         status: true,
+        point: true,
       },
     });
   }
@@ -205,9 +206,9 @@ class UserService {
   private async getGoogleToken(code: string) {
     const body = {
       code,
-      client_id: process.env.GOOGLE_CLIENT_ID!,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI!,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
       grant_type: 'authorization_code',
     };
     const { data } = await axios.post('https://oauth2.googleapis.com/token', body, {

@@ -38,7 +38,6 @@ model User {
   RefreshToken          RefreshToken[]
   HandlerReports        Report[]       @relation("Handler")
   ReporterReports       Report[]       @relation("Reporter")
-  Voucher               Voucher[]
   WishList              WishList[]
 
   @@map("users")
@@ -83,6 +82,7 @@ model Product {
   num_of_packs     Int?
   OrderDetail     OrderDetail[]
   ProductPricing  ProductPricing[]
+  Feedback        Feedback[]
   brand           Brand            @relation(fields: [brand_id], references: [id])
   category        Category         @relation(fields: [category_id], references: [id])
   WishList        WishList[]
@@ -184,6 +184,7 @@ model Order {
   to_ward_code   Int
   order_ghn_code String?
   expected_delivery_time String?
+  cancel_reason  String?
   OrderDetail    OrderDetail[]
   user           User          @relation(fields: [user_id], references: [id])
   Transaction    Transaction?
@@ -230,6 +231,8 @@ model Feedback {
   created_at      DateTime    @default(now())
   rating_point    Float
   order_detail_id Int         @unique
+  product_id      Int
+  product         Product     @relation(fields: [product_id], references: [id])
   order_detail    OrderDetail @relation(fields: [order_detail_id], references: [id])
   user            User        @relation(fields: [user_id], references: [id])
 
@@ -256,12 +259,15 @@ model Voucher {
   trading_point Int
   created_at    DateTime @default(now())
   expired_at    DateTime
-  status        Boolean
-  user_id       String?
-  user          User?    @relation(fields: [user_id], references: [id])
+  status        VOUCHER_STATUS
+  quantity      Int
 
-  @@index([user_id], map: "vouchers_user_id_fkey")
   @@map("vouchers")
+}
+
+enum VOUCHER_STATUS {
+  ACTIVE
+  INACTIVE
 }
 
 model Report {
@@ -383,6 +389,7 @@ enum products_ship_category_id {
 enum orders_status {
   PENDING
   SUCCESS
-  FAIL
+  CANCELLED
+  DELIVERING
 }
 

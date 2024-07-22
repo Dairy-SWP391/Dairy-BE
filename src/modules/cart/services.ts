@@ -5,10 +5,8 @@ import { DatabaseInstance } from '~/database/database.services';
 class CartService {
   async getCart(payload: CartItemReqBody[]) {
     const products: CartProduct[] = [];
-    let maxQuantity = 0;
     await Promise.all(
       payload.map(async (item) => {
-        maxQuantity += item.quantity;
         const product = await DatabaseInstance.getPrismaInstance().product.findUnique({
           where: {
             id: item.id,
@@ -16,6 +14,7 @@ class CartService {
           select: {
             id: true,
             name: true,
+            quantity: true,
           },
         });
         if (product) {
@@ -55,7 +54,6 @@ class CartService {
     );
     return {
       products: productsWithPriceDetails,
-      max_quantity: maxQuantity,
     };
   }
 }

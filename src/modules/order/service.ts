@@ -11,11 +11,18 @@ import HTTP_STATUS from '~/constants/httpsStatus';
 import { CartListType } from './schema';
 import { GetFeeType } from '../ship/schema';
 import orderDetailService from '../orderDetail/service';
+import voucherService from '../voucher/service';
 
 config();
 
 class OrderService {
-  async convertCartList(cart_list: CartListItem[]): Promise<CartListType> {
+  async convertCartList({
+    cart_list,
+    voucher_code,
+  }: {
+    cart_list: CartListItem[];
+    voucher_code?: string;
+  }): Promise<CartListType> {
     // danh sách các product_id mà người dùng đã truyền lên trong cart_list
     const productCartIdListPrev = cart_list.reduce((result: number[], item) => {
       result.push(Number(item.product_id));
@@ -133,6 +140,10 @@ class OrderService {
         ? (totalMoney += item.sale_price * item.quantity)
         : (totalMoney += item.price * item.quantity);
     });
+    if (voucher_code) {
+      const voucher = await voucherService.getVoucherByCode(voucher_code);
+      totalMoney -= voucher?.value || 0;
+    }
     return {
       cart_list: result,
       allQuality,
@@ -171,7 +182,7 @@ class OrderService {
         end_price: cartList.totalMoney + fee.total - 0,
         ship_fee: fee.total,
         discount: 0,
-        status: 'PENDING',
+        status: 'DELIVERING',
         service_id: Number(service_id),
         to_district_id: Number(to_district_id),
         to_ward_code: Number(to_ward_code),
@@ -303,6 +314,41 @@ class OrderService {
     });
 
     return orders;
+  }
+
+  async getOrderReport() {
+    const total_orders = await DatabaseInstance.getPrismaInstance().order.count();
+    const successful_orders = await DatabaseInstance.getPrismaInstance().order.count({
+      where: {
+        status: 'SUCCESS',
+      },
+    });
+    const total_expense = await DatabaseInstance.getPrismaInstance().order.aggregate({
+      _sum: {
+        end_price: true,
+      },
+      where: {
+        status: 'SUCCESS',
+      },
+    });
+
+    return {
+      total_orders,
+      successful_orders,
+      total_expense: total_expense._sum.end_price,
+    };
+  }
+
+  async cancelOrder({ order_id, cancel_reason }: { order_id: number; cancel_reason: string }) {
+    await DatabaseInstance.getPrismaInstance().order.update({
+      where: {
+        id: Number(order_id),
+      },
+      data: {
+        status: 'CANCELLED',
+        cancel_reason,
+      },
+    });
   }
 }
 

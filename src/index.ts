@@ -19,6 +19,7 @@ import chatRoomRouter from './modules/chat_room/routes';
 import brandRouter from './modules/brand/routes';
 import feedbackRouter from './modules/feedback/routes';
 import orderRouter from './modules/order/routes';
+import voucherRouter from './modules/voucher/routes';
 
 config();
 
@@ -126,6 +127,8 @@ app.use('/conversations', chatRoomRouter);
 app.use('/brand', brandRouter);
 
 app.use('/order', orderRouter);
+
+app.use('/voucher', voucherRouter);
 
 app.use('/feedback', feedbackRouter);
 // error handler
