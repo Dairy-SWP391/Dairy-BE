@@ -27,7 +27,7 @@ config();
 // const isProduction = process.env.NODE_ENV === 'production';
 
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: 'https://dairy.engineer',
   credentials: true, // access-control-allow-credentials:true
   allowedHeaders: ['Content-Type', 'Authorization'], // access-control-allow-headers
   optionSuccessStatus: 200,
@@ -42,7 +42,7 @@ app.use(json());
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: 'https://dairy.engineer',
   },
 });
 
