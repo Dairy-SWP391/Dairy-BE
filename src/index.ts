@@ -26,7 +26,7 @@ config();
 // const isProduction = process.env.NODE_ENV === 'production';
 
 const corsOptions = {
-  origin: 'https://oyster-app-kl49u.ondigitalocean.app',
+  origin: 'https://dairy.engineer',
   credentials: true, // access-control-allow-credentials:true
   allowedHeaders: ['Content-Type', 'Authorization'], // access-control-allow-headers
   optionSuccessStatus: 200,
@@ -41,7 +41,7 @@ app.use(json());
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: 'https://oyster-app-kl49u.ondigitalocean.app',
+    origin: 'https://dairy.engineer',
   },
 });
 
