@@ -135,16 +135,17 @@ class ProductService {
         // nếu sắp xếp theo giá thì join với bảng product_pricing
         if (payload.sort_by === 'price') {
           const products = await this.getProductByParentCategoryIdAndSortByPrice(payload);
-          if (products.length < payload.num_of_product) {
-            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
-          } else {
-            totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
-          }
+          // if (products.length < payload.num_of_product) {
+          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          // } else {
+          //   totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
+          // }
+          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
 
           if (payload.page === totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
-            const res = products.splice(skip, payload.num_of_product - skip);
+            const res = products.splice(skip, products.length - skip);
             return { totalPage, products: res };
           } else if (payload.page < totalPage) {
             // nếu không phải trang cuối cùng thì lấy số sản phẩm theo số sản phẩm trên 1 trang
@@ -161,15 +162,17 @@ class ProductService {
           // if (products.length < payload.num_of_product) {
           //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           // }
-          if (products.length < payload.num_of_product) {
-            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
-          } else {
-            totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
-          }
+          // if (products.length < payload.num_of_product) {
+          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          // } else {
+          //   totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
+          // }
+
+          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           if (payload.page == totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
-            const res = products.splice(skip, payload.num_of_product - skip);
+            const res = products.splice(skip, products.length - skip);
             return { totalPage, products: res };
           } else if (payload.page < totalPage) {
             // nếu không phải trang cuối cùng thì lấy số sản phẩm theo số sản phẩm trên 1 trang
@@ -216,16 +219,18 @@ class ProductService {
           // nếu sắp xếp theo giá thì join với bảng product_pricing
           const products = await this.getProductByCategoryIDAndSortByPrice(payload);
 
-          if (products.length < payload.num_of_product) {
-            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
-          } else {
-            totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
-          }
+          // if (products.length < payload.num_of_product) {
+          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          // } else {
+          //   totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
+          // }
+
+          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
 
           if (payload.page == totalPage) {
             // nếu là trang cuối cùng thì lấy hết số sản phẩm còn lại
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
-            const res = products.splice(skip, payload.num_of_product - skip);
+            const res = products.splice(skip, products.length - skip);
             return { totalPage, products: res };
           } else if (payload.page < totalPage) {
             // nếu không phải trang cuối cùng thì lấy số sản phẩm theo số sản phẩm trên 1 trang
@@ -260,15 +265,15 @@ class ProductService {
           // sắp xếp theo rating_point | sold | id
           const products = await this.getProductByCategoryIDAndSortByRatingPoint_Sold_ID(payload);
 
-          if (products.length < payload.num_of_product) {
-            totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
-          } else {
-            totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
-          }
-
-          if (payload.page == totalPage) {
+          // if (products.length < payload.num_of_product) {
+          //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          // } else {
+          //   totalPage = Math.ceil(payload.num_of_product / payload.num_of_items_per_page);
+          // }
+          totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
+          if (payload.page === totalPage) {
             const skip = (payload.page - 1) * payload.num_of_items_per_page;
-            const res = products.splice(skip, payload.num_of_product - skip);
+            const res = products.splice(skip, products.length - skip);
             return { totalPage, products: res };
           } else if (payload.page < totalPage) {
             const skip = (payload.page - 1) * payload.num_of_items_per_page;

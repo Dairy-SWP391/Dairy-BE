@@ -143,12 +143,11 @@ export const getPostDetailValidator = validate(
               throw new Error(POST_MESSAGES.INVALID_CATEGORY_ID);
             }
 
-            const post_category_id =
-              await DatabaseInstance.getPrismaInstance().postCategory.findUnique({
-                where: {
-                  id: Number(value),
-                },
-              });
+            const post_category_id = await DatabaseInstance.getPrismaInstance().post.findUnique({
+              where: {
+                id: Number(value),
+              },
+            });
             if (!post_category_id) {
               throw new Error(POST_MESSAGES.POST_CATOGORY_ID_NOT_FOUND);
             }
