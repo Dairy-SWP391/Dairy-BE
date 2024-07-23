@@ -87,3 +87,5 @@ export const getFeedbackValidator = validate(
     ['query'],
   ),
 );
+
+export const sendFeedbackValidator = validate(checkSchema({}));

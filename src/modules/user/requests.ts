@@ -43,6 +43,7 @@ export interface UpdateMeReqBody {
 export interface UpdateUserReqBody {
   user_id: string;
   status: UserVerifyStatus;
+  ban_reason: string;
 }
 export interface deleteUserReqBody {
   user_id: string;

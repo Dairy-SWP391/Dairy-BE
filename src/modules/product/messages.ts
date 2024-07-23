@@ -23,6 +23,7 @@ export const PRODUCT_MESSAGES = {
   ORIGIN_MUST_BE_STRING: 'Origin must be a string',
   ORIGIN_LENGTH_MUST_BE_FROM_1_TO_50: 'Origin length must be from 1 to 50',
   PRODUCER_MUST_BE_STRING: 'Producer must be a string',
+  GET_BRAND_NAME_SUCCESS: 'Get brand name success',
   PRODUCER_LENGTH_MUST_BE_FROM_1_TO_50: 'Producer length must be from 1 to 50',
   MANUFACTURED_AT_MUST_BE_STRING: 'Manufactured at must be a string',
   MANUFACTURED_AT_LENGTH_MUST_BE_FROM_1_TO_200: 'Manufactured at length must be from 1 to 200',

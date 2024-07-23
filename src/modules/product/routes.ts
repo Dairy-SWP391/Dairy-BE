@@ -7,6 +7,8 @@ import {
   searchProductController,
   deleteProductController,
   updateProductController,
+  getBrandNameController,
+  getProductsByCategorySortAndPaginateAdminController,
 } from './controllers';
 import {
   roleValidator,
@@ -30,6 +32,13 @@ productRouter.post(
   getProductsByCategorySortAndPaginateValidator,
   wrapAsync(getProductsByCategorySortAndPaginateController),
 );
+
+productRouter.post(
+  '/get-product-admin',
+  getProductsByCategorySortAndPaginateValidator,
+  wrapAsync(getProductsByCategorySortAndPaginateAdminController),
+);
+
 productRouter.get('/search-product', searchProductValidator, wrapAsync(searchProductController));
 
 productRouter.delete(
@@ -48,5 +57,7 @@ productRouter.patch(
 );
 
 productRouter.get('/:id', wrapAsync(getProductDetailController));
+
+productRouter.get('/brand_name/:id', wrapAsync(getBrandNameController));
 
 export default productRouter;

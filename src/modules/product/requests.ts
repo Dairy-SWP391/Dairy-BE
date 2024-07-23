@@ -69,7 +69,8 @@ export interface UpdateProductReqBody {
   quantity?: number;
   rating_number?: number;
   rating_point?: number;
-  brand_id?: number;
+  // brand_id?: number;
+  brand_name: string;
   origin?: string;
   producer?: string;
   manufactured_at?: string;

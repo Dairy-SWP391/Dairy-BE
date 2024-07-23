@@ -132,24 +132,24 @@ export const getPostDetailValidator = validate(
     {
       id: {
         notEmpty: {
-          errorMessage: POST_MESSAGES.POST_CATOGERY_ID_IS_REQUIRED,
+          errorMessage: POST_MESSAGES.POST_ID_IS_REQUIRED,
         },
         isNumeric: {
-          errorMessage: POST_MESSAGES.POST_CATOGORY_ID_MUST_BE_A_NUMBER,
+          errorMessage: POST_MESSAGES.POST_ID_MUST_BE_A_NUMBER,
         },
         custom: {
           options: async (value) => {
             if (value < 1) {
-              throw new Error(POST_MESSAGES.INVALID_CATEGORY_ID);
+              throw new Error(POST_MESSAGES.INVALID_POST_ID);
             }
 
-            const post_category_id = await DatabaseInstance.getPrismaInstance().post.findUnique({
+            const post = await DatabaseInstance.getPrismaInstance().post.findUnique({
               where: {
                 id: Number(value),
               },
             });
-            if (!post_category_id) {
-              throw new Error(POST_MESSAGES.POST_CATOGORY_ID_NOT_FOUND);
+            if (!post) {
+              throw new Error(POST_MESSAGES.POST_ID_NOT_FOUND);
             }
             return true;
           },

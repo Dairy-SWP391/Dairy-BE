@@ -117,6 +117,7 @@ class ProductService {
 
   async getProductByCategorySortingAndPaginate(
     payload: getProductsByCategorySortAndPaginateBodyReq,
+    status: 'ACTIVE' | 'INACTIVE' | 'ALL' = 'ACTIVE',
   ) {
     // {
     //   "category_id": 6,
@@ -134,7 +135,7 @@ class ProductService {
       if (!payload.category_id) {
         // nếu sắp xếp theo giá thì join với bảng product_pricing
         if (payload.sort_by === 'price') {
-          const products = await this.getProductByParentCategoryIdAndSortByPrice(payload);
+          const products = await this.getProductByParentCategoryIdAndSortByPrice(payload, status);
           // if (products.length < payload.num_of_product) {
           //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           // } else {
@@ -158,7 +159,10 @@ class ProductService {
           }
         } else if (payload.sort_by === 'discount') {
           // giảm giá
-          const products = await this.getProductByParentCategoryIdAndSortByDiscount(payload);
+          const products = await this.getProductByParentCategoryIdAndSortByDiscount(
+            payload,
+            status,
+          );
           // if (products.length < payload.num_of_product) {
           //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           // }
@@ -186,8 +190,10 @@ class ProductService {
         } else {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
           // sắp xếp theo rating_point | sold | id
-          const products =
-            await this.getProductByParentCategoryIdAndSortByRatingPoint_Sold_ID(payload);
+          const products = await this.getProductByParentCategoryIdAndSortByRatingPoint_Sold_ID(
+            payload,
+            status,
+          );
           // if (products.length < payload.num_of_product) {
           //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           // }
@@ -217,7 +223,7 @@ class ProductService {
         // nếu có category_id thì lấy theo category_id
         if (payload.sort_by === 'price') {
           // nếu sắp xếp theo giá thì join với bảng product_pricing
-          const products = await this.getProductByCategoryIDAndSortByPrice(payload);
+          const products = await this.getProductByCategoryIDAndSortByPrice(payload, status);
 
           // if (products.length < payload.num_of_product) {
           //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
@@ -243,7 +249,7 @@ class ProductService {
           }
         } else if (payload.sort_by === 'discount') {
           // giảm giá
-          const products = await this.getProductByCategoryIDAndSortByDiscount(payload);
+          const products = await this.getProductByCategoryIDAndSortByDiscount(payload, status);
           if (products.length < payload.num_of_product) {
             totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
           } else {
@@ -263,7 +269,10 @@ class ProductService {
         } else {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
           // sắp xếp theo rating_point | sold | id
-          const products = await this.getProductByCategoryIDAndSortByRatingPoint_Sold_ID(payload);
+          const products = await this.getProductByCategoryIDAndSortByRatingPoint_Sold_ID(
+            payload,
+            status,
+          );
 
           // if (products.length < payload.num_of_product) {
           //   totalPage = Math.ceil(products.length / payload.num_of_items_per_page);
@@ -292,7 +301,7 @@ class ProductService {
       if (!payload.category_id) {
         // nếu không có category_id thì lấy tất cả category
         if (payload.sort_by === 'price') {
-          const products = await this.getProductByParentCategoryIdAndSortByPrice(payload);
+          const products = await this.getProductByParentCategoryIdAndSortByPrice(payload, status);
 
           if (payload.num_of_product < products.length) {
             const res = products.slice(0, payload.num_of_product);
@@ -300,7 +309,10 @@ class ProductService {
           }
           return { totalPage, products };
         } else if (payload.sort_by === 'discount') {
-          const products = await this.getProductByParentCategoryIdAndSortByDiscount(payload);
+          const products = await this.getProductByParentCategoryIdAndSortByDiscount(
+            payload,
+            status,
+          );
           if (payload.num_of_product < products.length) {
             const res = products.slice(0, payload.num_of_product);
             return { totalPage, products: res };
@@ -308,8 +320,10 @@ class ProductService {
           return { totalPage, products };
         } else {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
-          const products =
-            await this.getProductByParentCategoryIdAndSortByRatingPoint_Sold_ID(payload);
+          const products = await this.getProductByParentCategoryIdAndSortByRatingPoint_Sold_ID(
+            payload,
+            status,
+          );
           if (payload.num_of_product < products.length) {
             const res = products.slice(0, payload.num_of_product);
             return { totalPage, products: res };
@@ -319,14 +333,14 @@ class ProductService {
       } else {
         // nếu có category_id thì lấy theo category_id
         if (payload.sort_by === 'price') {
-          const products = await this.getProductByCategoryIDAndSortByPrice(payload);
+          const products = await this.getProductByCategoryIDAndSortByPrice(payload, status);
           if (payload.num_of_product < products.length) {
             const res = products.slice(0, payload.num_of_product);
             return { totalPage, products: res };
           }
           return { totalPage, products };
         } else if (payload.sort_by === 'discount') {
-          const products = await this.getProductByCategoryIDAndSortByDiscount(payload);
+          const products = await this.getProductByCategoryIDAndSortByDiscount(payload, status);
 
           if (payload.num_of_product < products.length) {
             const res = products.slice(0, payload.num_of_product);
@@ -335,7 +349,10 @@ class ProductService {
           return { totalPage, products: products };
         } else {
           // nếu không sắp xếp theo giá thì không join với bảng product_pricing
-          const products = await this.getProductByCategoryIDAndSortByRatingPoint_Sold_ID(payload);
+          const products = await this.getProductByCategoryIDAndSortByRatingPoint_Sold_ID(
+            payload,
+            status,
+          );
 
           if (payload.num_of_product < products.length) {
             const res = products.slice(0, payload.num_of_product);
@@ -349,6 +366,7 @@ class ProductService {
 
   async getProductByParentCategoryIdAndSortByPrice(
     payload: getProductsByCategorySortAndPaginateBodyReq,
+    status: 'ACTIVE' | 'INACTIVE' | 'ALL' = 'ACTIVE',
   ) {
     const products = await DatabaseInstance.getPrismaInstance().product.findMany({
       where: {
@@ -360,6 +378,7 @@ class ProductService {
                   not: null,
                 },
         },
+        status: status === 'ALL' ? undefined : status,
       },
       include: {
         ProductPricing: {
@@ -424,6 +443,7 @@ class ProductService {
 
   async getProductByParentCategoryIdAndSortByRatingPoint_Sold_ID(
     payload: getProductsByCategorySortAndPaginateBodyReq,
+    status: 'ACTIVE' | 'INACTIVE' | 'ALL' = 'ACTIVE',
   ) {
     const products = await DatabaseInstance.getPrismaInstance().product.findMany({
       where: {
@@ -435,6 +455,7 @@ class ProductService {
                   not: null,
                 },
         },
+        status: status === 'ALL' ? undefined : status,
       },
       include: {
         ProductPricing: {
@@ -484,12 +505,16 @@ class ProductService {
     return this.getProductWithImages(productsWithParentCategoryId);
   }
 
-  async getProductByCategoryIDAndSortByPrice(payload: getProductsByCategorySortAndPaginateBodyReq) {
+  async getProductByCategoryIDAndSortByPrice(
+    payload: getProductsByCategorySortAndPaginateBodyReq,
+    status: 'ACTIVE' | 'INACTIVE' | 'ALL' = 'ACTIVE',
+  ) {
     const products = await DatabaseInstance.getPrismaInstance().product.findMany({
       where: {
         category: {
           id: payload.category_id,
         },
+        status: status === 'ALL' ? undefined : status,
       },
       include: {
         ProductPricing: {
@@ -553,12 +578,14 @@ class ProductService {
 
   async getProductByCategoryIDAndSortByRatingPoint_Sold_ID(
     payload: getProductsByCategorySortAndPaginateBodyReq,
+    status: 'ACTIVE' | 'INACTIVE' | 'ALL' = 'ACTIVE',
   ) {
     const products = await DatabaseInstance.getPrismaInstance().product.findMany({
       where: {
         category: {
           id: payload.category_id,
         },
+        status: status === 'ALL' ? undefined : status,
       },
       orderBy: {
         [payload.sort_by || 'id']: payload.order_by === 'DESC' ? 'desc' : 'asc',
@@ -635,12 +662,14 @@ class ProductService {
 
   async getProductByCategoryIDAndSortByDiscount(
     payload: getProductsByCategorySortAndPaginateBodyReq,
+    status: 'ACTIVE' | 'INACTIVE' | 'ALL' = 'ACTIVE',
   ) {
     const products = await DatabaseInstance.getPrismaInstance().product.findMany({
       where: {
         category: {
           id: payload.category_id,
         },
+        status: status === 'ALL' ? undefined : status,
       },
       include: {
         ProductPricing: {
@@ -717,6 +746,7 @@ class ProductService {
 
   async getProductByParentCategoryIdAndSortByDiscount(
     payload: getProductsByCategorySortAndPaginateBodyReq,
+    status: 'ACTIVE' | 'INACTIVE' | 'ALL' = 'ACTIVE',
   ) {
     const products = await DatabaseInstance.getPrismaInstance().product.findMany({
       where: {
@@ -728,6 +758,7 @@ class ProductService {
                   not: null,
                 },
         },
+        status: status === 'ALL' ? undefined : status,
       },
       include: {
         ProductPricing: {
@@ -807,6 +838,7 @@ class ProductService {
         name: {
           contains: search,
         },
+        status: 'ACTIVE',
       },
       include: {
         category: {
@@ -907,16 +939,28 @@ class ProductService {
   }
 
   async updateProduct(payload: UpdateProductReqBody) {
+    let brand = await DatabaseInstance.getPrismaInstance().brand.findFirst({
+      where: {
+        name: payload.brand_name,
+      },
+    });
+    if (!brand) {
+      brand = await DatabaseInstance.getPrismaInstance().brand.create({
+        data: {
+          name: payload.brand_name,
+        },
+      });
+    }
     const product = await DatabaseInstance.getPrismaInstance().product.update({
       where: {
         id: payload.id,
       },
       data: {
         name: payload.name,
-        quantity: payload.quantity,
+        quantity: Number(payload.quantity),
         rating_number: payload.rating_number,
         rating_point: payload.rating_point,
-        brand_id: payload.brand_id,
+        brand_id: brand.id,
         origin: payload.origin,
         producer: payload.producer,
         manufactured_at: payload.manufactured_at,
@@ -929,7 +973,7 @@ class ProductService {
         preservation: payload.preservation,
         description: payload.description,
         status: payload.status === 'ACTIVE' ? products_status.ACTIVE : products_status.INACTIVE,
-        category_id: payload.category_id,
+        category_id: Number(payload.category_id),
         num_of_packs: payload.num_of_packs,
         ship_category_id: payload.ship_category_id,
       },

@@ -124,6 +124,7 @@ export const USER_MESSAGES = {
   UPDATE_USER_SUCCESS: 'Update user successfully',
   USER_CANNOT_BE_UPDATED: 'User cannot be updated',
   STATUS_MUST_BE_UNVERIFIED_VERIFIED_BANNED: 'Status must be unverified, verified, banned',
+  BAN_REASON_MUST_BE_STRING: 'Ban reason must be a string',
 
   // delete user
   DELETE_USER_SUCCESS: 'Delete user successfully',

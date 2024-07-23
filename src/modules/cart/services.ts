@@ -10,6 +10,7 @@ class CartService {
         const product = await DatabaseInstance.getPrismaInstance().product.findUnique({
           where: {
             id: item.id,
+            status: 'ACTIVE',
           },
           select: {
             id: true,

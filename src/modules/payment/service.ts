@@ -15,6 +15,7 @@ import shipServices from '../ship/service';
 import { CartListType } from '../order/schema';
 import { CreateOrderParams } from '../ship/schema';
 import { DatabaseInstance } from '~/database/database.services';
+import axios from 'axios';
 
 config();
 class PaymentServices {
@@ -88,6 +89,8 @@ class PaymentServices {
     const vnp_ParamsSorted = this.sortObject(vnpayResponseNew);
     const signData = qs.stringify(vnp_ParamsSorted, { encode: false });
 
+    console.log(vnpayResponse);
+
     const hmac = crypto.createHmac('sha512', secretKey);
     const signed = hmac.update(Buffer.from(signData, 'utf8')).digest('hex');
 
@@ -110,6 +113,23 @@ class PaymentServices {
             to_ward_code: order.to_ward_code.toString(),
           },
           cartList,
+        );
+        await Promise.all(
+          cartList.cart_list.map((cart) => {
+            return DatabaseInstance.getPrismaInstance().product.update({
+              where: {
+                id: cart.id,
+              },
+              data: {
+                sold: {
+                  increment: cart.quantity,
+                },
+                quantity: {
+                  decrement: cart.quantity,
+                },
+              },
+            });
+          }),
         );
         const createOrderParam = {
           userId: order.user_id,
@@ -134,14 +154,16 @@ class PaymentServices {
           },
         });
 
-        await DatabaseInstance.getPrismaInstance().user.update({
-          where: {
-            id: order.user_id,
-          },
-          data: {
-            point: Number.parseInt((order.end_price * 0.01).toString()),
-          },
-        });
+        // await DatabaseInstance.getPrismaInstance().user.update({
+        //   where: {
+        //     id: order.user_id,
+        //   },
+        //   data: {
+        //     point: {
+        //       increment: Number.parseInt((order.end_price * 0.01).toString()),
+        //     },
+        //   },
+        // });
         // return url để redirect về trang thông tin order của đơn hàng
         const checkout_return_url = process.env.CHECKOUT_RETURN_URL;
         const urlOrderStatus = `${checkout_return_url}?&order_id=${order.id}`;
@@ -152,6 +174,45 @@ class PaymentServices {
       message: PAY_MESSAGE.RETURN_URL_IS_INVALID,
       status: HTTP_STATUS.BAD_REQUEST,
     });
+  }
+
+  async refund(data: {
+    vnp_RequestId: string;
+    vnp_TmnCode: string;
+    vnp_TransactionType: '02' | '03';
+    vnp_TxnRef: string;
+    vnp_Amount: number;
+    vnp_OrderInfo: string;
+    vnp_TransactionDate: string;
+    vnp_CreateBy: string;
+    vnp_CreateDate: string;
+    vnp_IpAddr: string;
+    vnp_SecureHash: string;
+  }) {
+    const response = await axios.post(process.env.VNP_REFUND_URL as string, {
+      ...data,
+      vnp_Command: 'refund',
+      vnp_Version: '2.1.0',
+    });
+    console.log(response);
+  }
+
+  async trackTransaction(data: {
+    vnp_RequestId: string;
+    vnp_TmnCode: string;
+    vnp_TxnRef: string;
+    vnp_OrderInfo: string;
+    vnp_TransactionDate: string;
+    vnp_CreateDate: string;
+    vnp_IpAddr: string;
+    vnp_SecureHash: string;
+  }) {
+    const response = await axios.post(process.env.VNP_QUERY_TRANSACTION_URL as string, {
+      ...data,
+      vnp_Command: 'querydr',
+      vnp_Version: '2.1.0',
+    });
+    console.log(response);
   }
 }
 

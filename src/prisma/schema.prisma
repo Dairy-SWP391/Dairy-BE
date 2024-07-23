@@ -24,6 +24,7 @@ model User {
   updated_at            DateTime       @updatedAt
   avatar_url            String         @default("https://firebasestorage.googleapis.com/v0/b/dairy-7d363.appspot.com/o/avatar.png?alt=media")
   forgot_password_token String?
+  ban_reason            String?
   point                 Int            @default(0)
   role                  ROLE           @default(MEMBER)
   status                USER_STATUS    @default(UNVERIFIED)

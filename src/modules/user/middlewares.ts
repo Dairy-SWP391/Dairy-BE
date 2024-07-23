@@ -727,6 +727,13 @@ export const updateUserValidator = validate(
           },
         },
       },
+      ban_reason: {
+        optional: true,
+        trim: true,
+        isString: {
+          errorMessage: USER_MESSAGES.BAN_REASON_MUST_BE_STRING,
+        },
+      },
     },
     ['body'],
   ),
@@ -872,7 +879,7 @@ export const deleteProductFromWishListValidator = validate(
           const user_id = req.decoded_authorization.user_id;
           const found = await DatabaseInstance.getPrismaInstance().product.findUnique({
             where: {
-              id: value,
+              id: Number(value),
             },
           });
           if (!found) {
@@ -881,7 +888,7 @@ export const deleteProductFromWishListValidator = validate(
           const product = await DatabaseInstance.getPrismaInstance().wishList.findFirst({
             where: {
               user_id: user_id,
-              product_id: value,
+              product_id: found.id,
             },
           });
           if (!product) {

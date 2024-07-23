@@ -342,6 +342,7 @@ class UserService {
         point: user.point,
         role: user.role,
         status: user.status,
+        ban_reason: user.ban_reason,
       }));
 
       const totalPage = Math.ceil(users.length / num_of_items_per_page);
@@ -371,6 +372,7 @@ class UserService {
         point: user.point,
         role: user.role,
         status: user.status,
+        ban_reason: user.ban_reason,
       }));
       if (page > 1) {
         return { total_page: 1, total_account: count, users: [] };
@@ -386,6 +388,7 @@ class UserService {
       },
       data: {
         status: upperCase(payload.status) as USER_STATUS,
+        ban_reason: upperCase(payload.status) === 'BANNED' ? payload.ban_reason : '',
       },
     });
   }

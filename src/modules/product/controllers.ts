@@ -19,6 +19,9 @@ export const getProductDetailController = async (req: Request, res: Response) =>
   if (!product) {
     return res.status(404).send(PRODUCT_MESSAGES.NOT_FOUND);
   }
+  if (product.status === 'INACTIVE') {
+    return res.status(404).send(PRODUCT_MESSAGES.NOT_FOUND);
+  }
   const prices = await productPricingsService.getProductPrice(Number(id));
   const brand = await brandService.getBrandName(product.brand_id);
   const images = await imageService.getProductImages(Number(id));
@@ -28,6 +31,23 @@ export const getProductDetailController = async (req: Request, res: Response) =>
     message: PRODUCT_MESSAGES.GET_PRODUCT_DETAIL_SUCCESS,
   });
 };
+
+export const getBrandNameController = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const product = await productService.getProductDetail(Number(id));
+  if (!product) {
+    return res.status(404).send(PRODUCT_MESSAGES.NOT_FOUND);
+  }
+  const brand = await brandService.getBrandName(product?.brand_id);
+  if (!brand) {
+    return res.status(404).send(PRODUCT_MESSAGES.NOT_FOUND);
+  }
+  res.status(200).json({
+    data: brand,
+    message: PRODUCT_MESSAGES.GET_BRAND_NAME_SUCCESS,
+  });
+};
+
 export const addProductController = async (
   req: Request<ParamsDictionary, any, AddProductBodyReq>,
   res: Response,
@@ -43,7 +63,18 @@ export const getProductsByCategorySortAndPaginateController = async (
   req: Request<ParamsDictionary, any, getProductsByCategorySortAndPaginateBodyReq>,
   res: Response,
 ) => {
-  const result = await productService.getProductByCategorySortingAndPaginate(req.body);
+  const result = await productService.getProductByCategorySortingAndPaginate(req.body, 'ACTIVE');
+  res.json({
+    data: result,
+    message: PRODUCT_MESSAGES.GET_PRODUCT_BASED_ON_CATEGORY_SORT_PAGINATION_SUCCESS,
+  });
+};
+
+export const getProductsByCategorySortAndPaginateAdminController = async (
+  req: Request<ParamsDictionary, any, getProductsByCategorySortAndPaginateBodyReq>,
+  res: Response,
+) => {
+  const result = await productService.getProductByCategorySortingAndPaginate(req.body, 'ALL');
   res.json({
     data: result,
     message: PRODUCT_MESSAGES.GET_PRODUCT_BASED_ON_CATEGORY_SORT_PAGINATION_SUCCESS,

@@ -114,7 +114,7 @@ class WishlistService {
     const product = await DatabaseInstance.getPrismaInstance().wishList.findFirst({
       where: {
         user_id,
-        product_id,
+        product_id: product_id,
       },
     });
     return await DatabaseInstance.getPrismaInstance().wishList.delete({

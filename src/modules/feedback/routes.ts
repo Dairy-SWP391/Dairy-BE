@@ -15,4 +15,11 @@ feedbackRouter.post(
 
 feedbackRouter.get('/detail-feedback', getFeedbackValidator, wrapAsync(getFeedbackController));
 
+// feedbackRouter.post(
+//   '/send-feekback',
+//   accessTokenValidator,
+//   sendFeedbackValidator,
+//   wrapAsync(sendFeedbackController),
+// );
+
 export default feedbackRouter;

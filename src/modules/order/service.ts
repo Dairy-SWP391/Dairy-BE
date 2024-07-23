@@ -198,9 +198,10 @@ class OrderService {
         id: Number(order_id),
       },
       data: {
-        status: 'SUCCESS',
+        status: 'DELIVERING',
       },
     });
+
     return order;
   }
 

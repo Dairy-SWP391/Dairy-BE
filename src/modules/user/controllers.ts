@@ -28,7 +28,7 @@ export const registerController = async (
   const user = await userService.register(req.body);
   res.json({
     message: USER_MESSAGES.REGISTER_SUCCESS,
-    data: user,
+    result: user,
   });
 };
 
