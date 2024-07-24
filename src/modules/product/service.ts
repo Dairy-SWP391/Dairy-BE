@@ -12,7 +12,7 @@ class ProductService {
   async getProductDetail(id: number) {
     return await DatabaseInstance.getPrismaInstance().product.findUnique({
       where: {
-        id,
+        id: id,
       },
     });
   }
@@ -1062,7 +1062,7 @@ class ProductService {
             },
           },
           data: {
-            price: payload.price,
+            price: Number(payload.price),
             starting_timestamp: payload.starting_timestamp,
           },
         });
@@ -1108,7 +1108,7 @@ class ProductService {
             },
           },
           data: {
-            price: payload.sale_price,
+            price: Number(payload.sale_price),
             starting_timestamp: payload.starting_timestamp,
             ending_timestamp: payload.ending_timestamp,
           },

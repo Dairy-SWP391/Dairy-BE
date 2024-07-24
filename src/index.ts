@@ -66,12 +66,27 @@ io.on('connection', async (socket) => {
   };
   console.log(users);
 
+  const availableStaff = Object.entries(users)
+    .filter((user) => user[1].role !== 'MEMBER')
+    .reduce(
+      (acc: { user_id: string; socket_id: string; role: 'STAFF' | 'ADMIN' | 'MEMBER' }[], item) => {
+        const profile = {
+          user_id: item[0],
+          socket_id: item[1].socket_id,
+          role: item[1].role,
+        };
+        return [...acc, profile];
+      },
+      [],
+    );
+
   // thêm phần lắng nghe sự kiện nhắn tin riêng
   socket.on('send_message', async (data) => {
     // vào users.user_id.socket_id để lấy đc socket_id của người nhận
     const { payload } = data;
-    const receiver_socket_id = users[payload.receiver_id]?.socket_id;
-    if (!receiver_socket_id) return;
+    const receiver_socket_id = payload.receiver_id
+      ? users[payload.receiver_id]?.socket_id
+      : availableStaff[0].socket_id;
     const chat_room_id = await chatRoomService.getChatRoomByUserId(
       payload.sender === 'MEMBER' ? payload.sender_id : payload.receiver_id,
     );
@@ -80,9 +95,11 @@ io.on('connection', async (socket) => {
       content: payload.content,
       sender: user?.role as 'STAFF' | 'MEMBER',
     });
+    if (!receiver_socket_id) return;
     // gửi tin nhắn đến người nhận gồm {nội dùng và người gữi}
     socket.to(receiver_socket_id).emit('receive_message', {
       payload: conversation,
+      staff_id: user_id,
     });
   });
 

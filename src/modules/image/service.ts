@@ -13,6 +13,7 @@ class ImageService {
     return await DatabaseInstance.getPrismaInstance().image.findMany({
       where: {
         parent_id: productId,
+        parent_type: 'PRODUCT',
       },
     });
   }

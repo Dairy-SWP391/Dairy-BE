@@ -1,5 +1,6 @@
 export const USER_MESSAGES = {
   VALIDATION_ERROR: 'Validation error',
+  ACCOUNT_BANNED: 'Account is banned',
   // username
   USERNAME_IS_REQUIRED: 'Username is required',
   USERNAME_MUST_BE_STRING: 'Username must be a string',

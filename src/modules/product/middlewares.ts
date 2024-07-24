@@ -133,13 +133,13 @@ const originSchema: ParamSchema = {
   isString: {
     errorMessage: PRODUCT_MESSAGES.ORIGIN_MUST_BE_STRING,
   },
-  isLength: {
-    options: {
-      min: 1,
-      max: 50,
-    },
-    errorMessage: PRODUCT_MESSAGES.ORIGIN_LENGTH_MUST_BE_FROM_1_TO_50,
-  },
+  // isLength: {
+  //   options: {
+  //     min: 1,
+  //     max: 50,
+  //   },
+  //   errorMessage: PRODUCT_MESSAGES.ORIGIN_LENGTH_MUST_BE_FROM_1_TO_50,
+  // },
 };
 const producerSchema: ParamSchema = {
   optional: true,
@@ -147,13 +147,13 @@ const producerSchema: ParamSchema = {
   isString: {
     errorMessage: PRODUCT_MESSAGES.PRODUCER_MUST_BE_STRING,
   },
-  isLength: {
-    options: {
-      min: 1,
-      max: 50,
-    },
-    errorMessage: PRODUCT_MESSAGES.PRODUCER_LENGTH_MUST_BE_FROM_1_TO_50,
-  },
+  // isLength: {
+  //   options: {
+  //     min: 1,
+  //     max: 50,
+  //   },
+  //   errorMessage: PRODUCT_MESSAGES.PRODUCER_LENGTH_MUST_BE_FROM_1_TO_50,
+  // },
 };
 const manufacturedAtSchema: ParamSchema = {
   optional: true,
@@ -161,13 +161,13 @@ const manufacturedAtSchema: ParamSchema = {
   isString: {
     errorMessage: PRODUCT_MESSAGES.MANUFACTURED_AT_MUST_BE_STRING,
   },
-  isLength: {
-    options: {
-      min: 1,
-      max: 50,
-    },
-    errorMessage: PRODUCT_MESSAGES.MANUFACTURED_AT_LENGTH_MUST_BE_FROM_1_TO_200,
-  },
+  // isLength: {
+  //   options: {
+  //     min: 1,
+  //     max: 50,
+  //   },
+  //   errorMessage: PRODUCT_MESSAGES.MANUFACTURED_AT_LENGTH_MUST_BE_FROM_1_TO_200,
+  // },
 };
 const targetSchema: ParamSchema = {
   optional: true,
@@ -175,13 +175,13 @@ const targetSchema: ParamSchema = {
   isString: {
     errorMessage: PRODUCT_MESSAGES.TARGET_AT_MUST_BE_STRING,
   },
-  isLength: {
-    options: {
-      min: 1,
-      max: 50,
-    },
-    errorMessage: PRODUCT_MESSAGES.ORIGIN_LENGTH_MUST_BE_FROM_1_TO_200,
-  },
+  // isLength: {
+  //   options: {
+  //     min: 1,
+  //     max: 50,
+  //   },
+  //   errorMessage: PRODUCT_MESSAGES.ORIGIN_LENGTH_MUST_BE_FROM_1_TO_200,
+  // },
 };
 const volumeSchema: ParamSchema = {
   optional: true,
@@ -201,13 +201,13 @@ const cautionSchema: ParamSchema = {
   isString: {
     errorMessage: PRODUCT_MESSAGES.CAUTION_AT_MUST_BE_STRING,
   },
-  isLength: {
-    options: {
-      min: 1,
-      max: 200,
-    },
-    errorMessage: PRODUCT_MESSAGES.CAUTION_LENGTH_MUST_BE_FROM_1_TO_200,
-  },
+  // isLength: {
+  //   options: {
+  //     min: 1,
+  //     max: 200,
+  //   },
+  //   errorMessage: PRODUCT_MESSAGES.CAUTION_LENGTH_MUST_BE_FROM_1_TO_200,
+  // },
 };
 const imageSchema: ParamSchema = {
   isArray: {
@@ -241,13 +241,13 @@ const preservationSchema: ParamSchema = {
   isString: {
     errorMessage: PRODUCT_MESSAGES.PRESERVATION_MUST_BE_STRING,
   },
-  isLength: {
-    options: {
-      min: 1,
-      max: 200,
-    },
-    errorMessage: PRODUCT_MESSAGES.PRESERVATION_LENGTH_MUST_BE_FROM_1_TO_50,
-  },
+  // isLength: {
+  //   options: {
+  //     min: 1,
+  //     max: 200,
+  //   },
+  //   errorMessage: PRODUCT_MESSAGES.PRESERVATION_LENGTH_MUST_BE_FROM_1_TO_50,
+  // },
 };
 const descriptionSchema: ParamSchema = {
   optional: true,
@@ -255,13 +255,13 @@ const descriptionSchema: ParamSchema = {
   isString: {
     errorMessage: PRODUCT_MESSAGES.DESCRIPTION_MUST_BE_STRING,
   },
-  isLength: {
-    options: {
-      min: 1,
-      max: 200,
-    },
-    errorMessage: PRODUCT_MESSAGES.DESCRIPTION_LENGTH_MUST_BE_FROM_1_TO_200,
-  },
+  // isLength: {
+  //   options: {
+  //     min: 1,
+  //     max: 200,
+  //   },
+  //   errorMessage: PRODUCT_MESSAGES.DESCRIPTION_LENGTH_MUST_BE_FROM_1_TO_200,
+  // },
 };
 const instructionSchema: ParamSchema = {
   optional: true,
@@ -269,13 +269,13 @@ const instructionSchema: ParamSchema = {
   isString: {
     errorMessage: PRODUCT_MESSAGES.INTRUCTION_MUST_BE_STRING,
   },
-  isLength: {
-    options: {
-      min: 1,
-      max: 200,
-    },
-    errorMessage: PRODUCT_MESSAGES.INSTRUCTION_LENGTH_MUST_BE_FROM_1_TO_200,
-  },
+  // isLength: {
+  //   options: {
+  //     min: 1,
+  //     max: 200,
+  //   },
+  //   errorMessage: PRODUCT_MESSAGES.INSTRUCTION_LENGTH_MUST_BE_FROM_1_TO_200,
+  // },
 };
 const category_idSchema: ParamSchema = {
   notEmpty: {

@@ -147,6 +147,17 @@ class UserService {
   }
 
   async login({ user_id, verify }: { user_id: string; verify: USER_STATUS }) {
+    const user = await DatabaseInstance.getPrismaInstance().user.findUnique({
+      where: {
+        id: user_id,
+      },
+    });
+    if (user?.status === 'BANNED') {
+      throw new ErrorWithStatus({
+        message: USER_MESSAGES.ACCOUNT_BANNED,
+        status: HTTP_STATUS.UNAUTHORIZED, // 403
+      });
+    }
     // dùng cái user_id tạo access và refresh token
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
       user_id,
