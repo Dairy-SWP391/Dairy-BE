@@ -310,9 +310,10 @@ const priceSchema: ParamSchema = {
   },
 };
 const salePriceSchema: ParamSchema = {
-  notEmpty: {
-    errorMessage: PRODUCT_MESSAGES.SALE_PRICE_IS_REQUIRED,
-  },
+  // notEmpty: {
+  //   errorMessage: PRODUCT_MESSAGES.SALE_PRICE_IS_REQUIRED,
+  // },
+  optional: true,
   isNumeric: {
     errorMessage: PRODUCT_MESSAGES.SALE_PRICE_MUST_BE_NUMBER,
   },
