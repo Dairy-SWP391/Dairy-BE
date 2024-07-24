@@ -14,4 +14,5 @@ export const ORDER_MESSAGES = {
   CANCEL_REASON_IS_REQUIRED: 'Cancel reason is required',
   CANCEL_REASON_MUST_BE_STRING: 'Cancel reason must be string',
   CANCEL_ORDER_SUCCESS: 'Cancel order success',
+  DELIVER_SUCCESS: 'Deliver success',
 } as const;

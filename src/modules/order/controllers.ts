@@ -45,4 +45,12 @@ export const cancelOrderController = async (
   });
 };
 
+export const deliverSuccessController = async (req: Request, res: Response) => {
+  const { order_id } = req.query;
+  await orderService.deliverSuccess(Number(order_id));
+  return res.json({
+    message: ORDER_MESSAGES.DELIVER_SUCCESS,
+  });
+};
+
 // export const refundOrderController = async (req: Request, res: Response) => {};

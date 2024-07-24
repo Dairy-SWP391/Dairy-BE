@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { wrapAsync } from '~/utils/handler';
 import {
   cancelOrderController,
+  deliverSuccessController,
   getAllOrdersController,
   getOrderInfoController,
   getOrderReportController,
@@ -34,6 +35,8 @@ orderRouter.post(
   cancelOrderValidator,
   wrapAsync(cancelOrderController),
 );
+
+orderRouter.post('/deliver-success', wrapAsync(deliverSuccessController));
 
 // orderRouter.post('/refund', wrapAsync(refundOrderController));
 

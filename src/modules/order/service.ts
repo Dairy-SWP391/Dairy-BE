@@ -350,6 +350,17 @@ class OrderService {
       },
     });
   }
+
+  async deliverSuccess(order_id: number) {
+    await DatabaseInstance.getPrismaInstance().order.update({
+      where: {
+        id: Number(order_id),
+      },
+      data: {
+        status: 'SUCCESS',
+      },
+    });
+  }
 }
 
 const orderService = new OrderService();
