@@ -88,4 +88,40 @@ export const getFeedbackValidator = validate(
   ),
 );
 
-export const sendFeedbackValidator = validate(checkSchema({}));
+export const sendFeedbackValidator = validate(
+  checkSchema({
+    product_id: {
+      notEmpty: { errorMessage: FEEDBACK_MESSAGES.PRODUCT_ID_REQUIRED },
+      isNumeric: { errorMessage: FEEDBACK_MESSAGES.PRODUCT_ID_MUST_BE_A_NUMBER },
+      custom: {
+        options: async (value) => {
+          const product = await productService.getProductById(value);
+          if (!product) {
+            throw new Error(FEEDBACK_MESSAGES.PRODUCT_NOT_FOUND);
+          }
+        },
+      },
+    },
+    content: {
+      optional: true,
+      trim: true,
+      isString: { errorMessage: FEEDBACK_MESSAGES.CONTENT_MUST_BE_A_STRING },
+      isLength: {
+        errorMessage: 'Content must be between 10 and 100 characters',
+        options: { min: 10, max: 100 },
+      },
+    },
+    rating_point: {
+      notEmpty: { errorMessage: FEEDBACK_MESSAGES.RATING_POINT_IS_REQUIRED },
+      isNumeric: { errorMessage: FEEDBACK_MESSAGES.RATING_POINT_MUST_BE_A_NUMBER },
+      custom: {
+        options: (value) => {
+          if (value < 1 || value > 5) {
+            throw new Error(FEEDBACK_MESSAGES.RATING_POINT_MUST_BE_BEWTEEN_1_AND_5);
+          }
+          return true;
+        },
+      },
+    },
+  }),
+);

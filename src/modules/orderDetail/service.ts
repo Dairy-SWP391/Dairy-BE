@@ -34,6 +34,18 @@ class OrderDetailService {
       };
     });
   }
+
+  async getOrderDetailById(user_id: string, product_id: number) {
+    const orderDetail = await DatabaseInstance.getPrismaInstance().orderDetail.findFirst({
+      where: {
+        order: {
+          user_id,
+        },
+        product_id,
+      },
+    });
+    return orderDetail;
+  }
 }
 
 const orderDetailService = new OrderDetailService();

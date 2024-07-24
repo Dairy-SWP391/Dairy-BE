@@ -4,3 +4,9 @@ export interface GiveFeedbackBodyReq {
   content?: string;
   rating_point: number;
 }
+
+export interface SendFeedbackReqBody {
+  product_id: number;
+  content: string;
+  rating_point: number;
+}

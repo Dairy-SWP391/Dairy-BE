@@ -1,5 +1,5 @@
 import { DatabaseInstance } from '~/database/database.services';
-import { GiveFeedbackBodyReq } from './requests';
+import { GiveFeedbackBodyReq, SendFeedbackReqBody } from './requests';
 import { FEEDBACK_MESSAGES } from './messages';
 
 class FeedbackService {
@@ -50,6 +50,20 @@ class FeedbackService {
     });
 
     return rs;
+  }
+
+  async sendFeedback(feedback: SendFeedbackReqBody & { user_id: string; order_detail_id: number }) {
+    const result = await DatabaseInstance.getPrismaInstance().feedback.create({
+      data: {
+        content: feedback.content,
+        rating_point: Number(feedback.rating_point),
+        order_detail_id: Number(feedback.order_detail_id),
+        user_id: feedback.user_id,
+        product_id: Number(feedback.product_id),
+      },
+    });
+
+    return result;
   }
 }
 const feedbackService = new FeedbackService();
