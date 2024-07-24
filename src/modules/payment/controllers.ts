@@ -32,8 +32,9 @@ export const createPaymentController = async (
   const { user_id } = req.decoded_authorization as TokenPayload;
   const cartList = await orderService.convertCartList({ cart_list, voucher_code });
   const fee = await shipServices.getFee(feeReq, cartList);
+  let voucher = null;
   if (voucher_code) {
-    const voucher = await DatabaseInstance.getPrismaInstance().voucher.update({
+    voucher = await DatabaseInstance.getPrismaInstance().voucher.update({
       where: {
         code: voucher_code,
       },
@@ -55,7 +56,7 @@ export const createPaymentController = async (
     });
   }
 
-  const totalMoneyNeedPay = cartList.totalMoney + fee.total;
+  const totalMoneyNeedPay = cartList.totalMoney + fee.total - (voucher?.value || 0);
   // vị trí ip mà khách hàng đang giao dịch
   // tạo order cho khách hàng với status là pending - chờ thanh toán
   const order_id = await orderService.createOrder({
@@ -64,6 +65,7 @@ export const createPaymentController = async (
     phone_number,
     address,
     cartList,
+    discount: voucher ? voucher.value : 0,
     fee,
     ...feeReq,
   });

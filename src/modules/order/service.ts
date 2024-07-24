@@ -11,7 +11,7 @@ import HTTP_STATUS from '~/constants/httpsStatus';
 import { CartListType } from './schema';
 import { GetFeeType } from '../ship/schema';
 import orderDetailService from '../orderDetail/service';
-import voucherService from '../voucher/service';
+// import voucherService from '../voucher/service';
 
 config();
 
@@ -28,6 +28,7 @@ class OrderService {
       result.push(Number(item.product_id));
       return result;
     }, []);
+    console.log(voucher_code);
 
     // danh sách các product lấy từ productCartIdListPrev
     const productList = await DatabaseInstance.getPrismaInstance().product.findMany({
@@ -140,10 +141,6 @@ class OrderService {
         ? (totalMoney += item.sale_price * item.quantity)
         : (totalMoney += item.price * item.quantity);
     });
-    if (voucher_code) {
-      const voucher = await voucherService.getVoucherByCode(voucher_code);
-      totalMoney -= voucher?.value || 0;
-    }
     return {
       cart_list: result,
       allQuality,
@@ -161,6 +158,7 @@ class OrderService {
     service_id,
     to_district_id,
     to_ward_code,
+    discount,
   }: {
     user_id: string;
     receiver_name: string;
@@ -171,6 +169,7 @@ class OrderService {
     service_id: string;
     to_district_id: string;
     to_ward_code: string;
+    discount: number;
   }) {
     const order = await DatabaseInstance.getPrismaInstance().order.create({
       data: {
@@ -181,7 +180,7 @@ class OrderService {
         estimate_price: cartList.totalMoney,
         end_price: cartList.totalMoney + fee.total - 0,
         ship_fee: fee.total,
-        discount: 0,
+        discount,
         status: 'DELIVERING',
         service_id: Number(service_id),
         to_district_id: Number(to_district_id),

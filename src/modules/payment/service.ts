@@ -154,16 +154,16 @@ class PaymentServices {
           },
         });
 
-        // await DatabaseInstance.getPrismaInstance().user.update({
-        //   where: {
-        //     id: order.user_id,
-        //   },
-        //   data: {
-        //     point: {
-        //       increment: Number.parseInt((order.end_price * 0.01).toString()),
-        //     },
-        //   },
-        // });
+        await DatabaseInstance.getPrismaInstance().user.update({
+          where: {
+            id: order.user_id,
+          },
+          data: {
+            point: {
+              increment: Number.parseInt((order.end_price * 0.01).toString()),
+            },
+          },
+        });
         // return url để redirect về trang thông tin order của đơn hàng
         const checkout_return_url = process.env.CHECKOUT_RETURN_URL;
         const urlOrderStatus = `${checkout_return_url}?&order_id=${order.id}`;
