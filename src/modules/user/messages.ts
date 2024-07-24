@@ -160,4 +160,8 @@ export const USER_MESSAGES = {
   WARD_CODE_MUST_BE_NUMBER: 'Ward code must be a number',
 
   GET_EXPENSE_SUCCESS: 'Get expense success',
+
+  // role
+  ROLE_MUST_BE_STRING: 'Role must be a string',
+  ROLE_MUST_BE_MEMBER_STAFF_ADMIN: 'Role must be member, staff, admin',
 } as const;

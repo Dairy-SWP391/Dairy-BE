@@ -504,6 +504,17 @@ class UserService {
       },
     });
   }
+
+  async updateRole(user_id: string, role: ROLE) {
+    return await DatabaseInstance.getPrismaInstance().user.update({
+      where: {
+        id: user_id,
+      },
+      data: {
+        role: role,
+      },
+    });
+  }
 }
 const userService = new UserService();
 export default userService;

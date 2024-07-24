@@ -265,3 +265,10 @@ export const getExpensePerMonthController = async (req: Request, res: Response) 
   const result = await userService.getExpensePerMonth(user_id);
   res.json({ message: USER_MESSAGES.GET_EXPENSE_SUCCESS, result: result });
 };
+
+export const updateRoleController = async (req: Request, res: Response) => {
+  // const { user_id } = req.decoded_authorization as TokenPayload;
+  const { role, id } = req.body;
+  const result = await userService.updateRole(id, role);
+  res.json({ message: USER_MESSAGES.UPDATE_USER_SUCCESS, result: result });
+};

@@ -929,3 +929,18 @@ export const getWishListValidator = validate(
     ['query'],
   ),
 );
+
+export const updateRoleValidator = validate(
+  checkSchema({
+    id: userIdSchema,
+    role: {
+      isString: {
+        errorMessage: USER_MESSAGES.ROLE_MUST_BE_STRING,
+      },
+      isIn: {
+        options: [Object.values(ROLE)],
+        errorMessage: USER_MESSAGES.ROLE_MUST_BE_MEMBER_STAFF_ADMIN,
+      },
+    },
+  }),
+);

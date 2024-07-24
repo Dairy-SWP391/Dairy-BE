@@ -18,6 +18,7 @@ import {
   deleteProductFromWishListValidator,
   getWishListValidator,
   getAllUsersValidator,
+  updateRoleValidator,
 } from './middlewares';
 import {
   registerController,
@@ -42,6 +43,7 @@ import {
   getDefaultAddressController,
   getExpenseController,
   getExpensePerMonthController,
+  updateRoleController,
 } from './controllers';
 
 const userRouter = Router();
@@ -116,5 +118,13 @@ userRouter.delete(
 );
 userRouter.get('/total', accessTokenValidator, wrapAsync(getExpenseController));
 userRouter.get('/total-per-month', accessTokenValidator, wrapAsync(getExpensePerMonthController));
+
+userRouter.patch(
+  '/role',
+  accessTokenValidator,
+  roleValidator,
+  updateRoleValidator,
+  wrapAsync(updateRoleController),
+);
 
 export default userRouter;
